@@ -1,12 +1,28 @@
 // Styling for the post page
+.post-article {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.post-banner {
+    overflow: hidden;
+    display: inline-flex;
+
+    @media only screen and (min-width: 768px) {
+        width: 400px;
+        height: 200px;
+        margin: 20px;
+    }
+}
+
 .post-preview {
+    flex: 1;
     >a {
         color: $gray-900;
 
         &:focus,
         &:hover {
-            text-decoration: none;
-            color: $primary;
+            text-decoration: underline;
         }
 
         >.post-title {
@@ -26,7 +42,7 @@
     }
 
     >.post-meta {
-        font-size: 18px;
+        font-size: 16px;
         font-style: italic;
         margin-top: 0;
         color: $gray-600;
@@ -42,16 +58,12 @@
             }
         }
     }
+}
+
+.post-content {
+    font-size: 16px;
 
     @media only screen and (min-width: 768px) {
-        >a {
-            >.post-title {
-                font-size: 32px;
-            }
-
-            >p {
-                font-size: 18px;
-            }
-        }
+    font-size: 20px;
     }
 }

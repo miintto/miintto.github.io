@@ -1,7 +1,7 @@
 ---
 layout: page
 title: About Me
-background: "/img/profile.jpg"
+background: "/img/bg/profile.jpg"
 ---
 
 안녕하세요! 서버 개발자 **박민재**입니다~ 👨🏻‍💻
