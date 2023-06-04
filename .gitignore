@@ -2,4 +2,8 @@
 
 # Cache files
 .idea/
-.pyc
+
+# Local Build
+Gemfile.lock
+.jekyll-cache/
+_site/
