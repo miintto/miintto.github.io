@@ -1,4 +1,18 @@
 // Styling for the post page
+.post-content {
+    font-size: 16px;
+
+    img {
+        display: block;
+        width: 100%;
+        margin: 30px auto;
+    }
+
+    @media only screen and (min-width: 768px) {
+    font-size: 20px;
+    }
+}
+
 .post-article {
     display: flex;
     flex-wrap: wrap;
@@ -8,10 +22,14 @@
     overflow: hidden;
     display: inline-flex;
 
+    img {
+        margin: 0;
+    }
+
     @media only screen and (min-width: 768px) {
         width: 400px;
         height: 200px;
-        margin: 20px;
+        margin: 30px 30px 30px 5px;
     }
 }
 
@@ -57,19 +75,5 @@
                 color: $primary;
             }
         }
-    }
-}
-
-.post-content {
-    font-size: 16px;
-
-    img {
-        display: block;
-        width: 100%;
-        margin: 30px auto;
-    }
-
-    @media only screen and (min-width: 768px) {
-    font-size: 20px;
     }
 }
