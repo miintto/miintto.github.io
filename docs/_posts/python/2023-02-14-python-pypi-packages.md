@@ -2,6 +2,10 @@
 layout: post
 title: "PyPI에 패키지를 업로드 해보자!"
 date: 2023-02-14
+tags:
+  - python
+  - pypi
+  - package
 banner: "/img/posts/python-pypi-packages-banner.png"
 ---
 

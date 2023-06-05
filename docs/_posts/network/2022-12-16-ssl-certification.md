@@ -2,6 +2,10 @@
 layout: post
 title: "SSL 인증서 발급 (with Let's Encrypt)"
 date: 2022-12-16
+tags:
+  - ssl certificate
+  - let's encrypt
+  - certbot
 banner: "/img/posts/ssl-certificate-banner.png"
 ---
 

@@ -2,6 +2,10 @@
 layout: post
 title: "[파이썬] GIL (Global Interpreter Lock)"
 date: 2022-03-01
+tags:
+  - python
+  - gil
+  - multi-threading
 banner: "/img/posts/python-gil-banner.png"
 ---
 

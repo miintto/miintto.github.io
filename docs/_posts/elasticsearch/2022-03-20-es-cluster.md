@@ -2,6 +2,11 @@
 layout: post
 title: "[엘라스틱서치] 클러스터 구성"
 sate: 2022-03-20
+tags:
+  - elasticsearch
+  - kibana
+  - aws
+  - cluster
 banner: "/img/posts/es-cluster-banner.png"
 ---
 
@@ -319,4 +324,4 @@ References
 - [Elastic 8.0 설치하기](http://kimjmin.net/2022/02/2022-02-elastic-8-install/)
 - [https://github.com/deviantony/docker-elk](https://github.com/deviantony/docker-elk)
 - [Running the Elastic Stack ("ELK") on Docker](https://www.elastic.co/guide/en/elastic-stack-get-started/current/get-started-stack-docker.html)
-- [The RED : 검색엔진 구축을 위한 Elasticsearch 마스터 클래스 by 정호욱 | 패스트캠퍼스](https://fastcampus.co.kr/data_red_jhw)
+- [The RED : 검색엔진 구축을 위한 Elasticsearch 마스터 클래스 by 정호욱](https://fastcampus.co.kr/data_red_jhw)

@@ -2,6 +2,9 @@
 layout: post
 title: "[파이썬] 제너레이터"
 date: 2022-03-06
+tags:
+  - python
+  - generator
 banner: "/img/posts/python-generator-banner.png"
 ---
 

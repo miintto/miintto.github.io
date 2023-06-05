@@ -2,6 +2,12 @@
 layout: post
 title: "[Django] Queryset"
 date: 2022-04-11
+tags:
+  - python
+  - django
+  - queryset
+  - lazy loading
+  - orm
 banner: "/img/posts/django-queryset-banner.png"
 ---
 
@@ -175,4 +181,4 @@ ORM을 자신의 입맛에 맞게 사용하려면 반드시 어느 정도의 시
 
 Referneces
 
-- [Django documentation | Django documentation | Django](https://docs.djangoproject.com/)
+- [Django documentation - Django](https://docs.djangoproject.com/)

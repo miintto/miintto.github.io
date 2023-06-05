@@ -2,6 +2,10 @@
 layout: post
 title: "[쿠버네티스] Architecture"
 date: 2022-05-08
+tags:
+  - k8s
+  - msa
+  - cluster
 banner: "/img/posts/k8s-archi-banner.png"
 ---
 

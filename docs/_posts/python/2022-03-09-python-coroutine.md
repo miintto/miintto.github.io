@@ -2,6 +2,10 @@
 layout: post
 title: "[파이썬] 코루틴"
 date: 2022-03-09
+tags: 
+  - python
+  - coroutine
+  - generator
 banner: "/img/posts/python-coroutine-banner.png"
 ---
 

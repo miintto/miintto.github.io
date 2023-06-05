@@ -2,6 +2,13 @@
 layout: post
 title: "[파이썬] 그린 스레드 라이브러리"
 date: 2023-04-09
+tags:
+  - python
+  - threading
+  - greenlet
+  - eventlet
+  - gevent
+  - coroutine
 banner: "/img/posts/python-green-thread-banner.png"
 ---
 

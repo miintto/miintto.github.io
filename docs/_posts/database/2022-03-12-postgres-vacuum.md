@@ -2,6 +2,11 @@
 layout: post
 title: "[PostgreSQL] Vacuum"
 date: 2022-03-12
+tags:
+  - database
+  - postgresql
+  - vacuum
+  - mvcc
 banner: "/img/posts/postgres-vacuum-banner.png"
 ---
 

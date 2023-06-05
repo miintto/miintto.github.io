@@ -2,6 +2,9 @@
 layout: post
 title: "HTTP status code"
 date: 2022-04-05
+tags:
+  - network
+  - http
 banner: "/img/posts/http-status-banner.png"
 ---
 

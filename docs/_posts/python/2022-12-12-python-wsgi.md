@@ -2,6 +2,11 @@
 layout: post
 title: "[파이썬] WSGI는 왜 필요할까?"
 date: 2022-12-12
+tags:
+  - python
+  - wsgi
+  - was
+  - web server
 banner: "/img/posts/python-wsgi-banner.png"
 ---
 

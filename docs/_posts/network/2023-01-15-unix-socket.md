@@ -2,6 +2,11 @@
 layout: post
 title: "Unix Socket 과 TCP Socket은 어떤 차이가 있을까?"
 date: 2023-01-15
+tags:
+  - network
+  - osi 7 layer
+  - tcp/ip
+  - unix domain socket
 banner: "/img/posts/network-socket-banner.png"
 ---
 

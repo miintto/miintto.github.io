@@ -2,6 +2,10 @@
 layout: post
 title: "[쿠버네티스] 무작정 설치해보기"
 date: 2022-05-05
+tags:
+  - k8s
+  - aws
+  - cluster
 banner: "/img/posts/k8s-install-banner.png"
 ---
 

@@ -2,6 +2,12 @@
 layout: post
 title: "[엘라스틱서치] Architecture"
 date: 2022-03-01
+tags:
+  - elasticsearch
+  - nosql
+  - cluster
+  - index
+  - shard
 banner: "/img/posts/es-archi-banner.png"
 ---
 
@@ -80,4 +86,4 @@ References
 
 - [Elasticsearch Guide](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html)
 - [Elastic 가이드 북](https://esbook.kimjmin.net/)
-- [The RED : 검색엔진 구축을 위한 Elasticsearch 마스터 클래스 by 정호욱 | 패스트캠퍼스](https://fastcampus.co.kr/data_red_jhw)
+- [The RED : 검색엔진 구축을 위한 Elasticsearch 마스터 클래스 by 정호욱](https://fastcampus.co.kr/data_red_jhw)

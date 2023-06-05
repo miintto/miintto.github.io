@@ -2,6 +2,12 @@
 layout: post
 title: "SQLAlchemy의 세션 관리"
 date: 2023-01-03
+tags:
+  - python
+  - sqlalchemy
+  - session
+  - orm
+  - thread-local
 banner: "/img/posts/sqlalchemy-session-banner.png"
 ---
 

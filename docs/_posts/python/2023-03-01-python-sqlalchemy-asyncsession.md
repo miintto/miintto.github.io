@@ -2,6 +2,11 @@
 layout: post
 title: "Async 환경에서 SQLAlchemy 세션 관리"
 date: 2023-03-01
+tags:
+  - python
+  - sqlalchemy
+  - session
+  - asyncio
 banner: "/img/posts/sqlalchemy-asyncsession-banner.png"
 ---
 

@@ -2,6 +2,11 @@
 layout: post
 title: "[파이썬] asyncio"
 date: 2022-10-30
+tags:
+  - python
+  - asyncio
+  - native coroutine
+  - event loop
 banner: "/img/posts/python-asyncio-banner.png"
 ---
 
