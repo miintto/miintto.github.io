@@ -2,6 +2,7 @@
 layout: post
 title: "[파이썬] Future를 이용한 동시성"
 date: 2022-10-05
+category: python
 tags:
   - python
   - future
@@ -132,7 +133,7 @@ download2()
 제너레이터에 `__next__` 메소드가 호출될때마다 각 Future 객체의 `result()` 함수를 실행하여 그 결과값을 호출한 순서대로 반환합니다.
 해당 작업이 진행되는 동안 Future 객체는 Executor 내부에서만 존재하므로 Future 객체를 직접 볼 수는 없습니다.
 
-앞서 [**GIL**](/docs/2022/03/01/python-gil.html)을 설명하면서 파이썬은 기본적으로 단일 스레드만 사용한다고 말씀드렸습니다.
+앞서 [**GIL**](/docs/python/2022/03/01/python-gil.html)을 설명하면서 파이썬은 기본적으로 단일 스레드만 사용한다고 말씀드렸습니다.
 하지만 `requests`, `sleep` 과 같은 입출력 작업에서는 GIL을 우회하므로 입출력을 기다리는 동안 다른 스레드로 전환할 수 있습니다.
 이러한 방식을 활용하면 여러 스레드를 이용하여 효율적으로 프로그램을 실행할 수 있습니다.
 

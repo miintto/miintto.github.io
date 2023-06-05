@@ -2,6 +2,7 @@
 layout: post
 title: "[Docker] 도커 엔진"
 date: 2022-03-27
+category: docker
 tags:
   - docker
   - vm

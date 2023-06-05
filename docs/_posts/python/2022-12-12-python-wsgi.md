@@ -2,6 +2,7 @@
 layout: post
 title: "[파이썬] WSGI는 왜 필요할까?"
 date: 2022-12-12
+category: python
 tags:
   - python
   - wsgi

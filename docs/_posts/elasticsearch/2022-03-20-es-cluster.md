@@ -2,6 +2,7 @@
 layout: post
 title: "[엘라스틱서치] 클러스터 구성"
 sate: 2022-03-20
+category: elasticsearch
 tags:
   - elasticsearch
   - kibana

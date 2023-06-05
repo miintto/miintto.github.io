@@ -2,6 +2,7 @@
 layout: post
 title: "[엘라스틱서치] Architecture"
 date: 2022-03-01
+category: elasticsearch
 tags:
   - elasticsearch
   - nosql

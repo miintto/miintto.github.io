@@ -7,6 +7,9 @@ background: "/img/bg/profile.jpg"
 안녕하세요! 서버 개발자 **박민재**입니다~ 👨🏻‍💻
 
 <br>
+
+<img src="/img/profile.jpg" style="max-width:240px; border-radius: 120px"/>
+
 <br>
 
 # I am...

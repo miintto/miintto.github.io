@@ -2,6 +2,7 @@
 layout: post
 title: "[PostgreSQL] Vacuum"
 date: 2022-03-12
+category: database
 tags:
   - database
   - postgresql

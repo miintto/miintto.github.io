@@ -1,0 +1,25 @@
+---
+layout: page
+title: Categories
+background: "/img/bg/category.jpg"
+---
+
+<div class="category-article">
+  {% for page in site.pages %}
+    {% if page.layout == "category" %}
+      {% assign category = page.title | downcase %}
+      <div class="category-banner">
+        <a href="{{ page.url | prepend: site.baseurl | replace: '//', '/' }}">
+          <div class="category-image">
+            <img src="/img/categories/{{ page.title }}.png" style="width: 100%">
+          </div>
+          <div class="category-description">
+            <h2>{{ page.title }}</h2>
+            <p>{{ site.categories[category].size }}개 포스트</p>
+            <div>View All Posts &rarr;</div>
+          </div>
+        </a>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>

@@ -2,6 +2,7 @@
 layout: post
 title: "[파이썬] 그린 스레드 라이브러리"
 date: 2023-04-09
+category: python
 tags:
   - python
   - threading

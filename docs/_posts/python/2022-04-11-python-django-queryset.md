@@ -2,6 +2,7 @@
 layout: post
 title: "[Django] Queryset"
 date: 2022-04-11
+category: django
 tags:
   - python
   - django

@@ -1,0 +1,36 @@
+.category-article {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.category-banner {
+    display: inline-flex;
+    position: relative;
+    margin: 5px;
+    overflow: hidden;
+
+    img {
+        margin: 0;
+    }
+
+    @media only screen and (min-width: 1200px) {
+        width: 450px;
+        height: 225px;
+    }
+
+    .category-description {
+        display: none;
+        position: absolute;
+        top: 0px;
+        width: 100%;
+        height: 100%;
+        padding: 10%;
+        background: fade-out($black, .2);
+        text-align: center;
+        color: $white;
+    }
+
+    &:hover .category-description {
+        display: block;
+    }
+}

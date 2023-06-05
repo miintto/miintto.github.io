@@ -2,6 +2,7 @@
 layout: post
 title: "[쿠버네티스] Architecture"
 date: 2022-05-08
+category: kubernetes
 tags:
   - k8s
   - msa

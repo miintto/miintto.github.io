@@ -2,6 +2,7 @@
 layout: post
 title: "[파이썬] 제너레이터"
 date: 2022-03-06
+category: python
 tags:
   - python
   - generator
