@@ -28,6 +28,14 @@
         background: fade-out($black, .2);
         text-align: center;
         color: $white;
+
+        >h2 {
+            margin: 8px;
+        }
+
+        >p {
+            margin: 12px;
+        }
     }
 
     &:hover .category-description {

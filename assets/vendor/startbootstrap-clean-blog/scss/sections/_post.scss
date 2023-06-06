@@ -35,6 +35,8 @@
 
 .post-preview {
     flex: 1;
+    margin: 0px 5px;
+
     >a {
         color: $gray-900;
 
@@ -50,13 +52,14 @@
         }
 
         >.post-subtitle {
+            font-size: 15px;
             font-weight: 300;
             margin: 0 0 10px;
         }
+    }
 
-        >p {
-            font-size: 15px;
-        }
+    >.post-meta {
+        margin: 10px 0px;
     }
 
     >.post-meta {
