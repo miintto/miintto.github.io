@@ -10,6 +10,11 @@ background: "/img/bg/profile.jpg"
 
 <img src="/img/profile.jpg" style="max-width:240px; border-radius: 120px"/>
 
+<blockquote align="center">
+절실함을 품고 노력에 정진하되,<br>
+억지 노력에 매몰되지 말고 그 과정을 즐기자.
+</blockquote>
+
 <br>
 
 # I am...
