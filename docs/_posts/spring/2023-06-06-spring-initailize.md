@@ -134,7 +134,7 @@ Gradle은 루트 경로의 `build.gradle.kts` 파일에 기입된 내용을 기�
 해당 파일에는 필요한 플러그인, 외부 라이브러리, 저장소 정보 등이 기입되어 있습니다.
 파일을 열어보면 아래와 같은 구성을 확인할 수 있습니다.
 
-```java
+```kotlin
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -227,7 +227,7 @@ BUILD SUCCESSFUL in 41s
 4 actionable tasks: 4 executed
 ```
 
-아직 별다른 로직이 생성되지 않았기 때문에 실행 후 프로세스가 바로 종료됩니다.
+아직 톰캣이 활성화되지 않았기 때문에 실행 후 프로세스가 바로 종료됩니다.
 
 ---
 
