@@ -2,7 +2,7 @@
 layout: post
 title: "Redis 분산 락을 활용한 동시성 처리"
 date: 2023-01-08
-category: redis
+category: database
 tags:
   - distributed lock
   - redis
