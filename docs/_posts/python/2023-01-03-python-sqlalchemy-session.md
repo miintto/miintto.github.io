@@ -276,7 +276,7 @@ class ScopedRegistry(object):
 
 다만 동시성을 위해 greenlet, asyncio같은 라이브러리를 사용하는 환경에서는 race condition이 발생할 수 있습니다.
 사실 필자가 SQLAlchemy를 학습한 이유가 FastAPI 환경에서 사용하기 위한 목적이었으나 정작 async 환경에서 적용하기에는 여러 위험 요소가 많았습니다.
-다행스럽게도 2020년 11월에 1.4 버전이 릴리즈되면서 `AsyncSession`기능이 탑재되었는데 해당 기능에 대해서는 [별도 포스트](/docs/sqlalchemy/2023/03/01/python-sqlalchemy-asyncsession.html)에서 설명하겠습니다.
+다행스럽게도 2020년 11월에 1.4 버전이 릴리즈되면서 `AsyncSession`기능이 탑재되었는데 해당 기능에 대해서는 [별도 포스트](/docs/python-sqlalchemy-asyncsession)에서 설명하겠습니다.
 
 ---
 

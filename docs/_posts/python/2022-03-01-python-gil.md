@@ -19,7 +19,7 @@ banner: "/img/posts/python-gil-banner.png"
 
 # 1. Thread Safe 이슈
 
-이전에 CPython은 기본적으로 [레퍼런스 카운팅](/docs/python/2022/02/27/python-gc.html)을 사용하여 메모리를 관리한다고 설명했습니다.
+이전에 CPython은 기본적으로 [레퍼런스 카운팅](/docs/python-gc#2-reference-counting)을 사용하여 메모리를 관리한다고 설명했습니다.
 각 스레드에서 객체가 참조될 때마다 `ob_refcnt` 를 계산해 주어야 하는데, 동시에 여러 스레드에서 동일한 객체에 접근할 때 일부 실행이 누락되는 경우가 발생할 수 있습니다.
 이렇게 둘 이상의 스레드가 서로 공유하는 자원에 접근하여 정상적인 동작을 방해하는 경우를 **race condition**(경쟁 상태)이라고 합니다.
 반대로 이런 race condition이 발생하지 않으면서 프로그램이 정상적으로 실행되면 **thread safe** 하다고 합니다.
