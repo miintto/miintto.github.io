@@ -1,7 +1,6 @@
 ---
 layout: post
 title: "Spring+Kotlin 프로젝트 시작"
-date: 2023-06-06
 category: spring
 tags: 
   - spring
@@ -21,6 +20,9 @@ banner: "/img/posts/spring-initialize-banner.png"
 ---
 
 # 1. Start Project
+
+처음 시작은 기존 Python으로 되어있는 프로젝트 하나를 옮겨보려고 합니다.
+기존 구축되었던 프로젝트를 코틀린 기반으로 재작성해 보면서 스프링에서는 어떻게 구현되는지 파악해 보면 이해가 쉬울 것 같아, FastAPI로 작성했던 [miintto/matstagram](https://github.com/miintto/matstagram) 프로젝트를 선택해서 스프링으로 다시 작성해 보겠습니다.
 
 ## 1.1 Spring Initializer
 

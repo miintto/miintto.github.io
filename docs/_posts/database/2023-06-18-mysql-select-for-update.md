@@ -87,7 +87,7 @@ SELECT * FROM t_user WHERE id BETWEEN 10 AND 20 FOR UPDATE;
 
 ## 2.3 Next-Key Locks
 
-**Next-key lock**은 레코드에는 record lock과  gap lock을 적절하게 조합한 락 입니다.
+**Next-key lock**은 record lock과  gap lock을 적절하게 조합한 락 입니다.
 열린구간(open interval), 닫힌구간(closed interval)들에 대해 복합적으로 락을 걸기 위해 사용됩니다.
 
 먼저 조건문에 해당하는 row에 락을 잡기 위해 구간을 스캔한 후에 해당하는 인덱스 레코드에 대해 락을 획득합니다.
