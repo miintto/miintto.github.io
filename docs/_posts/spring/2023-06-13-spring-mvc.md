@@ -296,7 +296,7 @@ class UserService {
 ```
 
 서비스 클래스에는 `@Service` 어노테이션을 붙여줍니다.
-기능적으로 `@Repository`, `@Service` 모두 Component 클래스를 상속하고 있어서 기능적으로는 큰 차이가 없지만 기능을 명시적으로 표기하기 위해 `@Component`보다는 적절하게 어노테이션을 붙여주는것을 권장합니다.
+기능적으로 `@Repository`, `@Service` 모두 `Component` 클래스를 상속하고 있어서 기능적으로는 큰 차이가 없지만 기능을 명시적으로 표기하기 위해 `@Component`보다는 적절하게 어노테이션을 붙여주는것을 권장합니다.
 
 ```kotlin
 @RestController
@@ -315,9 +315,12 @@ class UserController {
 
 그리고 컨트롤러에서 서비스의 로직과 연결합니다.
 
+URI 경로를 변수로 이용하려면 `path` 인자를 선언할 때 대괄호 `{}` 내부에 변수명을 입력합니다.
+또한 `@PathVariable`를 이용하여 경로에 입력된 값을 컨트롤러 내부로 가져올 수 있습니다.
+
 어플리케이션 실행후 아래와 같이 요청하면 데이터베이스에 있는 사용자 정보를 반환합니다.
 
-```
+```shell
 GET /user/1
 Response
 {
