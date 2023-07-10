@@ -1,11 +1,12 @@
 ---
 layout: post
-title: 어플리케이션 예외 처리
+title: Spring 어플리케이션 예외 처리
 category: spring
 tags: 
   - spring
   - custom response
   - exception
+  - controller advice
 banner: "/img/posts/spring-exception-banner.png"
 ---
 
