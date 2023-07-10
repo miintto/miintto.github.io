@@ -16,9 +16,9 @@ linkedin_username:
 google_analytics:   UA-XXXXXXXXX-X # out your google-analytics code
 
 # Build settings
-permalink: /docs/:title
+permalink:          "/docs/:title"
 markdown:           kramdown
-paginate:           10
+paginate:           20
 paginate_path:      "/posts/page:num/"
 plugins:
   - jekyll-feed
