@@ -60,10 +60,53 @@ Flask 어플리케이션 기반으로 구성되어 있으며 DAG의 상태, 실�
 
 ---
 
-# 3. Executor
+# 3. Scheduler
 
-**Executor**는 Task를 실행시키는 주체로서 scheduler 프로세스 내부에서 동작합니다.
-Airflow에는 여러 executor를 제공하는데 각 executor 마다 워커의 작동 방식도 조금씩 달라집니다.
+Airflow의 핵심 컴포넌트는 **스케줄러**라고 할 수 있습니다.
+크게 두 가지 일을 하는데 첫 번째는 파이썬으로 작성된 DAG 파일을 읽고 구문 분석하여 주기적으로 DB에 갱신하는 작업이고, 두 번째로는 실행 시기가 된 작업이 실행되도록 대기열에 배치하는 역할을 합니다.
+
+## 3.1 DAG Processor Manager
+
+스케줄러 프로세스는 구동 시에 **DagFileProcessorManager** 프로세스를 별도로 실행하여 DAG 파일 관리를 담당시킵니다.
+해당 프로세스는 파이썬으로 작성된 DAG 파일의 전반적인 전처리를 담당하는데 무한 루프를 돌면서 아래와 같이 정해진 작업을 반복합니다.
+
+<img src="/img/posts/airflow-archi-dagfile-processor-manager.png" style="max-width:720px"/>
+
+1. 디렉토리를 스캔하여 DAG 파일이 존재하는 path 리스트를 갱신합니다.
+  DAG 파일이 삭제된 경우 DAG 정보를 메타 데이터베이스에서 제거합니다.
+2. DAG 디렉토리 path 리스트 중에서 파싱 시점이 된 DAG를 선별하여 큐(queue)에 넣습니다.
+  이전 단계에서 새로 추가된 DAG 파일이 존재했다면 해당 DAG도 큐에 넣습니다.
+  큐는 파이썬 내장 객체 `collections.deque` 타입으로 되어있습니다.
+3. 큐에 처리할 DAG 파일이 존재한다면 DagFileProcessor 프로세스를 spawn 하여 처리할 DAG 파일을 할당합니다.
+  하나의 프로세스는 하나의 DAG 파일을 담당하여 작업을 진행합니다.
+4. **DagFileProcessor**에서 DAG 파일을 구문 분석하여 메타 데이터베이스에 저장합니다.
+  DAG 및 Task 정보들은 JSON 객체로 파싱 되어 **'serialized_dag'** 테이블에, 파이썬 코드에 입력된 정보들(스케줄 주기, 태그, 백필 등)을 비롯한 메타 정보들은 **'dag'** 테이블에, 파이썬 코드 전문은 **'dag_code'** 테이블에 각각 저장됩니다. 
+5. 위 작업을 계속 반복합니다.
+
+## 3.2 Task Scheduler
+
+스케줄러 메인 프로세스에서는 DAG 및 Task 들의 전반적인 생명 주기를 관리합니다. 처음 프로세스가 실행되면 DagFileProcessorManager 프로세스 및 executor를 실행시킨 후, 무한 루프를 돌면서 Task scheduling 작업을 합니다.
+반복되는 스케줄러 루프 과정은 아래와 같습니다.
+
+<img src="/img/posts/airflow-archi-scheduler-loop.png" style="max-width:720px"/>
+
+1. 'dag' 테이블을 조회하여 실행 시점이 된 DAG를 가져와 **DAG run** [scheduled]과 **Task instance** [none]를 생성합니다.
+2. [scheduled] 상태의 DAG run을 가져와서 [running] 상태로 변경합니다.
+3. [running] 상태의 DAG run 중에서 실행 가능한 Task instance를 가져옵니다.
+  실행할 Task instance가 없거나 이슈가 발생한 DAG run은 상황에 따라 [success] 혹은 [failed] 상태로 변경합니다.
+  가져온 Task instance 들은 우선순위를 계산하여 [queued] 상태로 변경 후 executor 내부의 큐(queue)로 전달합니다.
+  큐는 파이썬 내장 객체 `OrderedDict` 타입으로 되어있습니다.
+4. **Executor**에서 큐에 있는 작업들을 차례로 워커에 전달합니다.
+  각 executor에 따라 작업 전달 방식은 조금씩 차이가 날 수 있습니다.
+  작업을 전달받은 워커는 Task 실행 후 경과에 따라 Task instance의 상태를 변경합니다.
+5. 일정 시간 sleep 후 위 작업을 계속 반복합니다.
+
+---
+
+# 4. Executor
+
+**Executor**는 Task를 실행시키는 주체로 스케줄러 프로세스 내부에서 동작합니다.
+Airflow에서는 여러 executor를 제공하는데 각 executor 마다 작업 전달 방식 및 워커의 작동 방식도 조금씩 달라집니다.
 
 - SequentialExecutor
 - LocalExecutor
@@ -71,13 +114,13 @@ Airflow에는 여러 executor를 제공하는데 각 executor 마다 워커의 �
 - KubernetesExecutor
 - 등등...
 
-## 3.1 SequentialExecutor
+## 4.1 SequentialExecutor
 
 기본적으로 아무 세팅을 하지 않으면 `SequentialExecutor`로 설정됩니다.
 메타 데이터베이스로 sqlite를 사용하고 있기 때문에 병렬 처리는 불가능합니다.
-테스트 용도가 아니라면 해당 executor를 사용하는 ㄴ 권장하지 않고 있습니다.
+테스트 용도가 아니라면 해당 executor 사용은 권장하지 않고 있습니다.
 
-## 3.2 LocalExecutor
+## 4.2 LocalExecutor
 
 <img src="/img/posts/airflow-archi-local-executor.png" style="max-width:640px"/>
 
@@ -85,13 +128,13 @@ Airflow에는 여러 executor를 제공하는데 각 executor 마다 워커의 �
 메타 DB로 sqlite 대신 PostgreSQL, MySQL과 같이 멀티 커넥션이 가능한 데이터베이스를 사용해야 합니다.
 
 워커 프로세스는 스케줄러의 서브 프로세스로 실행됩니다.
-parallelism 설정에 따라 미리 특정 숫자의 워커를 띄워두거나 혹은 작업 실행시마다 워커 프로세스를 spawn 하는 방식으로 구성할 수 있습니다.
+parallelism 설정에 따라 미리 특정 숫자의 워커를 띄워두거나 혹은 작업 실행 시마다 워커 프로세스를 spawn 하는 방식으로 구성할 수 있습니다.
 
 장점으로는 구성이 간편합니다.
 단순히 기본 Airflow에서 메타 DB만 변경하면 바로 실행 가능합니다.
 다만 워커가 스케줄러의 서브 프로세스로 실행되기 때문에 스케줄러와 워커가 반드시 동일한 인스턴스에 구성되어야 하므로 확장에 한계가 있습니다.
 
-## 3.3 CeleryExecutor
+## 4.3 CeleryExecutor
 
 <img src="/img/posts/airflow-archi-celery-executor.png" style="max-width:640px"/>
 
@@ -100,12 +143,12 @@ Celery 구성을 위해 message broker와 result backend가 추가적으로 필�
 별도의 result backend 설정이 없으면 기본적으로 메타 DB를 사용하도록 되어있습니다.
 Airflow의 워커가 아닌 Celery 워커를 이용하여 작업을 수행하므로 스케줄러와 별개로 직접 워커 프로세스를 실행해 주어야 합니다.
 
-스케줄러는 작업을 대기열에 배치할때 message broker를 이용합니다.
+스케줄러는 작업을 대기열에 배치할 때 message broker를 이용합니다.
 스케줄러가 broker에 실행되어야 할 Task의 정보를 전달하면 각 Celery 워커들은 broker로부터 메시지를 가져와서 알맞은 작업을 수행합니다.
 
 작업에 대한 정보가 중간 broker를 통해 전달되는 구조라 확장이 매우 용이합니다.
 인스턴스에 Celery 워커를 실행하여 동일하게 broker를 방식으로 확장이 가능합니다.
-다만 추가적으로 필요한 라이브러리나 서비스가 있어서 구성하기 복잡힙니다.
+다만 추가적인 라이브러리나 서비스가 필요해서 구성하기 복잡합니다.
 
 ---
 
@@ -113,5 +156,6 @@ References
 
 - Bas Harenslak & Julian de Ruiter, 『Data Pipeline with Apache Airflow』, 김정민 & 문선홍, 제이펍, 2022-03-16
 - [Core Concepts — Airflow Documentation](https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/index.html#)
+- [DAG File Processing — Airflow Documentation](https://airflow.apache.org/docs/apache-airflow/stable/authoring-and-scheduling/dagfile-processing.html)
 - [버킷플레이스 Airflow 도입기 - 오늘의집 블로그](https://www.bucketplace.com/post/2021-04-13-버킷플레이스-airflow-도입기/)
 - [Kubernetes를 이용한 효율적인 데이터 엔지니어링(Airflow on Kubernetes VS Airflow Kubernetes Executor) - 1](https://engineering.linecorp.com/ko/blog/data-engineering-with-airflow-k8s-1)

@@ -5,7 +5,6 @@ category: python
 tags:
   - airflow
   - configuration
-  - scheduler
 banner: "/img/posts/airflow-quick-start-banner.png"
 ---
 
@@ -23,7 +22,7 @@ banner: "/img/posts/airflow-quick-start-banner.png"
 
 Airflow는 실행 시 홈 디렉토리가 정의되어 있어야 합니다.
 환경변수 **`AIRFLOW_HOME`**으로 프로젝트의 홈 디렉토리를 정의할 수 있습니다.
-해당 값이 정의되지 않으면 `~/airflow` 경로를 디폴트로 잡아 루트 경로에 새 프로젝트가 생성될 수 있으니 빼먹지 않도록 주의합니다.
+해당 값이 설정되지 않으면 `~/airflow` 경로를 디폴트로 잡아 루트 경로에 새 프로젝트가 생성될 수 있으니 빼먹지 않도록 주의합니다.
 
 현재 위치 기준으로 airflow/ 경로를 홈 디렉토리로 설정하였습니다.
 
@@ -49,14 +48,19 @@ $> tree
     └── webserver_config.py    # 웹서버 Config 파일
 ```
 
+`airflow.cfg` 파일은 아래서 설명할 Airflow 설정 파일입니다.
+logs 디렉토리 하위에는 스케줄러 및 워커의 로그가 기록됩니다.
+`webserver_config.py` 파일은 Airflow 웹서버 설정 파일입니다.
+
 ---
 
 # 2. Configuration
 
 Airflow를 구성하는 환경 설정값들은 **`airflow.cfg`** 파일에서 관리합니다.
 필요한 경우 해당 설정 파일의 변수들을 입맛에 맞게 조정할 수 있습니다.
+해당 설정 파일은 Airflow 실행 시에 반드시 `AIRFLOW_HOME` 디렉토리에 위치하고 있어야 인식할 수 있습니다.
 
-아래에 주로 많이 사용하는 값들을 나열해 보았는데, 더 자세한 내용을 보고 싶으면 [공식 문서 링크](https://airflow.apache.org/docs/apache-airflow/stable/configurations-ref.html) 참고 부탁드립니다.
+아래에 주로 많이 사용하는 값들을 나열해 보았는데, 더 자세한 내용을 보고 싶으면 [공식 문서 링크](https://airflow.apache.org/docs/apache-airflow/stable/configurations-ref.html)를 참고 부탁드립니다.
 
 ### [core]
 
@@ -74,15 +78,15 @@ Airflow를 구성하는 환경 설정값들은 **`airflow.cfg`** 파일에서 �
 - **`sql_alchemy_conn`**: 메타 데이터베이스 커넥션 정보
 
 ### [webserver]
-- **`secret_key`**: Flask 어플리케이션에서 사용하는 secert 키
+- **`secret_key`**: Flask 어플리케이션에서 사용할 secert 키
 - **`workers`**: 어플리케이션을 구동시킬 gunicorn 워커 개수
 
 ### [scheduler]
 
-- **`scheduler_idle_sleep_time`**:
-- **`min_file_process_interval`**: DAG 파일을 파싱하는 주기(초). 기본적으로 30초로 되어있으나 더 짧게 설정할수록 CPU 자원을 많이 소모합니다. 
-- **`dag_dir_list_interval`**: DAG 디렉토리를 조사하여 리스트를 갱신하는 주기
-- **`parsing_processes`**: DAG 파일을 파싱할 때 사용할 프로세의 개수
+- **`scheduler_idle_sleep_time`**: 스케줄러 루프를 한번 수행하고 다음 작업을 위해 대기하는 시간
+- **`min_file_process_interval`**: DAG 파일을 파싱하기 위해 큐에 넣는 최소 주기(초). 기본적으로 30초로 되어있으나 더 짧게 설정할수록 자주 파싱을 수행하게 되어 CPU 자원을 많이 소모합니다. 
+- **`dag_dir_list_interval`**: DAG 디렉토리를 스캔하여 리스트를 갱신하는 주기
+- **`parsing_processes`**: DAG 파일을 파싱할 때 동시에 spawn 되는 DagFileProcessor 프로세스의 최대 개수
 
 위의 내용을 바탕으로 프로젝트의 일부분을 수정하였습니다.
 
@@ -111,20 +115,26 @@ PostgreSQL을 사용하기 위해 아래 라이브러리를 설치힙니다.
 $> pip install psycopg2
 ```
 
-아래 명령어를 실행하여 데이터베이스를 초기화합니다.
+아래 명령어를 실행하여 메타 데이터베이스를 초기화합니다.
 
 ```bash
 $> airflow db init
 ```
 
-주요 테이블은 아래와 같습니다.
+초기 실행시 여러 테이블이 생성되는데 주요 테이블은 아래와 같습니다.
 
-- **ab_user**: 사용자 정보 테이블
+<img src="/img/posts/airflow-quick-start-database-erd.png" style="max-width:400px"/>
+
 - **dag**: DAG 메타 정보
-- **dag_code**: DAG 파이썬 소스코드 저장
-- **serialized_dag**: DAG 파일을 파싱한 JSON 데이터
-- **dag_run**: DAG의 실행 이력
-- **task_instance**: Task의 실행 이력
+- **serialized_dag**: DAG 및 Task 정보를 JSON 형식으로 파싱한 데이터
+- **dag_code**: DAG 파이썬 소스코드 전문
+- **dag_run**: DAG run 실행 이력
+- **task_instance**: Task instance 실행 이력
+- **xcom**: 작업 실행시 Task instance 간에 전달할 데이터
+- **ab_user**: 사용자 정보 테이블
+- **variable**: 작업시 필요한 변수들을 key-value 형식으로 저장한 데이터
+- **connection**: 데이터베이스 연결 정보
+- **log**: CLI 혹은 인터페이스에서 실행되는 이벤트 기록
 
 ---
 
@@ -135,31 +145,6 @@ $> airflow db init
 ```bash
 $> airflow scheduler
 ```
-
-## 4.1 DAG Processor Manager
-
-스케줄러 프로세스가 시작되면 DAG 파일을 관리하는 **DagFileProcessorManager** 프로세스가 실행됩니다.
-해당 프로세스는 DAG 파일의 전반적인 전처리를 담당합니다.
-`while` 루프 안에서 아래와 같이 정해진 작업을 반복합니다.
-
-1. DAG 디렉토리를 스캔하여 파일을 읽어옵니다.
-DAG가 삭제된 경우 메타 데이터베이스에서 제거합니다.
-이 작업은 `dag_dir_list_interval` 값을 기준으로 반복됩니다.
-2. 마지막 수행 시점으로부터 `min_file_process_interval`만큼 지나면 DAG 리스트를 큐에 넣습니다. 이전 단계에서 새로 추가된 DAG 파일이 존재했다면 해당 파일도 큐에 넣습니다.
-3. 큐에 처리할 DAG 파일이 존재한다면 DagFileProcessor 프로세스를 spawn 하여 DAG 파일을 가공합니다.
-해당 프로세스는 최대  `parsing_processes` 개수만큼 동시에 실행될 수 있습니다.
-4. 위 작업을 계속 반복합니다.
-
-<img src="/img/posts/airflow-quick-start-dagfile-processor-manager.png" style="max-width:720px"/>
-
-**DagFileProcessor** 프로세스에서는 하나의 DAG 파일을 담당하여 작업을 진행합니다.
-먼저 DAG 코드는 JSON 객체로 파싱 되어 'serialized_dag' 테이블에 저장됩니다.
-또한 파이썬 코드에 입력된 정보들(스케줄 주기, description, 태그, 백필 등)을 비롯하여 파일 경로, owner 등을 가져와 'dag' 테이블에 저장합니다.
-또한 코드 전문도 'dag_code' 테이블에 기록해 둡니다.
-
-## 4.2 Task Scheduler
-
-## 4.3 DAG runs
 
 아래와 같은 테스트 DAG를 작성합니다.
 
@@ -208,6 +193,8 @@ with DAG(
         second_task >> task_i >> finalize_task
 ```
 
+여러 operator 클래스를 이용하여 Task를 정의할 수 있으며, Task간에 `>>` 연산자 혹은 `set_downstream()` 메소드를 이용하여 연결할 수 있습니다.
+
 DAG 파일 작성 후 스케줄러가 돌아서 적당한 시간이 되면 해당 파일이 파싱 되어 메타 데이터베이스에 저장됩니다.
 아래 명령어로 현재 등록된 DAG 리스트를 확인해 볼 수 있습니다.
 
@@ -216,7 +203,7 @@ $> airflow dags list
 
 dag_id     | filepath                              | owner   | paused
 ===========+=======================================+=========+=======
-sample_dag | /your/home/airflow/dags/sample_dag.py | airflow | True 
+sample_dag | /your/airflow/home/dags/sample_dag.py | airflow | True 
 ```
 
 아래 명령어를 입력하여 작성한 DAG를 실행해 볼 수 있습니다.
@@ -243,10 +230,24 @@ Password:
 
 입력한 패스워드는 웹서버 접속 시 필요하므로 꼭 기억해 두도록 합니다.
 
+```bash
+$> airflow webserver
+```
+
+웹서버는 기본적으로 8080 포트로 실행됩니다.
+<u>http://localhost:8080</u> 경로로 웹서버에 접속할 수 있습니다.
+
+<img src="/img/posts/airflow-quick-start-webserver-login.png" style="max-width:640px"/>
+
+사용자 생성시 입력했던 username과 비밀번호를 입력하여 로그인힙니다.
+
+<img src="/img/posts/airflow-quick-start-webserver-dashboard.png" style="max-width:640px"/>
+
+메인 대시보드 화면에서 작성했던 DAG 리스트 및 Task 실행 현황을 모니터링 할 수 있습니다.
+
 ---
 
 References
 
 - Bas Harenslak & Julian de Ruiter, 『Data Pipeline with Apache Airflow』, 김정민 & 문선홍, 제이펍, 2022-03-16
 - [Quick Start — Airflow Documentation](https://airflow.apache.org/docs/apache-airflow/stable/start.html)
-- [DAG File Processing — Airflow Documentation](https://airflow.apache.org/docs/apache-airflow/stable/authoring-and-scheduling/dagfile-processing.html)
