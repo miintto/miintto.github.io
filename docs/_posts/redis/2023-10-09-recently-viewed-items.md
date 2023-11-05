@@ -180,13 +180,15 @@ class RecentlyViewedItemManager {
         return redissonClient.getScoredSortedSet(getKey(userId), StringCodec.INSTANCE)
     }
 
-    fun add(userId: Long, placeId: Long) {
+    fun add(userId: Long, itemId: Long) {
         try {
             val sortedSet = getSortedSet(userId)
-            val timestamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC).toDouble()
-            sortedSet.add(timestamp, placeId.toString())
+            sortedSet.add(
+                LocalDateTime.now().toEpochSecond(ZoneOffset.UTC).toDouble(),
+                itemId.toString()
+            )
         } catch (e: Exception) {
-            logger.error("Redis SortedSet Error - user=$userId place=$placeId", e)
+            logger.error("Redis SortedSet Error - user=$userId item=$itemId", e)
         }
     }
 
