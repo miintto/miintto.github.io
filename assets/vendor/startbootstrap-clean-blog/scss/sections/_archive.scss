@@ -1,0 +1,27 @@
+.archive-post {
+    display: flex;
+
+    .archive-date {
+        display: inline-block;
+        width: 100px;
+        margin: auto;
+        font-size: 12px;
+        text-align: right;
+        color: $gray-600;
+
+        @media only screen and (min-width: 768px) {
+            width: 120px;
+            margin: auto 20px auto 0;
+            font-size: 14px;
+        }
+    }
+
+    .archive-title {
+        display: inline-block;
+        flex: 1;
+    }
+
+    p {
+        margin: 8px;
+    }
+}
