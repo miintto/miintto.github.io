@@ -11,7 +11,8 @@ banner: "/img/posts/python-cow-friendly-python-gc-banner.png"
 ---
 
 예전 파이썬의 가비지 컬렉션에 대해 찾아보면서 인스타그램이 GC를 비활성화여 메모리 자원에 이득을 보았다는 포스트를 보았습니다.
-하지만 1년도 채 되지 않아 다시 활성화했다는 아래 게시글을 접하게 되었습니다.
+하지만 1년도 채 되지 않아 다시 활성화했다는 아래 게시글을 접하게 되었는데요.
+두 포스트 모두 문제를 발견하고 여러 가설을 세워 해결하는 과정이 인상적이었습니다.
 파이썬 인터프리터의 기본 구조와 동작 원리에 대한 이해를 돕는 데 좋을 것 같아 두고두고 읽으려고 번역해 두었습니다.
 
 ---
@@ -19,8 +20,8 @@ banner: "/img/posts/python-cow-friendly-python-gc-banner.png"
 # Copy-on-write에 친화적인 파이썬 가비지 컬렉션
 
 인스타그램은 세상에서 가장 큰 규모의 순수하게 파이썬으로 작성된 Django 서버를 운영하고 있습니다.
-초창기 파이썬을 선택한 이유는 바로 언어가 가진 단순함 때문이었는데 점점 규모가 커져감에도 이러한 단순함을 유지하고자 몇 년간 여러 편법을 사용해 왔습니다.
-작년에는 [인스타그램에 파이썬 GC를 비활성화](https://medium.com/instagram-engineering/dismissing-python-garbage-collection-at-instagram-4dca40b29172)하는 방식을 도입하여 사용하지 않는 메모리 자원을 확보하였고 약 10%의 성능상 이득을 보기도 했습니다.
+초창기에는 단순한 매력에 끌려 때문에 파이썬을 메인 언어로 선택하였고 점점 규모가 커져감에도 이러한 단순함을 유지하고자 몇 년간 여러 편법을 사용해 왔습니다.
+작년에는 [파이썬 GC를 비활성화](/docs/python-dismissing-python-gc)하는 방식을 도입하여 사용하지 않는 메모리 자원을 확보하였고 약 10%의 성능상 이득을 보기도 했습니다.
 하지만 인스타그램 엔지니어링 팀이 커지고 새 기능들이 점점 추가되면서 메모리 사용량도 점진적으로 증가하였고, 결국 GC를 비활성화하면서 얻은 이득이 다시 무용지물이 되기 시작했습니다.
 
 아래 차트에서 서버 요청량에 따른 메모리 사용량을 나타내 보았는데, 요청이 3,000건이 넘어가자 600MB 이상의 메모리가 사용되는 것을 확인할 수 있습니다.
@@ -33,13 +34,11 @@ GC를 다시 활성화함으로써 이 현상을 완화시켰고 메모리 증�
 그래서 우리는 COW와 그로 인한 메모리 오버헤드 없이 파이썬 GC를 작동시킬 수 있을지 확인해 보기로 했습니다.
 
 <img src="/img/posts/python-cow-friendly-python-gc-img002.png" style="max-width:480px"/>
-<span class="caption text-muted">
-  **빨강**: GC 비활성화 / **파랑**: 명식적으로 GC 호출 / **초록**: 기본 Python GC 활성화
-</span>
+<span class="caption text-muted">**빨강**: GC 비활성화 / **파랑**: 명식적으로 GC 호출 / **초록**: 기본 Python GC 활성화</span>
 
 ## 첫 번째 시도: GC 헤드 데이터 구조체를 재구성
 
-저번 GC 포스트에서도 설명했듯이 COW가 발생하는 원인은 각각의 파이썬 객체의 헤드 부분에 있습니다.
+[저번 GC 포스트](/docs/python-dismissing-python-gc)에서도 설명했듯이 COW가 발생하는 원인은 각각의 파이썬 객체의 헤드 부분에 있습니다.
 
 ```c
 /* GC information is stored BEFORE the object structure. */
@@ -93,14 +92,14 @@ for i in range(16000):
 ## 두 번째 시도: GC에서 공유 객체를 숨기는 방법
 
 새로 작성한 구조체가 단순 메모리 수치로는 이점을 보여주었지만 소폭의 메모리 오버헤드가 발생했다는 점에서 바람직하지 않았습니다.
-우리의 목표는 별다른 성능의 영향 없이 파이썬 GC를 다시 활성화시킬 방법을 찾는것이었습니다.
-이러한 COW 문제는 단지 하위 프로세스가 포크되기 이전에 메인 프로세스에서 생성된 공유 객체에서만 발생했기 때문에 파이썬 GC가 공유 객체를 다른 방식으로 접근하도록 시도해 보았습니다.
-간단히 말해서 공유되고 있는 객체들을 GC 과정에서 숨겨두어 컬렉션 주기에서 제외시키는 방식으로 문제를 해결하는 것입니다.
+우리의 목표는 별다른 성능의 영향 없이 파이썬 GC를 다시 활성화할 방법을 찾는 것이었습니다.
+이러한 COW 문제는 단지 하위 프로세스가 포크 되기 이전에 메인 프로세스에서 생성된 공유 객체에서만 발생했기 때문에 파이썬 GC가 공유 객체를 다른 방식으로 접근하도록 시도해 보았습니다.
+간단히 말해서 공유되고 있는 객체들을 GC 과정에서 숨겨두어 컬렉션 주기에서 제외할 수만 있다면 문제를 해결할 수 있습니다.
 
 이를 위해 우리는 파이썬 GC 모듈에 `gc.freeze()`라는 간단한 API를 추가했습니다.
-해당 메소드에서는 컬렉션 작업시 대상 객체를 추적하는 기능을 하는 파이썬 GC generation 리스트에서 특정 객체를 제거하는 작업을 합니다.
-그리고 해당 내용을 파이썬 오픈소스에 기여하여 Python3.7 부터 반영되엇습니다.
-[https://github.com/python/cpython/pull/3705](https://github.com/python/cpython/pull/3705)
+해당 메소드는 컬렉션 작업 시 대상 객체를 추적하는 파이썬 GC generation 리스트에서 특정 객체를 제거하는 작업을 수행하게 됩니다.
+추가된 API는 CPython 오픈소스에 반영되었고 Python3.7 부터 사용할 수 있습니다.
+([https://github.com/python/cpython/pull/3705](https://github.com/python/cpython/pull/3705))
 
 ```c
 static PyObject *
@@ -116,13 +115,12 @@ gc_freeze_impl(PyObject *module)
 
 ## 성공!
 
-해당 작업 내용을 운영 서버에 배포하였고, 마침내 우리가 예상했던 대로 작동하였습니다.
+우리는 해당 작업 내용을 운영 서버에 배포하였고, 마침내 우리가 예상했던 대로 작동하였습니다.
 COW는 더 이상 발생하지 않았으며 공유 메모리도 안정적으로 유지되었고 요청당 평균 메모리 증가율도 50% 이하로 떨어졌습니다.
 아래 차트는 GC를 다시 허용하면서 메모리 사용량이 지속적으로 증가하지 않고 프로세스 수명을 늘려주면서 효율적으로 메모리 자원이 사용되는 것을 보여줍니다.
 
 <img src="/img/posts/python-cow-friendly-python-gc-img003.png" style="max-width:480px"/>
 <span class="caption text-muted">파랑: GC 비활성화 / 빨강: 자동 GC</span>
-
 
 ---
 
@@ -150,6 +148,7 @@ Enabling GC could alleviate this problem and slow down the memory growth, but un
 So we decided to see if we could make Python GC work without COW, and hence, the memory overhead.
 
 <img src="/img/posts/python-cow-friendly-python-gc-img002.png" style="max-width:480px"/>
+<span class="caption text-muted">Red: without GC; Blue: calling GC collect explicitly; Green: default Python GC enabled</span>
 
 ## First try: redesign the GC head data structure
 
@@ -232,5 +231,10 @@ We deployed this change into our production and this time it worked as expected:
 The plot below shows how enabling GC helped the memory growth by stopping the linear growth and making each process live longer.
 
 <img src="/img/posts/python-cow-friendly-python-gc-img003.png" style="max-width:480px"/>
+<span class="caption text-muted">Blue: is no-GC; Red: auto-GC</span>
 
-[Copy-on-write friendly Python garbage collection \| by Instagram Engineering ](https://medium.com/instagram-engineering/copy-on-write-friendly-python-garbage-collection-ad6ed5233ddf)
+---
+
+References
+
+- [Copy-on-write friendly Python garbage collection \| by Instagram Engineering ](https://medium.com/instagram-engineering/copy-on-write-friendly-python-garbage-collection-ad6ed5233ddf)
