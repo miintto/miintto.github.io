@@ -15,6 +15,11 @@ redis-py 라이브러리에서 지원하는 락은 기본적으로 스핀락 구
 그래서 프로젝트 내에 Pub/Sub 시스템 기반으로 작동하는 락을 직접 구현하고 보니 아예 모듈로 만들어버리면 여러 프로젝트에서도 가져다 쓸 수 있을 것 같아서 아예 패키지로 만들어 보았습니다.
 관련 자료를 찾아 패키지를 만들고 PyPI 사이트에 업로드하는 과정을 기록하면 두고두고 좋을 것 같아 정리해 보았습니다.
 
+아래 제가 만들었던 패키지를 첨부했으니 참고하셔도 좋습니다.
+
+- 패키지 : [https://pypi.org/project/redis-lock-py/](https://pypi.org/project/redis-lock-py/)
+- 소스코드 : [https://github.com/miintto/redis-lock-py](https://github.com/miintto/redis-lock-py)
+
 --- 
 
 # 1. 소스코드 생성
@@ -42,10 +47,10 @@ $> tree
 
 파이썬 모듈은 반드시 `__init__.py` 파일을 포함하도록 합니다.
 또한 모듈명은 패키지명과 동일하게 작성하는 것이 간단한 프로젝트 설정에 도움이 됩니다.
-간혹 모듈을 프로젝트 최상위 경로가 아닌 한 단계 내려간 `src/` 디렉토리 하위에 구성하는 경우도 있습니다.
-해당 방식으로 모듈을 구성하여도 무방하며, 자세한 설명은 [src layout vs flat layout](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/)를 참고하시면 좋습니다.
+간혹 모듈을 프로젝트 최상위 경로가 아닌 한 단계 내려간 src/ 디렉토리 하위에 구성하는 경우도 있습니다.
+둘 중 어떤 방식으로 모듈을 구성하여도 무방하며, 자세한 설명은 [src layout vs flat layout](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/)를 참고하시면 좋습니다.
 
-`tests/`는 테스트 코드를 구성할 디렉토리로 이 부분은 별도로 설명하지 않겠습니다.
+tests/ 폴더는 테스트 코드를 구성할 디렉토리로 이 부분은 별도로 설명하지 않겠습니다.
 
 README 파일도 작성합니다.
 해당 파일에 작성한 내용은 PyPI 사이트 패키지 메인 화면에 보여집니다.
@@ -90,7 +95,7 @@ classifiers = [
 
 `[project]` 하위에는 패키지에 대한 상세 설명을 입력합니다.
 대부분의 내용은 PyPI 사이트에 게시될 화면을 위한 항목입니다.
-패키지명은 `name`에 명시한 값으로 생성되는데, 중복된 이름의 패키지를 생성할 수는 없으므로 사전에 동일한 패키지가 존재하는지 확인합니다.
+패키지명은 `name`에 명시한 값으로 생성되는데, 중복된 이름의 패키지를 생성할 수는 없으므로 사전에 동일한 패키지가 존재하는지 확인하도록 합니다.
 
 ## 1.3 License 생성
 
@@ -117,6 +122,8 @@ classifiers = [
 
 선택이 완료되면 화면 우측에 현재 연도와 이름을 입력하고 라이선스 파일을 생성하여 깃허브 repo에 추가합니다.
 
+---
+
 # 2. PyPI 회원 가입
 
 이제 모듈 구성이 어느 정도 마무리되었으니 업로드할 준비를 합니다.
@@ -132,6 +139,8 @@ classifiers = [
 <img src="/img/posts/python-pypi-packages-pypi-search.png" style="max-width:600px"/>
 
 혹시나 동명의 패키지가 이미 존재하는 경우에는 고유한 패키지명으로 변경 후 진행해야 합니다.
+
+---
 
 # 3. 빌드 및 업로드
 
@@ -152,7 +161,7 @@ $> python -m build
 ...
 ```
 
-프로젝트 `dist/` 디렉토리 하위에 빌드된 파일이 생성된 것을 확인할 수 있습니다.
+프로젝트 dist/ 디렉토리 하위에 빌드된 파일이 생성된 것을 확인할 수 있습니다.
 각각 `.whl`, `tar.gz` 확장자를 가진 파일이 생성되는데 둘 다 패키지의 내용을 담고 있지만 역할이 서로 상이합니다.
 
 `.whl` 확장자를 가진 파일은 **빌드 배포판**입니다.
@@ -174,7 +183,7 @@ $> python -m build
 $> pip install twine
 ```
 
-설치가 완료되었으면 아래 명령어로 `dist/` 디렉토리 하위의 파일들을 업로드 합니다.
+설치가 완료되었으면 아래 명령어로 dist/ 디렉토리 하위의 파일들을 업로드 합니다.
 업로드 과정에서 PyPI username 과 비밀번호를 입력하는 부분이 있습니다.
 회원 가입 시 기입했던 값을 넣어줍니다.
 
@@ -197,13 +206,64 @@ Uploading PACKAGE_NAME-0.1.0.tar.gz
 $> pip install PACKAGE_NAME
 ```
 
-아래 제가 만들었던 패키지를 첨부했으니 참고하셔도 좋습니다.
+---
 
-- 패키지 : [https://pypi.org/project/redis-lock-py/](https://pypi.org/project/redis-lock-py/)
-- 소스코드 : [https://github.com/miintto/redis-lock-py](https://github.com/miintto/redis-lock-py)
+## 4. GitHub Action으로 자동화
+
+여기까지만 해도 패키지를 업로드 하는 데 큰 문제가 없지만 매번 업데이트마다 수기로 빌드하고 업로드 하는 과정이 번거로울 수 있습니다.
+위 과정을 GitHub Action으로 자동화한다면 패키지를 좀 더 수월하게 관리할 수 있습니다.
+아래 작업은 모두 깃허브에 저장소를 구성했다는 가정하에 작성하였습니다.
+
+Action이 실행되는 환경에서 업로드 시 일일이 username과 password를 입력할 수 없으므로 토큰을 사용한 인증 방식으로 변경해야 합니다.
+토큰은 PyPI 사이트 계정 관리 화면에서 발급할 수 있습니다.
+
+<img src="/img/posts/python-pypi-packages-pypi-token.png" style="max-width:720px"/>
+
+'ADD API Token' 버튼을 클릭하여 토큰을 생성합니다.
+토큰을 발급받았으면 해당 토큰을 Action 실행 시에 사용할 수 있도록 깃허브 secrets에 등록합니다.
+
+YML은 아래와 같이 작성할 수 있습니다.
+
+{% raw %}
+```yml
+name: Publish Workflows
+on:
+  push:
+    branches:
+     - master
+jobs:
+  publish:
+    name: PUBLISH
+    runs-on: ubuntu-latest
+    steps:
+    - name: CHECKOUT
+      uses: actions/checkout@v4
+    - name: SET UP PYTHON
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+    - name: INSTALL DEPENDENCIES
+      run: |
+        python -m pip install --upgrade build
+    - name: BUILD PACKAGE
+      run: |
+        python -m build
+    - name: PUBLISH
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        password: ${{ secrets.PYPI_API_TOKEN }}
+```
+{% endraw %}
+
+master 브랜치에 변경(merge 혹은 push)이 일어날 때마다 Action 작업이 실행되도록 하였습니다.
+`pypa/gh-action-pypi-publish` 과정에서 빌드한 파일을 PyPI에 업로드 하는데, secrets에 저장했던 토큰을 가져와서 정상적으로 인증이 이루어지도록 합니다.
+
+위 작업 외에도 테스트 코드를 검증이나 자동 태깅 등 원하는 기능을 추가할 수 있습니다.
 
 ---
 
 References
 
 - [Packaging Python Projects — Python Packaging User Guide](https://packaging.python.org/en/latest/tutorials/packaging-projects/)
+- [GitHub - pypa/gh-action-pypi-publish](https://github.com/pypa/gh-action-pypi-publish)
+- [python 패키지 만들고 pypi에 배포하기 \| pypy.dev](https://pypy.dev/python/make-and-deploy-python-package/)
