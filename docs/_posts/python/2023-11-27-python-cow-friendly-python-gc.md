@@ -87,7 +87,7 @@ for i in range(16000):
 16바이트라는 수치가 비록 미미해 보일 수 있지만 모든 파이썬 객체에 대해 적용된다고 보면 각 서버에 꽤 심한 부담이 될 수 있습니다.
 (대략적으로 하나의 프로세스에 백만 개의 파이썬 객체가 있고 한 서버당 약 70개의 프로세스가 실행되고 있습니다.)
 
-> 16byte * 1,000,000 * 70 = ~ 1GB
+> 16 bytes* 1,000,000 * 70 = ~1 GB
 
 ## 두 번째 시도: GC에서 공유 객체를 숨기는 방법
 
@@ -136,10 +136,6 @@ Eventually, we started losing the gains we had achieved by disabling GC.
 
 Here’s a graph that shows how our memory grew with the number of requests.
 After 3,000 requests, the process used ~600MB more memory. More importantly, the trend was linear.
-
-From our load test, we could see that memory usage was becoming our bottleneck.
-Enabling GC could alleviate this problem and slow down the memory growth, but undesired Copy-on-write (COW) would still increase the overall memory footprint.
-So we decided to see if we could make Python GC work without COW, and hence, the memory overhead.
 
 <img src="/img/posts/python-cow-friendly-python-gc-img001.png" style="max-width:480px"/>
 
@@ -201,7 +197,7 @@ So it worked!
 However, you may have noticed the additional pointer in the proposed data structure introduced memory overhead (16 bytes — two pointers).
 It seems like a small number, but if you consider it applied to every collectable Python object (and we usually have millions of objects in one process, with ~70 processes per host), it could be a fairly big memory overhead on each server.
 
-> 16byte * 1,000,000 * 70 = ~ 1GB
+> 16 bytes* 1,000,000 * 70 = ~1 GB
 
 ## Second try: hiding shared objects from GC
 
