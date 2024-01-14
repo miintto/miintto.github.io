@@ -50,31 +50,43 @@
         }
 
         >.post-title {
-            font-size: 25px;
             margin-top: 30px;
             margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        >.post-title-home {
+            margin-top: 30px;
+            margin-bottom: 10px;
+            font-size: 24px;
         }
 
         >.post-subtitle {
             overflow: hidden;
             display: -webkit-box;
-            max-height: 80px;
             margin: 0 0 10px;
             font-size: 15px;
             font-weight: 300;
+            color: $gray-600;
             text-overflow: ellipsis;
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
+        }
+
+        >.home {
+            max-height: 52px;
+        }
+
+        >.post {
+            height: 80px;
         }
     }
 
     >.post-meta {
         margin: 10px 0px;
-    }
-
-    >.post-meta {
+        font-family: 'Lora', serif;
+        font-style: italic;
         font-size: 14px;
-        margin-top: 0;
         color: $gray-600;
 
         >a {

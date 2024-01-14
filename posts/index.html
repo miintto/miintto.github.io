@@ -16,9 +16,9 @@ background: "/img/bg/post.jpg"
     <a href="{{ post.url | prepend: site.baseurl | replace: '//', '/' }}">
       <h2 class="post-title">{{ post.title }}</h2>
       {% if post.subtitle %}
-      <p class="post-subtitle">{{ post.subtitle }}</p>
+      <p class="post-subtitle post">{{ post.subtitle }}</p>
       {% else %}
-      <p class="post-subtitle">{{ post.excerpt | strip_html | truncatewords: 30 }}</p>
+      <p class="post-subtitle post">{{ post.excerpt | strip_html | truncatewords: 30 }}</p>
       {% endif %}
     </a>
     <p class="post-meta">
