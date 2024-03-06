@@ -15,6 +15,26 @@
     @media only screen and (min-width: 768px) {
     font-size: 18px;
     }
+
+    table {
+        margin: 30px auto;
+    }
+    th {
+        text-align: left;
+        background: #4c6067;
+        color: #fff;
+    }
+
+    td, th {
+        padding: 6px 15px;
+        vertical-align: middle;
+    }
+    td {
+        border: 1px solid #c6c9cc;
+    }
+    tr:nth-child(even) td {
+        background: #f0f3f4;
+    }
 }
 
 .post-article {
