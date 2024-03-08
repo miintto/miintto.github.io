@@ -7,7 +7,7 @@ tags:
   - ssl certificate
   - let's encrypt
   - certbot
-banner: "/img/posts/ssl-certificate-banner.png"
+thumbnail: "/img/thumbnails/ssl-certificate.png"
 ---
 
 기존 velog에서 운영하던 [개발 블로그](https://velog.io/@miintto)를 현 블로그로 새로 이전하였습니다.

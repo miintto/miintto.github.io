@@ -6,7 +6,7 @@ tags:
   - redis
   - sorted set
   - skip list
-banner: "/img/posts/recently-viewed-items-banner.png"
+thumbnail: "/img/thumbnails/recently-viewed-items.png"
 ---
 
 쿠팡, 무신사와 같은 커머스 사이트에 접속해 보면 사용자가 둘러본 히스토리를 보여주는 **'최근 본 상품'**과 같은 섹션이 존재합니다.

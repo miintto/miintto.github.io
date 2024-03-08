@@ -7,7 +7,7 @@ tags:
   - security
   - filter chain proxy
   - jwt
-banner: "/img/posts/spring-security-banner.png"
+thumbnail: "/img/thumbnails/spring-security.png"
 ---
 
 구조적으로 탄탄한 어플리케이션을 설계한다면 반드시 인증과 인가 기능을 고려하게 될 겁니다.

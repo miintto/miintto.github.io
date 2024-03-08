@@ -8,7 +8,7 @@ tags:
   - postgresql
   - vacuum
   - mvcc
-banner: "/img/posts/postgres-vacuum-banner.png"
+thumbnail: "/img/thumbnails/postgres-vacuum.png"
 ---
 
 # 1. 테이블 부풀림 현상

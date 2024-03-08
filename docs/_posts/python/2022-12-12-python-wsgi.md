@@ -8,7 +8,7 @@ tags:
   - wsgi
   - was
   - web server
-banner: "/img/posts/python-wsgi-banner.png"
+thumbnail: "/img/thumbnails/python-wsgi.png"
 ---
 
 일반적으로 파이썬을 이용하여 웹 개발을 하는 경우, 일례로 django를 사용한다고 가정해 볼 때 로컬 환경에서는 `manage.py runserver` 명렁어를 이용하여 서버를 구동시킵니다.

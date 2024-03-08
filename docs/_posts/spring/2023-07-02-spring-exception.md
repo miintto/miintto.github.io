@@ -2,12 +2,12 @@
 layout: post
 title: Spring 어플리케이션 예외 처리
 category: spring
-tags: 
+tags:
   - spring
   - custom response
   - exception
   - controller advice
-banner: "/img/posts/spring-exception-banner.png"
+thumbnail: "/img/thumbnails/spring-exception.png"
 ---
 
 개발자가 아무리 코드를 완벽하게 작성했다고 해도 어플리케이션이 항상 개발자가 의도한 대로 돌아가지만은 않습니다.
@@ -36,11 +36,7 @@ banner: "/img/posts/spring-exception-banner.png"
 또한 응답 시 사용했던 `ResponseEntity`를 상속하여 커스텀한 응답 클래스를 만들었습니다.
 
 ```kotlin
-enum class Http(
-    val code: String,
-    val message: String,
-    val status: HttpStatus,
-) {
+enum class Http(val code: String, val message: String, val status: HttpStatus) {
     SUCCESS("S001", "성공", HttpStatus.OK),
     CREATED("S002","생성 완료", HttpStatus.CREATED),
     USER_NOT_FOUND("F001", "사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
@@ -87,7 +83,7 @@ Response
     "message": "성공",
     "data": {
         "id": 1,
-        "userName": "miintto.log@gmail.com",
+        "userName": "miintto",
         "userEmail": "miintto.log@gmail.com",
         "password": "$2b$12$XCJfOKShSppXRwuX",
         "userPermission": "ADMIN",
@@ -157,7 +153,7 @@ class ApiExceptionHandler {
 
     @ExceptionHandler(value = [Exception::class])
     fun handleException(e: Exception): ApiResponse {
-        return ApiResponse(Http5xx.SERVER_ERROR)  // Http에 추가 코드 정의
+        return ApiResponse(Http.SERVER_ERROR)  // Http에 추가 코드 정의
     }
 } 
 ```

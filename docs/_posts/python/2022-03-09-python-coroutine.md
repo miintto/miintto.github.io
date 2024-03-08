@@ -7,7 +7,7 @@ tags:
   - python
   - coroutine
   - generator
-banner: "/img/posts/python-coroutine-banner.png"
+thumbnail: "/img/thumbnails/python-coroutine.png"
 ---
 
 앞서 [**제너레이터**](/docs/python-generator)의 작동 방식을 생각해보면, 호출자가 제너레이터를 호출하면 제너레이터는 `yield`로 선언한 값을 호출자에게 전달하고 다음 호출을 기다리며 대기하게 됩니다.

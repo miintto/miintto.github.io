@@ -7,7 +7,7 @@ tags:
   - mysql
   - innodb
   - lock
-banner: "/img/posts/mysql-innodb-locking-banner.png"
+thumbnail: "/img/thumbnails/mysql-innodb-locking.png"
 ---
 
 필자가 속한 개발팀의 여러 Django 프로젝트에서는 데이터베이스의 동시성을 제어하기 위해 `select_for_update()` 메소드가 적용되어 있습니다. 

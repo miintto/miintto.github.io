@@ -4,7 +4,7 @@
   {% assign title = site.title | append: ' - '| append: site.description %}
 {% endif %}
 {% assign description = page.excerpt | default: site.description | strip_html | normalize_whitespace | truncate: 160 | escape %}
-{% assign bg_image = page.background | default: page.banner | default: "/img/bg/index.jpg" %}
+{% assign bg_image = page.background | default: page.thumbnail | default: "/img/bg/index.jpg" %}
 
 <head>
 

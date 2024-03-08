@@ -6,7 +6,8 @@ tags:
   - spring
   - logging
   - interceptor
-banner: "/img/posts/spring-logging-banner.png"
+  - ecs logging
+thumbnail: "/img/thumbnails/spring-logging.png"
 ---
 
 어플리케이션이 이상 없이 잘 돌아가고 있는지 확인하기 위해 필요한 부분에 로깅 메시지를 남겨두는 것은 중요합니다.

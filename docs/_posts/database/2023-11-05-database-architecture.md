@@ -7,7 +7,7 @@ tags:
   - buffer cache
   - index
   - b-tree
-banner: "/img/posts/database-archi-banner.png"
+thumbnail: "/img/thumbnails/database-archi.png"
 ---
 
 필자는 서버 개발자로 커리어를 이어가고 있지만 운이 좋게도 커리어 초반에 경력이 지긋한 이사님의 밀착 코칭을 받아 데이터베이스에 관해 전반적인 지식을 쌓을 수 있었습니다.

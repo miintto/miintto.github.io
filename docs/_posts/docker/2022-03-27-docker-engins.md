@@ -6,7 +6,7 @@ category: docker
 tags:
   - docker
   - vm
-banner: "/img/posts/docker-engine-banner.png"
+thumbnail: "/img/thumbnails/docker-engine.png"
 ---
 
 # 1. 왜 도커를 사용하는가??

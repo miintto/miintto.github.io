@@ -9,7 +9,7 @@ tags:
   - cluster
   - index
   - shard
-banner: "/img/posts/es-archi-banner.png"
+thumbnail: "/img/thumbnails/es-archi.png"
 ---
 
 **엘라스틱서치**(elasticsearch)는 오픈소스 분산 검색 엔진입니다.

@@ -11,7 +11,7 @@ tags:
   - queryset
   - lazy loading
   - orm
-banner: "/img/posts/django-queryset-banner.png"
+thumbnail: "/img/thumbnails/django-queryset.png"
 ---
 
 `QuerySet`은 Django 모델 객체로부터 생성되는 객체입니다.

@@ -7,7 +7,7 @@ tags:
   - copy-on-write
   - garbage collection
   - instagram
-banner: "/img/posts/python-cow-friendly-python-gc-banner.png"
+thumbnail: "/img/thumbnails/python-cow-friendly-python-gc.png"
 ---
 
 예전 파이썬의 가비지 컬렉션에 대해 찾아보면서 인스타그램이 GC를 비활성화여 메모리 자원에 이득을 보았다는 포스트를 보았습니다.

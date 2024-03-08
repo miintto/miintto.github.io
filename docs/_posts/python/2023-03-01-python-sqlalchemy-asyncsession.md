@@ -8,7 +8,7 @@ tags:
   - sqlalchemy
   - session
   - asyncio
-banner: "/img/posts/sqlalchemy-asyncsession-banner.png"
+thumbnail: "/img/thumbnails/sqlalchemy-asyncsession.png"
 ---
 
 이전에 [SQLAlchemy의 세션 관리](/docs/python-sqlalchemy-session) 포스트에서 SQLAlchemy 라이브러리 내부에서 세션의 작동 방식을 알아보았습니다.

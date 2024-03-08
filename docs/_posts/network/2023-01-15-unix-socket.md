@@ -8,7 +8,7 @@ tags:
   - osi 7 layer
   - tcp/ip
   - unix domain socket
-banner: "/img/posts/network-socket-banner.png"
+thumbnail: "/img/thumbnails/network-socket.png"
 ---
 
 일반적으로 웹 어플리케이션을 구동하는 경우 반드시 앞 단에 Apache 혹은 Nginx와 같은 웹서버를 연결하여 서비스합니다.

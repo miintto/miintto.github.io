@@ -7,7 +7,7 @@ tags:
   - spring boot
   - kotlin
   - gradle
-banner: "/img/posts/spring-initialize-banner.png"
+thumbnail: "/img/thumbnails/spring-initialize.png"
 ---
 
 여러 채용 사이트에서 서버 개발자 공고를 확인해 보면 절반 이상은 스프링 프레임워크 경험자를 우대하고 있는 것을 확인할 수 있습니다.

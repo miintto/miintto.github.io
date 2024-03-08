@@ -7,7 +7,7 @@ tags:
   - python
   - future
   - multi-threading
-banner: "/img/posts/python-future-banner.png"
+thumbnail: "/img/thumbnails/python-future.png"
 ---
 
 # 1. Future

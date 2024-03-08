@@ -7,7 +7,7 @@ tags:
   - k8s
   - msa
   - cluster
-banner: "/img/posts/k8s-archi-banner.png"
+thumbnail: "/img/thumbnails/k8s-archi.png"
 ---
 
 예전에는 서비스를 거대한 하나의 프로젝트로 운영하였지만, 최근 들어서는 도메인별로 쪼개어 각각 별도로 배포 및 운영이 가능하도록 나누는 **MSA**가 트렌드로 자리잡기 시작했습니다.

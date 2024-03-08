@@ -6,7 +6,7 @@ category: python
 tags:
   - python
   - generator
-banner: "/img/posts/python-generator-banner.png"
+thumbnail: "/img/thumbnails/python-generator.png"
 ---
 
 일반적으로 파이썬에서 반복문을 사용하는 경우 파이썬 리스트에 담아 for 문을 사용해 실행하는 경우가 많습니다.

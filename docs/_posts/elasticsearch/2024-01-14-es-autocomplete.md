@@ -6,7 +6,7 @@ tags:
   - elasticsearch
   - autocomplete
   - ngram
-banner: "/img/posts/es-autocomplete-banner.png"
+thumbnail: "/img/thumbnails/es-autocomplete.png"
 ---
 
 보통 구글 혹은 네이버 검색창을 보면 키보드로 입력할 때마다 연관된 키워드가 나타나는 것을 확인할 수 있습니다.

@@ -6,7 +6,7 @@ category: network
 tags:
   - network
   - http
-banner: "/img/posts/http-status-banner.png"
+thumbnail: "/img/thumbnails/http-status.png"
 ---
 
 얼마전 회사에서 PR을 리뷰하다가 status 처리 방식에 대한 재미있는 논쟁이 있었습니다.

@@ -7,7 +7,7 @@ tags:
   - python
   - garbage collection
   - instagram
-banner: "/img/posts/python-dismissing-python-gc-banner.png"
+thumbnail: "/img/thumbnails/python-dismissing-python-gc.png"
 ---
 
 # 인스타그램에서 파이썬 GC 비활성화

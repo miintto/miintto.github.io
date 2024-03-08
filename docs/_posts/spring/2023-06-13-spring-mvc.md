@@ -7,7 +7,7 @@ tags:
   - mvc
   - controller
   - entity
-banner: "/img/posts/spring-mvc-banner.png"
+thumbnail: "/img/thumbnails/spring-mvc.png"
 ---
 
 일반적으로 **MVC** 라고 하면 어플리케이션의 구성 요소를 역할에 따라 **모델**, **뷰**, **컨트롤러**로 구분하는 소프트웨어 디자인 패턴을 의미합니다.

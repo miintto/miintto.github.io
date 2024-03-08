@@ -8,7 +8,7 @@ tags:
   - kibana
   - aws
   - cluster
-banner: "/img/posts/es-cluster-banner.png"
+thumbnail: "/img/thumbnails/es-cluster.png"
 ---
 
 엘라스틱서치 클러스터를 구성하여 실행시켜 봅시다. 

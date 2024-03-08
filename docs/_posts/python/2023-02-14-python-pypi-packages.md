@@ -7,7 +7,7 @@ tags:
   - python
   - pypi
   - package
-banner: "/img/posts/python-pypi-packages-banner.png"
+thumbnail: "/img/thumbnails/python-pypi-packages.png"
 ---
 
 얼마 전 스프링 프로젝트에서 Redisson 클라이언트를 사용해보면서 Python 프로젝트에도 레디스 분산 락 적용을 시도하였는데,

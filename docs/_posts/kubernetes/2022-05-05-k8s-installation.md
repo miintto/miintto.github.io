@@ -7,7 +7,7 @@ tags:
   - k8s
   - aws
   - cluster
-banner: "/img/posts/k8s-install-banner.png"
+thumbnail: "/img/thumbnails/k8s-install.png"
 ---
 
 쿠버네티스는 컨테이너화된 애플리케이션을 자동으로 배포, 스케일링 및 관리해주는 오픈소스입니다.

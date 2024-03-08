@@ -8,7 +8,7 @@ tags:
   - asyncio
   - native coroutine
   - event loop
-banner: "/img/posts/python-asyncio-banner.png"
+thumbnail: "/img/thumbnails/python-asyncio.png"
 ---
 
 앞서 설명했듯이 [**코루틴**](/docs/python-coroutine)은 기본적으로 제어권을 호출자로부터 넘겨받아 작업을 수행하고 다시 제어권을 반환하는 방식으로 작동합니다.

@@ -10,7 +10,7 @@ tags:
   - eventlet
   - gevent
   - coroutine
-banner: "/img/posts/python-green-thread-banner.png"
+thumbnail: "/img/thumbnails/python-green-thread.png"
 ---
 
 보편적으로 스레드라고 하면 커널로부터 자원을 할당받아 실행되는 **네이티브 스레드**(native thread)를 먼저 생각하겠지만,
