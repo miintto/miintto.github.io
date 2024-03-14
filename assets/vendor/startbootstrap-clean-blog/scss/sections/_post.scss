@@ -20,9 +20,10 @@
         margin: 30px auto;
     }
     th {
-        text-align: left;
+        border: 1px solid $steel-gray;
         background: #4c6067;
-        color: #fff;
+        text-align: center;
+        color: $white;
     }
 
     td, th {
