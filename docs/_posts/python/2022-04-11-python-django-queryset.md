@@ -1,12 +1,8 @@
 ---
 layout: post
 title: "[Django] Queryset"
-date: 2022-04-11
-categories:
-  - django
-  - python
+category: django
 tags:
-  - python
   - django
   - queryset
   - lazy loading
