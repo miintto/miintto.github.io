@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "[번역] Python 3.12에 대한 Meta의 공헌"
+excerpt: 이번 파이썬 3.12 릴리즈는 메타 내부의 사용 사례를 파이썬 커뮤니티에서 더 쉽게 접근할 수 있도록 파이썬을 개발 및 확장하였던 노력의 결실입니다. 이처럼 메타를 구성하는 오픈소스는 우리의 작업 방식과 학습한 결과를 커뮤니티에 공유하는 아주 중요한 역할을 합니다.
 category: python
 tags:
   - python
@@ -11,10 +12,10 @@ thumbnail: "/img/thumbnails/python-meta-contribution-for-python312.png"
 
 # 메타가 Python 3.12에 도입한 기능
 
-이번 [파이썬 3.12](https://discuss.python.org/t/python-3-12-0-final-is-here/35186) 릴리즈는 메타 내부의 사용 사례를 파이썬 커뮤니티에서 더 쉽게 접근할 수 있도록 파이썬을 개발 및 확장하였던 노력의 결실입니다.
+이번 [파이썬 3.12](https://discuss.python.org/t/python-3-12-0-final-is-here/35186) 릴리즈에는 우리 내부의 사용 사례를 파이썬 커뮤니티에서 더 쉽게 접근할 수 있도록 개발 및 확장하였던 메타의 노력이 담겨있습니다.
 이처럼 메타를 구성하는 오픈소스는 우리의 작업 방식과 학습한 결과를 커뮤니티에 공유하는 아주 중요한 역할을 합니다.
 
-몇 년 동안 우리는 자체적인 Python 런타임 [Cinder](https://github.com/facebookincubator/cinder)를 공개하고 있었습니다.
+몇 년 동안 우리는 자체적인 Python 런타임 [Cinder](https://github.com/facebookincubator/cinder)를 공개하고 있습니다.
 또한 파이썬 커뮤니티와 꾸준히 밀접하게 협력하고 있는데, 새로운 기능과 최적화를 도입하여 파이썬 성능을 향상시키고 제삼자 입장에서 좀 더 수월하게 파이썬 런타임 최적화를 진행하도록 지원하고 있습니다.
 
 이번 파이썬 3.12 릴리즈에서 우리는 아래와 같은 여러 부문에서 기능을 제안하고 구현하였습니다.
