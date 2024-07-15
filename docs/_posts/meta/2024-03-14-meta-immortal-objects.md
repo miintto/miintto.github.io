@@ -2,12 +2,12 @@
 layout: post
 title: "[번역] Python에 불멸 객체 도입"
 excerpt: Meta에서는 인스타그램 프론트엔드 서버로 파이썬(Django)을 사용하고 있습니다. 해당 환경에서 병렬 처리를 위해 프로세스마다 asyncio 기반의 동시성을 처리하는 멀티 프로세스 아키텍처로 운영하고 있습니다. 하지만 인스타그램 정도 규모의
-category: python
+category: meta engineering
 tags:
   - python
   - immortal object
   - instagram
-thumbnail: "/img/thumbnails/python-immortal-objects.png"
+thumbnail: "/img/thumbnails/meta-immortal-objects.png"
 ---
 
 # 파이썬에 불멸 객체 도입
@@ -21,7 +21,7 @@ Meta에서는 인스타그램 프론트엔드 서버로 파이썬(Django)을 사
 
 그래서 파이썬의 힙(heap) 메모리를 조사해 보았는데, 대다수 파이썬 객체가 실질적으로 불멸(immutable) 객체처럼 전체 런타임 실행 내내 살아있었지만, 레퍼런스 카운팅과 가비지 컬렉션 사이클 작업을 거치면서 이러한 객체에 대한 메타데이터 조정 작업이 수행되었고, 결국 서버 프로세스에 COW(Copy on Write)를 유발한다는 사실을 발견했습니다.
 
-<img src="/img/posts/python-immortal-objects-img001.jpg" style="max-width:600px"/>
+<img src="/img/posts/meta-immortal-objects-img001.jpg" style="max-width:600px"/>
 <span class="caption text-muted">메인 프로세스에서 COW의 영향으로 private 메모리가 늘어나고 공유 메모리가 줄어드는 현상</span>
 
 ## 파이썬을 위한 불멸 객체
@@ -33,7 +33,7 @@ Meta에서는 인스타그램 프론트엔드 서버로 파이썬(Django)을 사
 파이썬 객체의 레퍼런스 카운트 필드에 특별한 값을 표기하면서 핵심 객체의 상태가 절대 변하지 않는 불멸 객체를 고안해 냈습니다.
 그래서 런타임이 언제 레퍼런스 카운트 필드와 GC 헤더를 mutate 할 수 있는지 구별할 수 있게 되었습니다.
 
-<img src="/img/posts/python-immortal-objects-img002.jpg" style="max-width:600px"/>
+<img src="/img/posts/meta-immortal-objects-img002.jpg" style="max-width:600px"/>
 <span class="caption text-muted">표준 객체와 불멸 객체간의 비교. 표준 객체 사용시 타입이나 데이터가 mutate하지 않도록 보장. 불멸성은 추가적으로 런타임이 레퍼런스 카운트나 GC 헤더를 수정하지 않음을 보장하여 전체 객체의 불변성을 활성화.</span>
 
 이런 방식을 인스타그램 내부에 적용하는 건 비교적 어렵지 않았지만, 커뮤니티에 발표하기까지 매우 길고 힘든 과정이 있었습니다.
@@ -53,7 +53,7 @@ Meta에서는 인스타그램 프론트엔드 서버로 파이썬(Django)을 사
 다시 처음으로 돌아와서, 인스타그램의 초기 목표는 COW를 감소시켜서 매 요청마다 메모리와 CPU 효율성을 향상시키는 것이었습니다.
 그리고 불멸 객체를 도입하면서 공유 메모리 사용량을 높이고 private 메모리 사용량을 줄일 수 있었습니다.
 
-<img src="/img/posts/python-immortal-objects-img003.jpg" style="max-width:600px"/>
+<img src="/img/posts/meta-immortal-objects-img003.jpg" style="max-width:600px"/>
 <span class="caption text-muted">불멸 객체를 사용하면서 공유 메모리 사용량 증가 및 private 메모리 사용량의 현저한 감소. COW 횟수 감소</span>
 
 이러한 변화는 인스타그램 내부의 개선을 넘어서 파이썬 언어의 진화에도 영향을 주었습니다.
@@ -90,7 +90,7 @@ While this greatly helps, upon closer inspection we saw that our processes’ pr
 
 By analyzing the Python heap, we found that while most of our Python Objects were practically immutable and lived throughout the entire execution of the runtime, it ended up still modifying these objects through reference counts and garbage collection (GC) operations that mutate the objects’ metadata on every read and GC cycle –  thus, triggering a copy on write on the server process.
 
-<img src="/img/posts/python-immortal-objects-img001.jpg" style="max-width:600px"/>
+<img src="/img/posts/meta-immortal-objects-img001.jpg" style="max-width:600px"/>
 <span class="caption text-muted">The effect of copy on writes is increasing private memory and a reduction of shared memory from the main process.</span>
 
 ## Immortal Objects for Python 
@@ -102,7 +102,7 @@ To get around this issue, we introduced Immortal Objects – PEP-683.
 This creates an immortal object (an object for which the core object state will never change) by marking a special value in the object’s reference count field.
 It allows the runtime to know when it can and can’t mutate both the reference count fields and GC header.
 
-<img src="/img/posts/python-immortal-objects-img002.jpg" style="max-width:600px"/>
+<img src="/img/posts/meta-immortal-objects-img002.jpg" style="max-width:600px"/>
 <span class="caption text-muted">A comparison of standard objects versus immortal objects. With standard objects, a user can guarantee that it will not mutate its type and/or its data. Immortality adds an extra guarantee that the runtime will not modify the reference count or the GC Header if present, enabling full object immutability.</span>
 
 While implementing and releasing this within Instagram was a relatively straightforward process due to our relatively isolated environment, sharing this to the community was a long and arduous process.
@@ -122,7 +122,7 @@ Fortunately, with the smart usage of register allocations, we managed to get thi
 For Instagram, our initial focus was to achieve improvements in both memory and CPU efficiency of handling our requests by reducing copy on writes.
 Through immortal objects, we managed to greatly reduce private memory by increasing shared memory usage. 
 
-<img src="/img/posts/python-immortal-objects-img003.jpg" style="max-width:600px"/>
+<img src="/img/posts/meta-immortal-objects-img003.jpg" style="max-width:600px"/>
 <span class="caption text-muted">Increasing shared memory usage through immortal Objects allows us to significantly reduce private memory. Reducing the number of copy on writes.</span>
 
 However, the implications of these changes go far beyond Instagram and into the evolution of Python as a language.

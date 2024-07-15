@@ -1,13 +1,13 @@
 ---
 layout: post
 title: "[번역] COW 친화적인 파이썬 가비지 컬렉션"
-category: python
+category: meta engineering
 tags:
   - python
   - copy-on-write
   - garbage collection
   - instagram
-thumbnail: "/img/thumbnails/python-cow-friendly-python-gc.png"
+thumbnail: "/img/thumbnails/meta-cow-friendly-python-gc.png"
 ---
 
 예전 파이썬의 가비지 컬렉션에 대해 찾아보면서 인스타그램이 GC를 비활성화여 메모리 자원에 이득을 보았다는 포스트를 보았습니다.
@@ -27,13 +27,13 @@ thumbnail: "/img/thumbnails/python-cow-friendly-python-gc.png"
 아래 차트에서 서버 요청량에 따른 메모리 사용량을 나타내 보았는데, 요청이 3,000건이 넘어가자 600MB 이상의 메모리가 사용되는 것을 확인할 수 있습니다.
 여기서 주목할 점은 메모리 사용량이 지속적으로 증가하는 추세라는 점입니다.
 
-<img src="/img/posts/python-cow-friendly-python-gc-img001.png" style="max-width:480px"/>
+<img src="/img/posts/meta-cow-friendly-python-gc-img001.png" style="max-width:480px"/>
 
 부하 테스트 결과 메모리 사용량이 병목 지점임을 확인할 수 있었습니다.
 GC를 다시 활성화함으로써 이 현상을 완화시켰고 메모리 증가율도 소폭 감소했지만, Copy-on-write(COW)는 여전히 메모리 공간을 잡아먹고 있었습니다.
 그래서 우리는 COW와 그로 인한 메모리 오버헤드 없이 파이썬 GC를 작동시킬 수 있을지 확인해 보기로 했습니다.
 
-<img src="/img/posts/python-cow-friendly-python-gc-img002.png" style="max-width:480px"/>
+<img src="/img/posts/meta-cow-friendly-python-gc-img002.png" style="max-width:480px"/>
 <span class="caption text-muted">**빨강**: GC 비활성화 / **파랑**: 명식적으로 GC 호출 / **초록**: 기본 Python GC 활성화</span>
 
 ## 첫 번째 시도: GC 헤드 데이터 구조체를 재구성
@@ -119,7 +119,7 @@ gc_freeze_impl(PyObject *module)
 COW는 더 이상 발생하지 않았으며 공유 메모리도 안정적으로 유지되었고 요청당 평균 메모리 증가율도 50% 이하로 떨어졌습니다.
 아래 차트는 GC를 다시 허용하면서 메모리 사용량이 지속적으로 증가하지 않고 프로세스 수명을 늘려주면서 효율적으로 메모리 자원이 사용되는 것을 보여줍니다.
 
-<img src="/img/posts/python-cow-friendly-python-gc-img003.png" style="max-width:480px"/>
+<img src="/img/posts/meta-cow-friendly-python-gc-img003.png" style="max-width:480px"/>
 <span class="caption text-muted">파랑: GC 비활성화 / 빨강: 자동 GC</span>
 
 ---
@@ -137,13 +137,13 @@ Eventually, we started losing the gains we had achieved by disabling GC.
 Here’s a graph that shows how our memory grew with the number of requests.
 After 3,000 requests, the process used ~600MB more memory. More importantly, the trend was linear.
 
-<img src="/img/posts/python-cow-friendly-python-gc-img001.png" style="max-width:480px"/>
+<img src="/img/posts/meta-cow-friendly-python-gc-img001.png" style="max-width:480px"/>
 
 From our load test, we could see that memory usage was becoming our bottleneck.
 Enabling GC could alleviate this problem and slow down the memory growth, but undesired Copy-on-write (COW) would still increase the overall memory footprint.
 So we decided to see if we could make Python GC work without COW, and hence, the memory overhead.
 
-<img src="/img/posts/python-cow-friendly-python-gc-img002.png" style="max-width:480px"/>
+<img src="/img/posts/meta-cow-friendly-python-gc-img002.png" style="max-width:480px"/>
 <span class="caption text-muted">Red: without GC; Blue: calling GC collect explicitly; Green: default Python GC enabled</span>
 
 ## First try: redesign the GC head data structure
@@ -226,7 +226,7 @@ gc_freeze_impl(PyObject *module)
 We deployed this change into our production and this time it worked as expected: COW no longer happened and shared memory stayed the same, while average memory growth per request dropped ~50%.
 The plot below shows how enabling GC helped the memory growth by stopping the linear growth and making each process live longer.
 
-<img src="/img/posts/python-cow-friendly-python-gc-img003.png" style="max-width:480px"/>
+<img src="/img/posts/meta-cow-friendly-python-gc-img003.png" style="max-width:480px"/>
 <span class="caption text-muted">Blue: is no-GC; Red: auto-GC</span>
 
 ---

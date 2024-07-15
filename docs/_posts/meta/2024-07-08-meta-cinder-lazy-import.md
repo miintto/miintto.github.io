@@ -2,12 +2,12 @@
 layout: post
 title: "[번역] Cinder의 Lazy Import"
 excerpt: 파이썬은 별도 컴파일 과정 없이 빠른 코드 수정 및 실행이 가능하다는 장점 덕분에 개발자 친화적인 언어로 널리 사용되고 있습니다. 하지만 대규모로 운영되는 인스타그램 서버를 로컬 개발 환경에 구성하는 경우 이러한 사용성 이점을 제대로 누리지 못하고 있었습니다. 
-category: python
+category: meta engineering
 tags:
   - python
   - cinder
   - lazy import
-thumbnail: "/img/thumbnails/python-cinder-lazy-import.png"
+thumbnail: "/img/thumbnails/meta-cinder-lazy-import.png"
 ---
 
 # Cinder의 Lazy Import
@@ -65,14 +65,14 @@ Joshua Lear는 하루 온 종일을 쏟아부어서 이전까지 아무도 보�
 의존성 그래프를 시각화하는 스크립트를 약 **3시간** 정도 실행한 후 "거대한 검은 점" 하나가 출력되었습니다.
 처음 그래프를 확인했을 때는 버그가 발생한 줄 알았지만 이내 인스타그램의 의존성이 이렇게 거대하다는 사실을 깨달았습니다.
 
-<img src="/img/posts/python-cinder-lazy-import-img001.png" style="max-width:600px"/>
+<img src="/img/posts/meta-cinder-lazy-import-img001.png" style="max-width:600px"/>
 <span class="caption text-muted">Joshua Lear의 인스타그램 의존성 그래프 (예술적 재창조)</span>
 
 실제로 인스타그램의 코드베이스 의존성은 모든 부분이 강하게 연결되어 있어서 마치 거대한 그물망과 같습니다.
 그래서 서버를 시작하는 것만으로도 약 **28,000개**의 모듈을 불러오게 되는데, 이 부분에서 모듈을 가져와 파이썬 함수 및 클래스 객체를 생성하는 데 상당한 시간이 소요됩니다.
 좀 더 봐줄 만한 의존성 그래프는 Benjamin Woodruff가 현재 상태를 반영하여 다시 만들었고 그 결과물은 아래와 같습니다.
 
-<img src="/img/posts/python-cinder-lazy-import-img002.png" style="max-width:600px"/>
+<img src="/img/posts/meta-cinder-lazy-import-img002.png" style="max-width:600px"/>
 <span class="caption text-muted">현 시점 인스타그램 의존성 그래프, January 2022</span>
 
 그러면 과연 무엇이 문제였을까요?
@@ -100,7 +100,7 @@ Joshua Lear는 하루 온 종일을 쏟아부어서 이전까지 아무도 보�
 
 ## Lazy Imports
 
-<img src="/img/posts/python-cinder-lazy-import-img003.jpg" style="max-width:600px"/>
+<img src="/img/posts/meta-cinder-lazy-import-img003.jpg" style="max-width:600px"/>
 <span class="caption text-muted">Creative Commons의 Geoff Gallice로부터 제공받은 두발가락나무늘보</span>
 
 우리는 좀 더 깔끔하고 손이 많이 가지 않으면서도 신뢰성 높고 영구적인 방법으로 모듈을 가져오는 시점을 늦출 방법이 필요했습니다.
@@ -132,13 +132,13 @@ Carl Meyer, Dino Viehland와 충분한 논의를 가진 끝에 저는 대부분�
 
 2022년 1월에 해당 기능을 수천 개의 개발 & 운영 환경에 문제없이 배포했고 곧바로 그래프에서 인스타그램 서버의 재시작 시간 차이를 확인할 수 있었습니다.
 
-<img src="/img/posts/python-cinder-lazy-import-img004.png" style="max-width:480px"/>
+<img src="/img/posts/meta-cinder-lazy-import-img004.png" style="max-width:480px"/>
 
 **모듈을 12배 적게** 로드하면서 개발 서버의 평균 재시작 시간의 **중앙값은 70% 줄어들었고 90 백분위수는 60% 감소하였습니다.**
 동시에 우리가 매일 신경 쓰던 순환 참조 에러도 사실상 모두 제거되었습니다.
 인스타그램 외의 다른 서버에서도 동일하게 **50~70%** 성능이 향상되었고 메모리 사용량은 **20~40%** 까지 감소했습니다.
 
-<img src="/img/posts/python-cinder-lazy-import-img005.png" style="max-width:480px"/>
+<img src="/img/posts/meta-cinder-lazy-import-img005.png" style="max-width:480px"/>
 <span class="caption text-muted">그래프의 어느 지점에서 Lazy Imports가 반영되었는지 보이시나요?</span>
 
 추가적인 결과는 [여기](https://github.com/facebookincubator/cinder/blob/cinder/3.8/CinderDoc/lazy_imports.rst#results)를 참고해 주세요.
@@ -173,7 +173,7 @@ Lazy Imports의 강점은 아래와 같습니다.
 - 파이썬을 지연시키는 목적으로 사용되는 패러다임 중 가장 **자연스럽**고, **강력**하며 **명료**한 방법입니다.
 - 적용하는데 크게 **어렵지 않습니다**. Lazy Imports 기능을 언어 레벨에 전역으로 설정해 두었으며 단일 모듈이나 표준 및 서드파티 라이브러리에도 적용 가능합니다.
 - **효율적**입니다. 저희 서버에 여러 테스트를 진행했는데, Lazy Imports를 추가하더라도 성능에 큰 영향을 미치지 않았습니다. 오픈소스 [<u>pyperformance</u>](https://pyperformance.readthedocs.io/)를 **3회** 실행하여 측정하였는데, Lazy Imports를 적용하지 않았을 때와 적용했을 때의 성능을 비교하여 아래와 같이 유의미한 결과를 얻었습니다.
-<img src="/img/posts/python-cinder-lazy-import-img006.png" style="max-width:360px"/>
+<img src="/img/posts/meta-cinder-lazy-import-img006.png" style="max-width:360px"/>
 - **순환 참조가 발생하지 않습니다**. 단순히 Lazy Imports가 직접 순환 참조를 걸러낸다는 의미가 아닙니다. 여전히 모듈 간의 순환 의존성이 존재할 수 있으나 대부분의 순환 의존성은 큰 문제가 없는 일반적인 상황입니다. 인스타그램에서는 매일마다 80개의 순환 참조 에러가 발견되었지만, 현재는 발생하지 않고 있습니다.
 
 ## 향후 전망
@@ -239,14 +239,14 @@ If you have never seen an image of how complex the dependency graph of Instagram
 After **3 hours** of running a modified dependency visualization script, he came back to a _"large, black ball."_
 At first he thought the dependency analyzer had a bug, but it turns out Instagram Server’s dependency graph was a giant circle.
 
-<img src="/img/posts/python-cinder-lazy-import-img001.png" style="max-width:600px"/>
+<img src="/img/posts/meta-cinder-lazy-import-img001.png" style="max-width:600px"/>
 <span class="caption text-muted">Recreation (artistic interpretation) of Instagram Dependency Graph, by Joshua Lear</span>
 
 In all truth, the dependency graph in the Instagram codebase is a _big ugly mesh_; everything is very tightly connected.
 Just starting the server automatically triggers loading a huge number of modules, about **28,000**, and most of that startup time is spent, literally, just importing modules, creating Python functions and class objects.
 A nicer looking dependency graph was first provided by Benjamin Woodruff and updated to reflect the current state:
 
-<img src="/img/posts/python-cinder-lazy-import-img002.png" style="max-width:600px"/>
+<img src="/img/posts/meta-cinder-lazy-import-img002.png" style="max-width:600px"/>
 <span class="caption text-muted">Real Instagram Dependency Graph, January 2022</span>
 
 So what's the problem?
@@ -271,7 +271,7 @@ What we needed was a robust way of lazyfing all things.
 
 ## Lazy Imports
 
-<img src="/img/posts/python-cinder-lazy-import-img003.jpg" style="max-width:600px"/>
+<img src="/img/posts/meta-cinder-lazy-import-img003.jpg" style="max-width:600px"/>
 <span class="caption text-muted">Two-toed sloth courtesy of Geoff Gallice via Creative Commons</span>
 
 We needed a more transparent, automatic, reliable and permanent way to make things lazy, instead of manually trying to make things _lazy_ by using _inner imports_, `import_module()`, or `__import__()`.
@@ -298,13 +298,13 @@ Sure enough, the net looked like almost a wash, we didn't see any clear signal t
 
 In early January 2022, we rolled out to thousands of production and development hosts with no major issues, and we could immediately see the difference in Instagram Server start times in the graphs:
 
-<img src="/img/posts/python-cinder-lazy-import-img004.png" style="max-width:480px"/>
+<img src="/img/posts/meta-cinder-lazy-import-img004.png" style="max-width:480px"/>
 
 By loading **~12x less modules**, we measured a ~**70% reduction in p50 reload time** and a ~**60% reduction in p90 reload time** for Instagram development servers.
 At the same time, it virtually got rid of all import cycle error events we were seeing every day.
 Other servers and tools consistently saw improvements between **50% to 70%** and memory usage reduction of **20% to 40%**.
 
-<img src="/img/posts/python-cinder-lazy-import-img005.png" style="max-width:480px"/>
+<img src="/img/posts/meta-cinder-lazy-import-img005.png" style="max-width:480px"/>
 <span class="caption text-muted">Can you guess when Lazy Imports was enabled in the graph?</span>
 
 See additional results [here](https://github.com/facebookincubator/cinder/blob/cinder/3.8/CinderDoc/lazy_imports.rst#results).
@@ -337,7 +337,7 @@ Some of its highlights are:
 - It provides an _**automatic**_, _**robust**_ and mostly _**transparent**_ solution to the often used paradigm of making things _lazy_ in Python.
 - It needs _**little effort**_ to be used. We can turn Lazy Imports on _globally_, as a language level feature, and have Python _load every single module and package ever being used lazily_ (even third party and standard library packages).
 - It's _**efficient**_. We ran a series of experiments in our live servers and results were performance neutral when adding the Lazy Imports patch (but not enabling the feature). We also ran the open source [<u>pyperformance</u>](https://pyperformance.readthedocs.io/) **3 times**, and observed the following most significant results when Lazy Imports is enabled vs. without the patch:
-<img src="/img/posts/python-cinder-lazy-import-img006.png" style="max-width:360px"/>
+<img src="/img/posts/meta-cinder-lazy-import-img006.png" style="max-width:360px"/>
 - **No more import cycles**. That doesn’t mean there can’t be circular imports with Lazy Imports enabled. There can still be legitimate cyclic dependencies at module level, but most cycles won’t be harmful and won’t manifest themselves as import errors. In our use case at Instagram, we went from engineers seeing ~80 circular import errors every day to zero.
 - It _**Just Works™️**_ (most of the time).
 

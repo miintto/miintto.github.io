@@ -2,12 +2,12 @@
 layout: post
 title: "[번역] 인스타그램에서 파이썬 GC 비활성화"
 excerpt: 인스타그램은 사용하지 않는 데이터를 메모리 공간에서 다시 회수하는 기능인 파이썬 가비지 컬렉션(GC)을 걷어내고서 약 10%의 효율성 향상을 이끌어냈습니다. GC를 비활성화함으로서 메모리 사용량을 줄이고 CPU LLC 캐시 히트율을 증가시킬 수 있었습니다.
-category: python
+category: meta engineering
 tags:
   - python
   - garbage collection
   - instagram
-thumbnail: "/img/thumbnails/python-dismissing-python-gc.png"
+thumbnail: "/img/thumbnails/meta-dismissing-python-gc.png"
 ---
 
 # 인스타그램에서 파이썬 GC 비활성화
@@ -80,7 +80,7 @@ perf record -e page-faults -g -p <PID>
 
 그리고 스택을 추적하면서 언제 페이지 폴트가 발생하는지 감을 잡을 수 있었습니다.
 
-<img src="/img/posts/python-dismissing-python-gc-img001.png" style="max-width:600px"/>
+<img src="/img/posts/meta-dismissing-python-gc-img001.png" style="max-width:600px"/>
 
 우리는 줄곧 코드 객체의 복사본이 문제를 일으킨다고 생각했지만, 막상 뚜껑을 열어보니 주요 범인은 `gcmodule.c` 내부의 `collect` 작업이었습니다.
 즉, 가비지 컬렉션이 실행되는 시점에 문제가 발생하는 것이었습니다.
@@ -148,12 +148,12 @@ typedef union _gc_head {
 배포 과정이 워낙 순식간에 이루어지다 보니 에러가 발생하는 순간을 잡아내기가 매우 힘들었고, rollout 커맨드에 별도 `atop`을 추가하는 방식을 사용했습니다.
 그리고 캐시 메모리가 줄어드는 순간을 포착하였는데 모든 uWSGI 프로세스가 MINFLT(마이너 페이지 폴트)를 유발하는 것을 발견했습니다.
 
-<img src="/img/posts/python-dismissing-python-gc-img002.png" style="max-width:600px"/>
+<img src="/img/posts/meat-dismissing-python-gc-img002.png" style="max-width:600px"/>
 
 다시 Perf를 사용하여 `Py_Finalize`를 들여다보았습니다.
 파이썬이 종료되는 시점에 GC 마무리 작업 이외에도 타입 객체를 해제하거나 불러왔던 모듈을 정리하는 등의 cleanup 작업을 하게 되는데 이 과정에서 공유 메모리에 부하가 생긴 것으로 보여집니다.
 
-<img src="/img/posts/python-dismissing-python-gc-img003.png" style="max-width:600px"/>
+<img src="/img/posts/meta-dismissing-python-gc-img003.png" style="max-width:600px"/>
 
 ## 네 번째 시도: Cleanup 없이 GC 비활성화
 
@@ -295,7 +295,7 @@ perf record -e page-faults -g -p <PID>
 
 Then, we got an idea about when page faults happen in the process with stack trace.
 
-<img src="/img/posts/python-dismissing-python-gc-img001.png" style="max-width:600px"/>
+<img src="/img/posts/meta-dismissing-python-gc-img001.png" style="max-width:600px"/>
 
 The results were different than our expectations.
 Rather than copying the code object, the top suspect is `collect`, which belongs to `gcmodule.c`, and is called when a garbage collection is triggered. After reading how GC works in CPython, we have the following theory:
@@ -367,13 +367,13 @@ Lesson learned: always test the old clients/models because they’re often the e
 Because our continuous deployment is a fairly fast procedure, to really catch what happened, I added a separate `atop` to our rollout command.
 We're able to catch a moment where cache memory goes really low, and all of uWSGI processes trigger a lot of MINFLT (minor page faults).
 
-<img src="/img/posts/python-dismissing-python-gc-img002.png" style="max-width:600px"/>
+<img src="/img/posts/meta-dismissing-python-gc-img002.png" style="max-width:600px"/>
 
 Again, by perf profiling, we saw `Py_Finalize` again.
 Upon shutdown, other than the final GC, Python did a bunch of cleanup operations, like destroying type objects and unloading modules.
 Again, this hurt shared memory.
 
-<img src="/img/posts/python-dismissing-python-gc-img003.png" style="max-width:600px"/>
+<img src="/img/posts/meta-dismissing-python-gc-img003.png" style="max-width:600px"/>
 
 ## Attempt 4: Final step for shutting down GC: No cleanup
 
