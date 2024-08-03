@@ -17,6 +17,9 @@ layout: default
           {% if page.subtitle %}
           <h2 class="subheading">{{ page.subtitle }}</h2>
           {% endif %}
+          <div class="post-tags post-heading-tags">
+            {% for tag in page.tags %}<p>{{ tag | escape }}</p>{% endfor %}
+          </div>
           <span class="meta">
             Posted on {{ page.date | date: '%B %d, %Y' }} &middot; {% include read_time.html
             content=page.content %}
