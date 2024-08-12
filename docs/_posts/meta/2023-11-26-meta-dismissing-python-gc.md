@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "[번역] 인스타그램에서 파이썬 GC 비활성화"
-excerpt: 인스타그램은 사용하지 않는 데이터를 메모리 공간에서 다시 회수하는 기능인 파이썬 가비지 컬렉션(GC)을 걷어내고서 약 10%의 효율성 향상을 이끌어냈습니다. GC를 비활성화함으로서 메모리 사용량을 줄이고 CPU LLC 캐시 히트율을 증가시킬 수 있었습니다.
+excerpt: 인스타그램은 사용하지 않는 데이터를 메모리 공간에서 다시 회수하는 기능인 파이썬 가비지 컬렉션(GC)을 걷어내고서 약 10%의 효율성 향상을 끌어냈습니다. 간단히 말해서 GC를 비활성화함으로써 메모리 사용량을 줄이고 CPU LLC 캐시 적중률을 증가시킬 수 있었습니다.
 category: meta engineering
 tags:
   - python
@@ -9,6 +9,10 @@ tags:
   - instagram
 thumbnail: "/img/thumbnails/meta-dismissing-python-gc.png"
 ---
+
+> 해당 포스트는 Instagram Engineering 블로그의 [Dismissing Python Garbage Collection at Instagram](https://medium.com/instagram-engineering/dismissing-python-garbage-collection-at-instagram-4dca40b29172) 포스트를 번역한 글입니다.
+> 
+> 게시일: 2017.01.18
 
 # 인스타그램에서 파이썬 GC 비활성화
 
@@ -226,8 +230,6 @@ CPU 캐시 미스는 CPU 파이프라인을 정지시키기 때문에 매우 치
 언젠가는 성과를 볼 것입니다.
 
 ---
-
-> Source Text
 
 # Dismissing Python Garbage Collection at Instagram
 

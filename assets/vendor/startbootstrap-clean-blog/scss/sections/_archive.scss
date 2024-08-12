@@ -3,8 +3,8 @@
 
     .archive-date {
         display: inline-block;
-        width: 100px;
-        margin: auto;
+        width: 80px;
+        margin: auto 10px auto 0;
         font-family: 'Lora', serif;
         font-style: italic;
         font-size: 12px;
@@ -12,7 +12,7 @@
         color: $gray-600;
 
         @media only screen and (min-width: 768px) {
-            width: 120px;
+            width: 100px;
             margin: auto 20px auto 0;
             font-size: 14px;
         }
@@ -24,6 +24,6 @@
     }
 
     p {
-        margin: 8px;
+        margin: 4px;
     }
 }

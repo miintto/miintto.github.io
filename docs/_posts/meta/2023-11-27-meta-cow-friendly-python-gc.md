@@ -15,6 +15,10 @@ thumbnail: "/img/thumbnails/meta-cow-friendly-python-gc.png"
 두 포스트 모두 문제를 발견하고 여러 가설을 세워 해결하는 과정이 인상적이었습니다.
 파이썬 인터프리터의 기본 구조와 동작 원리에 대한 이해를 돕는 데 좋을 것 같아 두고두고 읽으려고 번역해 두었습니다.
 
+> 해당 포스트는 Instagram Engineering 블로그의 [Copy-on-write friendly Python garbage collection](https://medium.com/instagram-engineering/copy-on-write-friendly-python-garbage-collection-ad6ed5233ddf) 포스트를 번역한 글입니다.
+> 
+> 게시일: 2017.12.21
+
 ---
 
 # Copy-on-write에 친화적인 파이썬 가비지 컬렉션
@@ -124,8 +128,6 @@ COW는 더 이상 발생하지 않았으며 공유 메모리도 안정적으로 
 
 ---
 
-> Source Text
-
 # Copy-on-write friendly Python garbage collection
 
 At Instagram, we have the world’s largest deployment of the Django web framework, which is written entirely in Python.
@@ -233,4 +235,4 @@ The plot below shows how enabling GC helped the memory growth by stopping the li
 
 References
 
-- [Copy-on-write friendly Python garbage collection \| by Instagram Engineering ](https://medium.com/instagram-engineering/copy-on-write-friendly-python-garbage-collection-ad6ed5233ddf)
+- [Copy-on-write friendly Python garbage collection \| by Instagram Engineering](https://medium.com/instagram-engineering/copy-on-write-friendly-python-garbage-collection-ad6ed5233ddf)

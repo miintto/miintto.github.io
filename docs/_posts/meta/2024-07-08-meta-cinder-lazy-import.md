@@ -10,6 +10,10 @@ tags:
 thumbnail: "/img/thumbnails/meta-cinder-lazy-import.png"
 ---
 
+> 해당 포스트는 Meta 블로그의 [Python Lazy Imports With Cinder](https://developers.facebook.com/blog/post/2022/06/15/python-lazy-imports-with-cinder/) 포스트를 번역한 글입니다.
+> 
+> 게시일: 2022.06.15
+
 # Cinder의 Lazy Import
 
 파이썬은 [별도 컴파일 과정 없이](https://xkcd.com/303/) 빠른 코드 수정 및 실행이 가능하다는 장점 덕분에 개발자 친화적인 언어로 널리 사용되고 있습니다.
@@ -68,7 +72,7 @@ Joshua Lear는 하루 온 종일을 쏟아부어서 이전까지 아무도 보�
 <img src="/img/posts/meta-cinder-lazy-import-img001.png" style="max-width:600px"/>
 <span class="caption text-muted">Joshua Lear의 인스타그램 의존성 그래프 (예술적 재창조)</span>
 
-실제로 인스타그램의 코드베이스 의존성은 모든 부분이 강하게 연결되어 있어서 마치 거대한 그물망과 같습니다.
+실제로 인스타그램의 코드베이스 의존성은 모든 부분이 강하게 연결되어 있어서 마치 거대한 그물망과 같이 되어있습니다.
 그래서 서버를 시작하는 것만으로도 약 **28,000개**의 모듈을 불러오게 되는데, 이 부분에서 모듈을 가져와 파이썬 함수 및 클래스 객체를 생성하는 데 상당한 시간이 소요됩니다.
 좀 더 봐줄 만한 의존성 그래프는 Benjamin Woodruff가 현재 상태를 반영하여 다시 만들었고 그 결과물은 아래와 같습니다.
 
@@ -134,7 +138,7 @@ Carl Meyer, Dino Viehland와 충분한 논의를 가진 끝에 저는 대부분�
 
 <img src="/img/posts/meta-cinder-lazy-import-img004.png" style="max-width:480px"/>
 
-**모듈을 12배 적게** 로드하면서 개발 서버의 평균 재시작 시간의 **중앙값은 70% 줄어들었고 90 백분위수는 60% 감소하였습니다.**
+**모듈을 12배 적게** 로드하면서 개발 서버의 평균 재시작 시간의 **중앙값은 70% 줄어들었고 90th percentile 값은 60% 감소하였습니다.**
 동시에 우리가 매일 신경 쓰던 순환 참조 에러도 사실상 모두 제거되었습니다.
 인스타그램 외의 다른 서버에서도 동일하게 **50~70%** 성능이 향상되었고 메모리 사용량은 **20~40%** 까지 감소했습니다.
 
@@ -181,11 +185,9 @@ Lazy Imports의 강점은 아래와 같습니다.
 - Lazy Imports를 적절히 개선하여 메모리 확보, 서버 재시작 시간 개선뿐 아니라 인스타그램 서버의 성능까지 이끌어낼 수 있습니다.
 - 순환 참조에 대한 염려가 사라지면서 코드베이스의 품질을 높이는 새로운 길을 열어줍니다. 리팩토링이 더욱 간편해지고 불가능했던 일이 가능해집니다.
 - 외부 서드파티 라이브러리와 협력하여 Lazy Imports와 호환 가능하도록 하여 많은 어플리케이션이 활용할 수 있도록 합니다.
-- [<u>보다 광범위한 세계관에서 Lazy Import를 사용할 수 있도록 파이썬 프로젝트에 반영합니다.</u>](https://peps.python.org/pep-0690/)
+- [<u>보다 광범위한 세계관에서 Lazy Import를 사용할 수 있도록 파이썬 프로젝트에 기여합니다.</u>](https://peps.python.org/pep-0690/)
 
 ---
-
-> Source Text
 
 # Python Lazy Imports With Cinder
 
