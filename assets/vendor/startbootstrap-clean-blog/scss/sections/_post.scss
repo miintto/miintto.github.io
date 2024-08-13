@@ -39,17 +39,31 @@
 }
 
 .post-article {
-    display: flex;
     flex-wrap: wrap;
     margin-top: 30px;
+
+    >a {
+        display: flex;
+        flex-wrap: wrap;
+
+        &:hover {
+            text-decoration: none;
+
+            img {
+                transform: scale(1.08);
+            }
+        }
+    }
 }
 
 .post-thumbnail {
     overflow: hidden;
     display: inline-flex;
+    margin: 0 0 15px 0;
 
     img {
-        margin: 0 0 18px 0;
+        margin: 0;
+        transition: all 0.2s linear;
     }
 
     @media only screen and (min-width: 768px) {
@@ -63,45 +77,36 @@
     flex: 1;
     margin: 0px 5px;
 
-    >a {
-        color: $gray-900;
+    >.post-title {
+        margin-top: 10px;
+        margin-bottom: 15px;
+        font-size: 21px;
+    }
 
-        &:focus,
-        &:hover {
-            text-decoration: underline;
-        }
+    >.post-title-home {
+        margin-top: 30px;
+        margin-bottom: 15px;
+        font-size: 24px;
+    }
 
-        >.post-title {
-            margin-top: 10px;
-            margin-bottom: 15px;
-            font-size: 21px;
-        }
+    >.post-subtitle {
+        overflow: hidden;
+        display: -webkit-box;
+        margin: 0 0 10px;
+        font-size: 15px;
+        font-weight: 300;
+        color: $gray-600;
+        text-overflow: ellipsis;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
 
-        >.post-title-home {
-            margin-top: 30px;
-            margin-bottom: 15px;
-            font-size: 24px;
-        }
+    >.home {
+        max-height: 52px;
+    }
 
-        >.post-subtitle {
-            overflow: hidden;
-            display: -webkit-box;
-            margin: 0 0 10px;
-            font-size: 15px;
-            font-weight: 300;
-            color: $gray-600;
-            text-overflow: ellipsis;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-        }
-
-        >.home {
-            max-height: 52px;
-        }
-
-        >.post {
-            height: 52px;
-        }
+    >.post {
+        height: 52px;
     }
 
     >.post-meta {
@@ -110,16 +115,5 @@
         font-style: italic;
         font-size: 14px;
         color: $gray-600;
-
-        >a {
-            text-decoration: none;
-            color: $gray-900;
-
-            &:focus,
-            &:hover {
-                text-decoration: underline;
-                color: $primary;
-            }
-        }
     }
 }

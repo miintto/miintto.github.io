@@ -32,19 +32,19 @@ layout: default
       <!-- Home Post List -->
       {% for post in site.posts limit : 4 %}
 
-      <article class="post-preview">
-        <a href="{{ post.url | prepend: site.baseurl | replace: '//', '/' }}">
+      <a href="{{ post.url | prepend: site.baseurl | replace: '//', '/' }}">
+        <article class="post-preview">
           <h2 class="post-title-home">{{ post.title }}</h2>
           {% if post.subtitle %}
           <p class="post-subtitle home">{{ post.subtitle }}</p>
           {% else %}
           <p class="post-subtitle home ">{{ post.excerpt | strip_html | truncatewords: 40 }}</p>
           {% endif %}
-        </a>
-        <p class="post-meta">
-          {{ post.date | date: '%B %d, %Y' }} &middot; {% include read_time.html content=post.content %}
-        </p>
-      </article>
+          <p class="post-meta">
+            {{ post.date | date: '%B %d, %Y' }} &middot; {% include read_time.html content=post.content %}
+          </p>
+        </article>
+      </a>
 
       <hr>
 
