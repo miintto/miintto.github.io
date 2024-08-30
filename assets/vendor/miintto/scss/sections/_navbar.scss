@@ -1,9 +1,15 @@
 .navbar {
     background: $steel-blue-1;
+
+    @media (max-width: 767px) {
+        background: $white;
+    }
 }
 
 .navbar-content {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
 }
 
 .navbar-brand {
@@ -14,9 +20,34 @@
     line-height: 60px;
 }
 
+.navbar-button {
+    display: none;
+    height: 40px;
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid $gray-1;
+    border-radius: 5px;
+    background-color: $white;
+    font-size: 12px;
+    font-weight: 700;
+
+    @media (max-width: 767px) {
+        display: inline-block;
+    }
+}
+
 .navbar-nav {
     display: flex;
     margin-left: auto;
+
+    @media (max-width: 767px) {
+        display: none;
+        position: absolute;
+        top: 60px;
+        width: 100vw;
+        padding: 5px;
+        background-color: $white;
+    }
 }
 
 .nav-item {
@@ -27,12 +58,15 @@
     line-height: 60px;
     text-align: center;
 
-    @media (max-width: 768px) {
-        padding: 0px 10px;
+    @media (max-width: 767px) {
+        padding: 0px 12px;
         font-size: 12px;
+        line-height: 40px;
+        text-align: left;
     }
 
     >a {
+        display: block;
         color: $gray-5;
     }
 }

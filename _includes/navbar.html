@@ -6,7 +6,11 @@
 {% endif %}
   <div class="navbar-content container">
     <a class="navbar-brand" href="{{"/" | relative_url }}">{{ site.title | escape }}</a>
-    <div class="navbar-nav">
+    <button class="navbar-button" id="toggleButton" type="button" data-toggle="collapse" aria-controls="navbarResponsive" aria-expanded="false">
+      MENU
+      <i class="fa fa-bars"></i>
+    </button>
+    <div class="navbar-nav" id="navbarResponsive" aria-hidden="true">
       <div class="nav-item">
         <a class="nav-link" href="{{"/about" | relative_url }}">ABOUT</a>
       </div>
