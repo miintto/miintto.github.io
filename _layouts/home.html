@@ -2,59 +2,155 @@
 layout: default
 ---
 
-<!-- Page Header -->
-{% if page.background %}
-<header class="masthead" style="background-image: url('{{ page.background | prepend: site.baseurl | replace: '//', '/' }}')">
-{% else %}
-<header class="masthead">
-{% endif %}
-  <div class="overlay"></div>
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-8 col-md-10 mx-auto">
-        <div class="page-heading">
-          <h1>{{ site.title }}</h1>
-          {% if site.description %}
-          <span class="subheading">{{ site.description }}</span>
-          {% endif %}
-        </div>
+<div class="main">
+  <!-- Main Banner -->
+  <div class="banner-content">
+    <div class="banner-component container">
+      <div class="banner-thumbnail">
+        <img src="/img/bg/developer.png">
+      </div>
+      <div class="banner-description">
+        <h1>미민또의 프로그래밍</h1>
+        <p>안녕하세요! 개발을 즐기는 백엔드 엔지니어 박민재입니다.</p>
       </div>
     </div>
   </div>
-</header>
 
-<div class="container">
-  <div class="row">
-    <div class="col-lg-8 col-md-10 mx-auto">
-
-      {{ content }}
-
-      <!-- Home Post List -->
-      {% for post in site.posts limit : 4 %}
-
-      <a href="{{ post.url | prepend: site.baseurl | replace: '//', '/' }}">
-        <article class="post-preview">
-          <h2 class="post-title-home">{{ post.title }}</h2>
-          {% if post.subtitle %}
-          <p class="post-subtitle home">{{ post.subtitle }}</p>
-          {% else %}
-          <p class="post-subtitle home ">{{ post.excerpt | strip_html | truncatewords: 40 }}</p>
-          {% endif %}
-          <p class="post-meta">
-            {{ post.date | date: '%B %d, %Y' }} &middot; {% include read_time.html content=post.content %}
-          </p>
-        </article>
-      </a>
-
-      <hr>
-
-      {% endfor %}
-
-      <!-- Pager -->
-      <div class="clearfix">
-        <a class="btn btn-primary float-right" href="{{"/posts" | relative_url }}">View All Posts &rarr;</a>
+  <!-- Skills -->
+  <div class="skill-content">
+    <a href="/category/python">
+      <div class="skill-item">
+        <div class="skills-thumbnail">
+          <img src="/img/skills/python.png">
+        </div>
+        <div class="skill-title">Python</div>
       </div>
+    </a>
+    <a href="/category/django">
+      <div class="skill-item">
+        <div class="skills-thumbnail">
+          <img src="/img/skills/django.png">
+        </div>
+        <div class="skill-title">Django</div>
+      </div>
+    </a>
+    <a href="/category/django">
+      <div class="skill-item">
+        <div class="skills-thumbnail">
+          <img src="/img/skills/fastapi.png">
+        </div>
+        <div class="skill-title">FastAPI</div>
+      </div>
+    </a>
+    <a href="/category/spring">
+      <div class="skill-item">
+        <div class="skills-thumbnail">
+          <img src="/img/skills/spring.png">
+        </div>
+        <div class="skill-title">Spring</div>
+      </div>
+    </a>
+    <a href="/category/database">
+      <div class="skill-item">
+        <div class="skills-thumbnail">
+          <img src="/img/skills/mysql.png">
+        </div>
+        <div class="skill-title">MySQL</div>
+      </div>
+    </a>
+    <a href="/category/database">
+      <div class="skill-item">
+        <div class="skills-thumbnail">
+          <img src="/img/skills/postgresql.png">
+        </div>
+        <div class="skill-title">PostgreSQL</div>
+      </div>
+    </a>
+    <a href="/category/elasticsearch">
+      <div class="skill-item">
+        <div class="skills-thumbnail">
+          <img src="/img/skills/elasticsearch.png">
+        </div>
+        <div class="skill-title">Elasticsearch</div>
+      </div>
+    </a>
+    <a href="/category/database">
+      <div class="skill-item">
+        <div class="skills-thumbnail">
+          <img src="/img/skills/redis.png">
+        </div>
+        <div class="skill-title">Redis</div>
+      </div>
+    </a>
+    <a href="/category/docker">
+      <div class="skill-item">
+        <div class="skills-thumbnail">
+          <img src="/img/skills/docker.png">
+        </div>
+        <div class="skill-title">Docker</div>
+      </div>
+    </a>
+    <a href="/category/system-architecture">
+      <div class="skill-item">
+        <div class="skills-thumbnail">
+          <img src="/img/skills/airflow.png">
+        </div>
+        <div class="skill-title">Apach-Airflow</div>
+      </div>
+    </a>
+  </div>
 
+  <!-- Recent Posts -->
+  <div class="recent-content">
+    <div class="recent-wrapper">
+      <h1>Latest Posts</h1>
+      <div class="recent-content-list">
+        <div class="recent-first post-effect">
+          {% assign latest_post = site.posts | first %}
+          <a href="{{ latest_post.url | prepend: site.baseurl | replace: '//', '/' }}">
+            <div class="recent-thumbnail">
+              <img src="{{ latest_post.thumbnail }}">
+            </div>
+            <div class="post-meta">
+              <p class="post-meta-category">
+                {% assign category_letters = latest_post.category | split: ' ' %}
+                {% for word in category_letters %}{% assign capitalized_word = word | capitalize %}{{ capitalized_word }} {% endfor %}
+              </p>
+              <p>|</p>
+              <p>{{ latest_post.date | date: '%Y.%m.%d' }}</p>
+            </div>
+            <p class="recent-title">{{ latest_post.title }}</p>
+          </a>
+        </div>
+        <div class="recent-sub">
+          {% assign posts_subset = site.posts | slice: 1, 3 %}
+          {% for post in posts_subset %}
+          <div class="post-effect">
+            <a href="{{ post.url | prepend: site.baseurl | replace: '//', '/' }}">
+              <div class="recent-post">
+                <div class="recent-thumbnail-sub">
+                  <img src="{{ post.thumbnail }}">
+                </div>
+                <div>
+                  <div class="post-meta">
+                    <p class="post-meta-category">
+                      {% assign category_letters = post.category | split: ' ' %}
+                      {% for word in category_letters %}{% assign capitalized_word = word | capitalize %}{{ capitalized_word }} {% endfor %}
+                    </p>
+                    <p>|</p>
+                    <p >{{ post.date | date: "%Y.%m.%d" }}</p>
+                  </div>
+                  <p class="recent-title">{{ post.title }}</p>
+                </div>
+              </div>
+            </a>
+          </div>
+          {% endfor %}
+          <div class="post-link">
+            <a class="btn btn-primary float-right" href="{{"/posts" | relative_url }}">See All Posts <span class="link-arrow">&rarr;</span></a>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

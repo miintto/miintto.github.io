@@ -1,14 +1,13 @@
 ---
 layout: post
 title: "[파이썬] asyncio"
-date: 2022-10-30
 category: python
 tags:
   - python
   - asyncio
   - native coroutine
   - event loop
-thumbnail: "/img/thumbnails/python-asyncio.png"
+thumbnail: "/img/thumbnails/python.png"
 ---
 
 앞서 설명했듯이 [**코루틴**](/docs/python-coroutine)은 기본적으로 제어권을 호출자로부터 넘겨받아 작업을 수행하고 다시 제어권을 반환하는 방식으로 작동합니다.

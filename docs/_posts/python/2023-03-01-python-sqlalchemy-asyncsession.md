@@ -1,14 +1,13 @@
 ---
 layout: post
 title: "Async 환경에서 SQLAlchemy 세션 관리"
-date: 2023-03-01
 category: sqlalchemy
 tags:
   - python
   - sqlalchemy
   - session
   - asyncio
-thumbnail: "/img/thumbnails/sqlalchemy-asyncsession.png"
+thumbnail: "/img/thumbnails/sqlalchemy.png"
 ---
 
 이전에 [SQLAlchemy의 세션 관리](/docs/python-sqlalchemy-session) 포스트에서 SQLAlchemy 라이브러리 내부에서 세션의 작동 방식을 알아보았습니다.

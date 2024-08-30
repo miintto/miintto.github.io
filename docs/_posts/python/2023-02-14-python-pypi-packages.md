@@ -1,13 +1,12 @@
 ---
 layout: post
 title: "PyPI에 패키지를 업로드 해보자!"
-date: 2023-02-14
 category: python
 tags:
   - python
   - pypi
   - package
-thumbnail: "/img/thumbnails/python-pypi-packages.png"
+thumbnail: "/img/thumbnails/python.png"
 ---
 
 얼마 전 스프링 프로젝트에서 Redisson 클라이언트를 사용해보면서 Python 프로젝트에도 레디스 분산 락 적용을 시도하였는데,

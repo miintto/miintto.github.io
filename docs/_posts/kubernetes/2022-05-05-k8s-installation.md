@@ -1,13 +1,12 @@
 ---
 layout: post
 title: "[쿠버네티스] 무작정 설치해보기"
-date: 2022-05-05
 category: kubernetes
 tags:
   - k8s
   - aws
   - cluster
-thumbnail: "/img/thumbnails/k8s-install.png"
+thumbnail: "/img/thumbnails/k8s.png"
 ---
 
 쿠버네티스는 컨테이너화된 애플리케이션을 자동으로 배포, 스케일링 및 관리해주는 오픈소스입니다.

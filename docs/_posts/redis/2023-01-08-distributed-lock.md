@@ -8,7 +8,7 @@ tags:
   - setnx
   - spin lock
   - redisson
-thumbnail: "/img/thumbnails/distributed-lock.png"
+thumbnail: "/img/thumbnails/redis.png"
 ---
 
 유명 가수 콘서트 티케팅 혹은 블랙 프라이데이 할인 행사 같은 이벤트는 오픈하자마자 순식간에 많은 트래픽이 몰려듭니다.

@@ -1,13 +1,12 @@
 ---
 layout: post
 title: "[파이썬] GIL (Global Interpreter Lock)"
-date: 2022-03-01
 category: python
 tags:
   - python
   - gil
   - multi-threading
-thumbnail: "/img/thumbnails/python-gil.png"
+thumbnail: "/img/thumbnails/python.png"
 ---
 
 **GIL**(global interpreter lock)이란 파이썬 바이트코드가 하나의 스레드만 사용하여 실행하도록 CPython 인터프리터 자체에서 스레드를 제한하는 것을 의미합니다.

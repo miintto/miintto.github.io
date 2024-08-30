@@ -1,0 +1,40 @@
+<div class="profile-box">
+  <div class="profile-img">
+    <img src="/img/profile.jpg" style="max-width:120px;"/>
+  </div>
+  <div class="prifile-username">박민재<span> (miintto)</span></div>
+  <div class="profile-bio">안녕하세요! 개발을 즐기는 백엔드 엔지니어 박민재입니다.</div>
+  <div class="proflie-contact">
+    <a href="mailto:{{ site.email | encode_email }}">
+      <span class="fa-sm">
+        <i class="fa fa-envelope"></i>
+      </span>
+    </a>
+    <a href="https://github.com/{{ site.github_username }}" target="_blank">
+      <span class="fa-sm">
+        <i class="fab fa-github"></i>
+      </span>
+    </a>
+    <a href="https://instagram.com/{{ site.instagram_username }}" target="_blank">
+      <span class="fa-sm">
+        <i class="fab fa-instagram"></i>
+      </span>
+    </a>
+  </div>
+</div>
+
+<div class="profile-category">
+  <div class="profile-title">Categories</div>
+  <ul>
+  {% for page in site.pages %}
+    {% if page.layout == "category" %}
+      {% assign category = page.title | downcase %}
+      <li>
+        <a href="{{ page.url | prepend: site.baseurl | replace: '//', '/' }}">
+          {{ page.title }} ({{ site.categories[category].size }})
+        </a>
+      </li>
+    {% endif %}
+  {% endfor %}
+  </ul>
+</div>

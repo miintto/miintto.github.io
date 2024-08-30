@@ -1,7 +1,6 @@
 ---
 layout: post
 title: "[엘라스틱서치] Architecture"
-date: 2022-03-01
 category: elasticsearch
 tags:
   - elasticsearch
@@ -9,7 +8,7 @@ tags:
   - cluster
   - index
   - shard
-thumbnail: "/img/thumbnails/es-archi.png"
+thumbnail: "/img/thumbnails/elasticsearch.png"
 ---
 
 **엘라스틱서치**(elasticsearch)는 오픈소스 분산 검색 엔진입니다.

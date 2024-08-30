@@ -1,7 +1,6 @@
 ---
 layout: post
 title: "SSL 인증서 발급 (with Let's Encrypt)"
-date: 2022-12-16
 category: network
 tags:
   - ssl certificate

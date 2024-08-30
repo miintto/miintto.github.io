@@ -1,7 +1,6 @@
 ---
 layout: post
 title: "SQLAlchemy의 세션 관리"
-date: 2023-01-03
 category: sqlalchemy
 tags:
   - python
@@ -9,7 +8,7 @@ tags:
   - session
   - orm
   - thread-local
-thumbnail: "/img/thumbnails/sqlalchemy-session.png"
+thumbnail: "/img/thumbnails/sqlalchemy.png"
 ---
 
 보통 Django를 벗어나서 독자적인 ORM이 없는 파이썬 프레임워크를 사용한다면 아마 거의 대부분은 SQLAlchemy를 채택하여 사용할 겁니다.

@@ -1,7 +1,6 @@
 ---
 layout: post
 title: "[Nginx] 도메인 유입만 허용하는 방법"
-date: 2023-05-29
 category: network
 tags:
   - network

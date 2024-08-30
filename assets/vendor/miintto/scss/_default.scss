@@ -1,0 +1,37 @@
+.container {
+    max-width: 1060px;
+    margin: 0 auto;
+}
+
+.fixed-top {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+}
+
+.post-meta {
+    display: flex;
+    font-size: 14px;
+
+    >p {
+        margin: 10px 10px 10px 0;
+        color: $gray-5;
+    }
+
+    .post-meta-category {
+        font-weight: 500;
+        color: $gray-8;
+    }
+}
+
+.post-effect {
+    &:hover {
+        text-decoration: none;
+
+        img {
+            transition: all 0.2s linear;
+            transform: scale(1.2);
+        }
+    }
+}

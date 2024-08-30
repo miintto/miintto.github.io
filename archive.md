@@ -23,7 +23,7 @@ background: "/img/bg/archive.jpg"
 
       <div class="archive-post">
         <div class="archive-date">
-          <p>{{ post.date | date: '%B %e' }}</p>
+          <p>{{ post.date | date: '%m.%d' }}</p>
         </div>
         <div class="archive-title">
           <a href="{{ post.url | prepend: site.baseurl | replace: '//', '/' }}">

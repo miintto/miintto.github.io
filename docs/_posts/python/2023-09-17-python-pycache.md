@@ -7,7 +7,7 @@ tags:
   - cache
   - interpreter
   - compiler
-thumbnail: "/img/thumbnails/python-pycache.png"
+thumbnail: "/img/thumbnails/python.png"
 ---
 
 파이썬 기반의 프로젝트를 작업하다 보면 `__pycache__` 디렉토리와 `.pyc`확장자의 파일을 본 적이 있을 겁니다.

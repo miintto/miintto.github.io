@@ -1,0 +1,38 @@
+.navbar {
+    background: $steel-blue-1;
+}
+
+.navbar-content {
+    display: flex;
+}
+
+.navbar-brand {
+    height: 60px;
+    margin: 0 10px;
+    font-size: 20px;
+    font-weight: 900;
+    line-height: 60px;
+}
+
+.navbar-nav {
+    display: flex;
+    margin-left: auto;
+}
+
+.nav-item {
+    flex: 1 1 auto;
+    padding: 0px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 60px;
+    text-align: center;
+
+    @media (max-width: 768px) {
+        padding: 0px 10px;
+        font-size: 12px;
+    }
+
+    >a {
+        color: $gray-5;
+    }
+}

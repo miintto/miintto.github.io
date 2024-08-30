@@ -1,34 +1,11 @@
 ---
 layout: page
-title: Posts
-background: "/img/bg/post.jpg"
+title: 전체 게시물
 ---
 
 {% for post in paginator.posts %}
 
-<div class="post-article">
-  <a href="{{ post.url | prepend: site.baseurl | replace: '//', '/' }}">
-    <div class="post-thumbnail">
-      <img src="{{ post.thumbnail }}" style="width: 100%">
-    </div>
-    <div class="post-preview">
-      <h2 class="post-title">{{ post.title }}</h2>
-      {% if post.subtitle %}
-      <p class="post-subtitle post">{{ post.subtitle }}</p>
-      {% else %}
-      <p class="post-subtitle post">{{ post.excerpt | strip_html | truncatewords: 30 }}</p>
-      {% endif %}
-      <p class="post-meta">
-        {{ post.date | date: '%B %d, %Y' }} &middot; {% include read_time.html content=post.content %}
-      </p>
-    {% if post.tags %}
-      <aside class="post-tags post-list-tags">
-        {% for tag in post.tags %}<p>{{ tag | escape }}</p>{% endfor %}
-      </aside>
-    {% endif %}
-    </div>
-  </a>
-</div>
+{% include post-preview.html %}
 
 <hr>
 
@@ -37,15 +14,38 @@ background: "/img/bg/post.jpg"
 <!-- Pager -->
 {% if paginator.total_pages > 1 %}
 
-<div class="clearfix">
+{% assign total_pages = paginator.total_pages %}
+{% assign current_page = paginator.page %}
+{% assign page_group_size = 5 %}
+{% assign start_page = current_page | minus: 1 | divided_by: page_group_size | times: page_group_size | plus: 1 %}
+{% assign end_page = start_page | plus: page_group_size | minus: 1 %}
+{% if end_page > total_pages %}
+  {% assign end_page = total_pages %}
+{% endif %}
 
-  {% if paginator.previous_page %}
-  <a class="btn btn-primary float-left" href="{{ paginator.previous_page_path | prepend: site.baseurl | replace: '//', '/' }}">&larr;
-    Newer<span class="d-none d-md-inline"> Posts</span></a>
+<div class="post-pagination">
+  {% if current_page > page_group_size %}
+    {% assign previous_page = start_page | minus: 1 %}
+    <span class="previous"><a href="{{ site.paginate_path | relative_url | replace: ':num', previous_page }}">< Prev</a></span>
+  {% else %}
+    <span class="previous disable">< Prev</span></Previous>
   {% endif %}
 
-  {% if paginator.next_page %}
-  <a class="btn btn-primary float-right" href="{{ paginator.next_page_path | prepend: site.baseurl | replace: '//', '/' }}">Older<span class="d-none d-md-inline"> Posts</span> &rarr;</a>
+  {% for page in (start_page..end_page) %}
+    {% if page == current_page %}
+      <span class="current">{{ page }}</span>
+    {% elsif page == 1 %}
+      <a href="{{ "/posts" | relative_url }}"><span class="pagination-page">1</span></a>
+    {% else %}
+      <a href="{{ site.paginate_path | relative_url | replace: ':num', page }}"><span class="pagination-page">{{ page }}</span></a>
+    {% endif %}
+  {% endfor %}
+
+  {% if end_page < total_pages %}
+    {% assign next_page = end_page | plus: 1 %}
+    <span class="next"><a href="{{ site.paginate_path | relative_url | replace: ':num', next_page }}">Next ></a></span>
+  {% else %}
+    <span class="next disable">Next ></span>
   {% endif %}
 
 </div>

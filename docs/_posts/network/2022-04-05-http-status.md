@@ -1,7 +1,6 @@
 ---
 layout: post
 title: "HTTP status code"
-date: 2022-04-05
 category: network
 tags:
   - network

@@ -1,7 +1,6 @@
 ---
 layout: post
 title: "[파이썬] 그린 스레드 라이브러리"
-date: 2023-04-09
 category: python
 tags:
   - python
@@ -10,7 +9,7 @@ tags:
   - eventlet
   - gevent
   - coroutine
-thumbnail: "/img/thumbnails/python-green-thread.png"
+thumbnail: "/img/thumbnails/python.png"
 ---
 
 보편적으로 스레드라고 하면 커널로부터 자원을 할당받아 실행되는 **네이티브 스레드**(native thread)를 먼저 생각하겠지만,

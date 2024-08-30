@@ -5,7 +5,7 @@ category: system architecture
 tags:
   - airflow
   - configuration
-thumbnail: "/img/thumbnails/airflow-quick-start.png"
+thumbnail: "/img/thumbnails/airflow.png"
 ---
 
 [저번 포스트](/docs/python-airflow-architecture)에서 간단히 Airflow의 구조에 대해 살펴보았다면 이번에는 Airflow를 직접 실행해 봅시다.

@@ -1,13 +1,12 @@
 ---
 layout: post
 title: "[파이썬] Future를 이용한 동시성"
-date: 2022-10-05
 category: python
 tags:
   - python
   - future
   - multi-threading
-thumbnail: "/img/thumbnails/python-future.png"
+thumbnail: "/img/thumbnails/python.png"
 ---
 
 # 1. Future

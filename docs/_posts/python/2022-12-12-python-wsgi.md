@@ -1,14 +1,13 @@
 ---
 layout: post
 title: "[파이썬] WSGI는 왜 필요할까?"
-date: 2022-12-12
 category: python
 tags:
   - python
   - wsgi
   - was
   - web server
-thumbnail: "/img/thumbnails/python-wsgi.png"
+thumbnail: "/img/thumbnails/python.png"
 ---
 
 일반적으로 파이썬을 이용하여 웹 개발을 하는 경우, 일례로 django를 사용한다고 가정해 볼 때 로컬 환경에서는 `manage.py runserver` 명렁어를 이용하여 서버를 구동시킵니다.

@@ -152,7 +152,7 @@ typedef union _gc_head {
 배포 과정이 워낙 순식간에 이루어지다 보니 에러가 발생하는 순간을 잡아내기가 매우 힘들었고, rollout 커맨드에 별도 `atop`을 추가하는 방식을 사용했습니다.
 그리고 캐시 메모리가 줄어드는 순간을 포착하였는데 모든 uWSGI 프로세스가 MINFLT(마이너 페이지 폴트)를 유발하는 것을 발견했습니다.
 
-<img src="/img/posts/meat-dismissing-python-gc-img002.png" style="max-width:600px"/>
+<img src="/img/posts/meta-dismissing-python-gc-img002.png" style="max-width:600px"/>
 
 다시 Perf를 사용하여 `Py_Finalize`를 들여다보았습니다.
 파이썬이 종료되는 시점에 GC 마무리 작업 이외에도 타입 객체를 해제하거나 불러왔던 모듈을 정리하는 등의 cleanup 작업을 하게 되는데 이 과정에서 공유 메모리에 부하가 생긴 것으로 보여집니다.

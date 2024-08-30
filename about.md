@@ -1,10 +1,10 @@
 ---
-layout: page
+layout: about
 title: About Me
 background: "/img/bg/profile.jpg"
 ---
 
-안녕하세요! 서버 개발자 **박민재**입니다~ 👨🏻‍💻
+안녕하세요! 개발을 즐기는 백엔드 엔지니어 **박민재**입니다~ 👨🏻‍💻
 
 <br>
 

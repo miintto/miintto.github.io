@@ -6,7 +6,7 @@ tags:
   - django
   - connection pool
   - persistent connections
-thumbnail: "/img/thumbnails/django-db-connection.png"
+thumbnail: "/img/thumbnails/django.png"
 ---
 
 Django 혹은 Spring 같은 웹프레임워크를 사용하여 어플리케이션을 구축하는 경우 대부분 데이터베이스 연동이 필요한데, 각 프레임워크마다 효율적으로 데이터베이스 커넥션을 관리하기 위해 여러 기술을 사용하고 있습니다.

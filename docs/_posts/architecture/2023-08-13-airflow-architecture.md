@@ -8,7 +8,7 @@ tags:
   - scheduler
   - executor
   - celery
-thumbnail: "/img/thumbnails/airflow-archi.png"
+thumbnail: "/img/thumbnails/airflow.png"
 ---
 
 비즈니스 로직을 작성하다 보면 일괄적인 포인트 만료 작업, 휴면 계정 처리 혹은 복잡한 데이터 마이그레이션 등 주기적으로 대량의 작업을 수행해야 하는 경우가 생길 수 있습니다.

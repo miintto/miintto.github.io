@@ -1,0 +1,24 @@
+body {
+    margin: 0;
+    font-family: "Pretendard", sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    text-align: left;
+    color: $gray-8;
+}
+
+a {
+    text-decoration: none;
+    color: $gray-8;
+}
+
+hr {
+    margin: 16px 0;
+    border: 0.5px solid $gray-2;
+}
+
+img {
+    width: 100%;
+    border-style: none;
+    vertical-align: middle;
+}

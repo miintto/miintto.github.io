@@ -1,0 +1,65 @@
+.profile-content {
+    display: block;
+    width: 250px;
+    margin: 0px 60px 0 10px;
+
+    @media (max-width: 1078px) {
+        display: none;
+    }
+}
+
+.profile-box {
+    margin: 0 auto;
+
+    >.profile-img {
+        overflow: hidden;
+        width: 120px;
+        margin: 20px auto;
+        border-radius: 120px;
+    }
+
+    >.prifile-username {
+        margin: 10px auto;
+        font-size: 16px;
+        font-weight: 700;
+    
+        >span {
+            font-size: 14px;
+        }
+    }
+
+    >.profile-bio {
+        margin-bottom: 16px;
+        font-size: 14px;
+        color: #606060;
+    }
+
+    >.proflie-contact {
+        height: 35px;
+
+        >a {
+            margin-right: 10px;
+        }
+    }
+}
+
+.profile-title {
+    margin: 10px 0;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.profile-category {
+    margin-top: 50px;
+    font-size: 14px;
+
+    >ul {
+        padding-left: 24px;
+        color: #606060;
+
+        >li {
+            height: 30px;
+            line-height: 30px;
+        }
+    }
+}
