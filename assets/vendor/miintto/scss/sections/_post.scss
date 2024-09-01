@@ -11,18 +11,8 @@
 .post-article a {
     display: flex;
     flex-wrap: wrap;
-}
-
-.post-preview {
-    flex: 1;
-    margin: auto 0;
-
-    >.post-title {
-        margin: 0 0 24px 0;
-        font-size: 20px;
-        font-weight: 700;
-        letter-spacing: .03em;
-    }
+    flex-direction: row-reverse;
+    padding: 5px;
 }
 
 .post-thumbnail {
@@ -38,8 +28,22 @@
         object-fit: cover;
     }
 
-    @media (max-width: 767px) {
-        display: none;
+    @media (max-width: 478px) {
+        width: 100%;
+        height: auto;
+        margin: 0px 0px 10px 0px;
+    }
+}
+
+.post-preview {
+    flex: 1;
+    margin: auto 0;
+
+    >.post-title {
+        margin: 0 0 24px 0;
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: .03em;
     }
 }
 

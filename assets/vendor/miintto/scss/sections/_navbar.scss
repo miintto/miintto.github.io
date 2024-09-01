@@ -39,14 +39,15 @@
 
 .navbar-nav {
     display: flex;
-    margin-left: auto;
+    transition: height 0.3s ease;
 
     @media (max-width: 767px) {
-        display: none;
+        display: block;
         position: absolute;
+        overflow: hidden;
         top: 60px;
         width: 100vw;
-        padding-bottom: 10px;
+        height: 0;
         background-color: $white;
     }
 }

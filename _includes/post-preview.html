@@ -1,5 +1,8 @@
 <div class="post-article post-effect">
   <a href="{{ post.url | prepend: site.baseurl | replace: '//', '/' }}">
+    <div class="post-thumbnail">
+      <img src="{{ post.thumbnail }}">
+    </div>
     <div class="post-preview">
       <div class="post-meta">
         <p class="post-meta-category">
@@ -17,9 +20,6 @@
         {% for tag in post.tags %}<p>{{ tag | escape }}</p>{% endfor %}
       </aside>
     {% endif %}
-    </div>
-    <div class="post-thumbnail">
-      <img src="{{ post.thumbnail }}">
     </div>
   </a>
 </div>

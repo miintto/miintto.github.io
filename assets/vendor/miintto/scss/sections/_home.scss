@@ -176,7 +176,6 @@
 
 .recent-sub {
     flex: 1;
-    max-width: 480px;
 }
 
 .recent-post {
@@ -184,6 +183,7 @@
     margin-bottom: 24px;
 
     .recent-title {
+        max-width: 360px;
         margin: 0;
         font-size: 18px;
         font-weight: 700;
@@ -197,15 +197,21 @@
         height: 100px;
         margin-right: 20px;
         border-radius: 10px;
-
-        @media only screen and (max-width: 1059px) {
-            display: none;
-        }
     }
 
     img {
         height: 100%;
         object-fit: cover;
+    }
+
+    @media only screen and (max-width: 1059px) {
+        .recent-title {
+            max-width: 720px;
+        }
+
+        .recent-thumbnail-sub {
+            display: none;
+        }
     }
 }
 
