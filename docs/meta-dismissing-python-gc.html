@@ -91,39 +91,6 @@
     <div class="article-content">
       <aside>
   <div class="section-toc">
-    <ul id="toc" class="section-nav">
-<li class="toc-entry toc-h1"><a href="#인스타그램에서-파이썬-gc-비활성화">인스타그램에서 파이썬 GC 비활성화</a>
-<ul>
-<li class="toc-entry toc-h2"><a href="#인스타그램의-서버-운영-방식">인스타그램의 서버 운영 방식</a></li>
-<li class="toc-entry toc-h2"><a href="#메모리에-대한-이해">메모리에 대한 이해</a></li>
-<li class="toc-entry toc-h2"><a href="#우리가-세운-가설-copy-on-read">우리가 세운 가설: Copy-on-Read</a></li>
-<li class="toc-entry toc-h2"><a href="#첫-번째-시도-코드-객체에서-레퍼런스-카운팅-비활성화">첫 번째 시도: 코드 객체에서 레퍼런스 카운팅 비활성화</a></li>
-<li class="toc-entry toc-h2"><a href="#페이지-폴트-추적">페이지 폴트 추적</a></li>
-<li class="toc-entry toc-h2"><a href="#두-번째-시도-gc를-비활성화">두 번째 시도: GC를 비활성화</a></li>
-<li class="toc-entry toc-h2"><a href="#세-번째-시도-gc를-완전히-중단한-후-좌충우돌">세 번째 시도: GC를 완전히 중단한 후 좌충우돌</a></li>
-<li class="toc-entry toc-h2"><a href="#네-번째-시도-cleanup-없이-gc-비활성화">네 번째 시도: Cleanup 없이 GC 비활성화</a></li>
-<li class="toc-entry toc-h2"><a href="#회고">회고</a></li>
-<li class="toc-entry toc-h2"><a href="#이득-파헤쳐-보기">이득 파헤쳐 보기</a></li>
-</ul>
-</li>
-<li class="toc-entry toc-h1"><a href="#dismissing-python-garbage-collection-at-instagram">Dismissing Python Garbage Collection at Instagram</a>
-<ul>
-<li class="toc-entry toc-h2"><a href="#how-we-run-our-web-server">How We Run Our Web Server</a></li>
-<li class="toc-entry toc-h2"><a href="#understanding-memory">Understanding Memory</a></li>
-<li class="toc-entry toc-h2"><a href="#our-theory-copy-on-read">Our theory: Copy-on-Read</a></li>
-<li class="toc-entry toc-h2"><a href="#attempt-1-disable-reference-count-on-code-objects">Attempt 1: Disable reference count on code objects</a></li>
-<li class="toc-entry toc-h2"><a href="#profiling-page-faults">Profiling page faults</a></li>
-<li class="toc-entry toc-h2"><a href="#attempt-2-lets-try-disabling-gc">Attempt 2: Let’s try disabling GC</a></li>
-</ul>
-</li>
-<li class="toc-entry toc-h1"><a href="#attempt-3-completely-shutdown-gc-takes-churns">Attempt 3: Completely shutdown GC takes churns</a>
-<ul>
-<li class="toc-entry toc-h2"><a href="#attempt-4-final-step-for-shutting-down-gc-no-cleanup">Attempt 4: Final step for shutting down GC: No cleanup</a></li>
-<li class="toc-entry toc-h2"><a href="#looking-back">Looking back</a></li>
-</ul>
-</li>
-<li class="toc-entry toc-h1"><a href="#breaking-down-the-gains">Breaking down the gains</a></li>
-</ul>
   </div>
 </aside>
 
@@ -598,10 +565,6 @@ So keep digging and sniffing around, and you’ll be amazed how things really wo
 
   <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
 <script src="/assets/scripts.js"></script>
-
-
-  <script src="/assets/vendor/miintto/js/toc.js"></script>
-
 
 
   <!-- Global site tag (gtag.js) - Google Analytics -->

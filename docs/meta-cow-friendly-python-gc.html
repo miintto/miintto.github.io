@@ -91,22 +91,6 @@
     <div class="article-content">
       <aside>
   <div class="section-toc">
-    <ul id="toc" class="section-nav">
-<li class="toc-entry toc-h1"><a href="#copy-on-write에-친화적인-파이썬-가비지-컬렉션">Copy-on-write에 친화적인 파이썬 가비지 컬렉션</a>
-<ul>
-<li class="toc-entry toc-h2"><a href="#첫-번째-시도-gc-헤드-데이터-구조체를-재구성">첫 번째 시도: GC 헤드 데이터 구조체를 재구성</a></li>
-<li class="toc-entry toc-h2"><a href="#두-번째-시도-gc에서-공유-객체를-숨기는-방법">두 번째 시도: GC에서 공유 객체를 숨기는 방법</a></li>
-<li class="toc-entry toc-h2"><a href="#성공">성공!</a></li>
-</ul>
-</li>
-<li class="toc-entry toc-h1"><a href="#copy-on-write-friendly-python-garbage-collection">Copy-on-write friendly Python garbage collection</a>
-<ul>
-<li class="toc-entry toc-h2"><a href="#first-try-redesign-the-gc-head-data-structure">First try: redesign the GC head data structure</a></li>
-<li class="toc-entry toc-h2"><a href="#second-try-hiding-shared-objects-from-gc">Second try: hiding shared objects from GC</a></li>
-<li class="toc-entry toc-h2"><a href="#success">Success!</a></li>
-</ul>
-</li>
-</ul>
   </div>
 </aside>
 
@@ -372,10 +356,6 @@ The plot below shows how enabling GC helped the memory growth by stopping the li
 
   <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
 <script src="/assets/scripts.js"></script>
-
-
-  <script src="/assets/vendor/miintto/js/toc.js"></script>
-
 
 
   <!-- Global site tag (gtag.js) - Google Analytics -->
