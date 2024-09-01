@@ -6,6 +6,7 @@ category: docker
 tags:
   - docker
   - vm
+toc: true
 thumbnail: "/img/thumbnails/docker-engine.png"
 ---
 

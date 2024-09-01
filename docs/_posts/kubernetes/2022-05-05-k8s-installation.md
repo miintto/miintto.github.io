@@ -6,6 +6,7 @@ tags:
   - k8s
   - aws
   - cluster
+toc: true
 thumbnail: "/img/thumbnails/k8s.png"
 ---
 

@@ -7,6 +7,7 @@ tags:
   - plugin
   - sbt
   - seunjeon
+toc: true
 thumbnail: "/img/thumbnails/opensearch-seunjeon.png"
 ---
 

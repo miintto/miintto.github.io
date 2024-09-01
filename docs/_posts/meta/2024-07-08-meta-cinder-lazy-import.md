@@ -7,6 +7,7 @@ tags:
   - python
   - cinder
   - lazy import
+toc: true
 thumbnail: "/img/thumbnails/meta-cinder-lazy-import.png"
 ---
 

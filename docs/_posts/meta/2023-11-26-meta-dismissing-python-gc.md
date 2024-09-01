@@ -7,6 +7,7 @@ tags:
   - python
   - garbage collection
   - instagram
+toc: true
 thumbnail: "/img/thumbnails/meta-dismissing-python-gc.png"
 ---
 

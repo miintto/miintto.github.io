@@ -8,6 +8,7 @@ tags:
   - session
   - orm
   - thread-local
+toc: true
 thumbnail: "/img/thumbnails/sqlalchemy.png"
 ---
 

@@ -7,6 +7,7 @@ tags:
   - kibana
   - aws
   - cluster
+toc: true
 thumbnail: "/img/thumbnails/elasticsearch.png"
 ---
 

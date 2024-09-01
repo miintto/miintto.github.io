@@ -6,6 +6,7 @@ tags:
   - ssl certificate
   - let's encrypt
   - certbot
+toc: true
 thumbnail: "/img/thumbnails/ssl-certificate.png"
 ---
 

@@ -8,6 +8,7 @@ tags:
   - cluster
   - index
   - shard
+toc: true
 thumbnail: "/img/thumbnails/elasticsearch.png"
 ---
 

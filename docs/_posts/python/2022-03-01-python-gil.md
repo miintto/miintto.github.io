@@ -6,6 +6,7 @@ tags:
   - python
   - gil
   - multi-threading
+toc: true
 thumbnail: "/img/thumbnails/python.png"
 ---
 

@@ -7,6 +7,7 @@ tags:
   - mvc
   - controller
   - entity
+toc: true
 thumbnail: "/img/thumbnails/spring-mvc.png"
 ---
 

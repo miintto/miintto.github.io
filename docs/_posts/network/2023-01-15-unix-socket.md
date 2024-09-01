@@ -7,6 +7,7 @@ tags:
   - osi 7 layer
   - tcp/ip
   - unix domain socket
+toc: true
 thumbnail: "/img/thumbnails/network-socket.png"
 ---
 

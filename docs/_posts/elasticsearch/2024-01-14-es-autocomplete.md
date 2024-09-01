@@ -6,6 +6,7 @@ tags:
   - elasticsearch
   - autocomplete
   - ngram
+toc: true
 thumbnail: "/img/thumbnails/elasticsearch.png"
 ---
 

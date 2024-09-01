@@ -6,6 +6,7 @@ tags:
   - python
   - coroutine
   - generator
+toc: true
 thumbnail: "/img/thumbnails/python.png"
 ---
 

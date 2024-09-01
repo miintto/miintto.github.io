@@ -7,6 +7,7 @@ tags:
   - logging
   - interceptor
   - ecs logging
+toc: true
 thumbnail: "/img/thumbnails/spring-logging.png"
 ---
 

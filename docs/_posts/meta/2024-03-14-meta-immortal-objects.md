@@ -7,6 +7,7 @@ tags:
   - python
   - immortal object
   - instagram
+toc: true
 thumbnail: "/img/thumbnails/meta-immortal-objects.png"
 ---
 

@@ -6,6 +6,7 @@ tags:
   - k8s
   - msa
   - cluster
+toc: true
 thumbnail: "/img/thumbnails/k8s.png"
 ---
 

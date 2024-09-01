@@ -7,6 +7,7 @@ tags:
   - asyncio
   - native coroutine
   - event loop
+toc: true
 thumbnail: "/img/thumbnails/python.png"
 ---
 

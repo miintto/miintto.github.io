@@ -7,6 +7,7 @@ tags:
   - queryset
   - lazy loading
   - orm
+toc: true
 thumbnail: "/img/thumbnails/django.png"
 ---
 

@@ -5,6 +5,7 @@ category: system architecture
 tags:
   - airflow
   - configuration
+toc: true
 thumbnail: "/img/thumbnails/airflow.png"
 ---
 

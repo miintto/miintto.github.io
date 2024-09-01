@@ -6,6 +6,7 @@ tags:
   - python
   - pypi
   - package
+toc: true
 thumbnail: "/img/thumbnails/python.png"
 ---
 

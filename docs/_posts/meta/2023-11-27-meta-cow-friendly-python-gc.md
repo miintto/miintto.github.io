@@ -7,6 +7,7 @@ tags:
   - copy-on-write
   - garbage collection
   - instagram
+toc: true
 thumbnail: "/img/thumbnails/meta-cow-friendly-python-gc.png"
 ---
 

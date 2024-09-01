@@ -6,6 +6,7 @@ tags:
   - redis
   - sorted set
   - skip list
+toc: true
 thumbnail: "/img/thumbnails/redis.png"
 ---
 

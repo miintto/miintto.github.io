@@ -7,6 +7,7 @@ tags:
   - spring boot
   - kotlin
   - gradle
+toc: true
 thumbnail: "/img/thumbnails/spring-initialize.png"
 ---
 

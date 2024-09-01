@@ -7,6 +7,7 @@ tags:
   - buffer cache
   - index
   - b-tree
+toc: true
 thumbnail: "/img/thumbnails/database-archi.png"
 ---
 

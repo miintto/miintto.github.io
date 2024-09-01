@@ -7,6 +7,7 @@ tags:
   - python
   - machine learning
   - lazy import
+toc: true
 thumbnail: "/img/thumbnails/meta-ml-lazy-import.png"
 ---
 

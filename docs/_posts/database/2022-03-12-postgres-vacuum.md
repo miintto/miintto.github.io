@@ -7,6 +7,7 @@ tags:
   - postgresql
   - vacuum
   - mvcc
+toc: true
 thumbnail: "/img/thumbnails/postgres-vacuum.png"
 ---
 

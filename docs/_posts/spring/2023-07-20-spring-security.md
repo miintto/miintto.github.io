@@ -7,6 +7,7 @@ tags:
   - security
   - filter chain proxy
   - jwt
+toc: true
 thumbnail: "/img/thumbnails/spring-security.png"
 ---
 

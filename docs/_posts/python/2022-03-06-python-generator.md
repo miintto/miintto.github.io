@@ -5,6 +5,7 @@ category: python
 tags:
   - python
   - generator
+toc: true
 thumbnail: "/img/thumbnails/python.png"
 ---
 

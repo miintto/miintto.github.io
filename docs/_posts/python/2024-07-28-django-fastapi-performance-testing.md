@@ -7,6 +7,7 @@ tags:
   - fastapi
   - locust
   - persistent connections
+toc: true
 thumbnail: "/img/thumbnails/django-fastapi-performance-testing.png"
 ---
 

@@ -7,6 +7,7 @@ tags:
   - mysql
   - innodb
   - lock
+toc: true
 thumbnail: "/img/thumbnails/mysql-innodb-locking.png"
 ---
 

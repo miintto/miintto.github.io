@@ -7,6 +7,7 @@ tags:
   - cache
   - interpreter
   - compiler
+toc: true
 thumbnail: "/img/thumbnails/python.png"
 ---
 

@@ -5,6 +5,7 @@ category: network
 tags:
   - network
   - nginx
+toc: true
 thumbnail: "/img/thumbnails/nginx-allow-via-domain.png"
 ---
 

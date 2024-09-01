@@ -30,6 +30,7 @@
     background-color: $white;
     font-size: 12px;
     font-weight: 700;
+    color: $gray-8;
 
     @media (max-width: 767px) {
         display: inline-block;
@@ -45,23 +46,21 @@
         position: absolute;
         top: 60px;
         width: 100vw;
-        padding: 5px;
+        padding-bottom: 10px;
         background-color: $white;
     }
 }
 
 .nav-item {
     flex: 1 1 auto;
-    padding: 0px 20px;
+    padding: 0 20px;
     font-size: 14px;
     font-weight: 700;
     line-height: 60px;
     text-align: center;
 
     @media (max-width: 767px) {
-        padding: 0px 12px;
-        font-size: 12px;
-        line-height: 40px;
+        line-height: 50px;
         text-align: left;
     }
 

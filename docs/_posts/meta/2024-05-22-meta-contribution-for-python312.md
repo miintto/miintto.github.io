@@ -7,6 +7,7 @@ tags:
   - python
   - immortal object
   - asyncio
+toc: true
 thumbnail: "/img/thumbnails/meta-contribution-for-python312.png"
 ---
 

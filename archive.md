@@ -1,7 +1,6 @@
 ---
 layout: page
 title: Archives
-background: "/img/bg/archive.jpg"
 ---
 
 {% assign year = 0 %}

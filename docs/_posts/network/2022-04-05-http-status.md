@@ -5,6 +5,7 @@ category: network
 tags:
   - network
   - http
+toc: true
 thumbnail: "/img/thumbnails/http-status.png"
 ---
 

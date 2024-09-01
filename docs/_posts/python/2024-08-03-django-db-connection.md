@@ -6,6 +6,7 @@ tags:
   - django
   - connection pool
   - persistent connections
+toc: true
 thumbnail: "/img/thumbnails/django.png"
 ---
 

@@ -7,6 +7,7 @@ tags:
   - sqlalchemy
   - session
   - asyncio
+toc: true
 thumbnail: "/img/thumbnails/sqlalchemy.png"
 ---
 

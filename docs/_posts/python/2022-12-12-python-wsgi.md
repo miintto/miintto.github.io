@@ -7,6 +7,7 @@ tags:
   - wsgi
   - was
   - web server
+toc: true
 thumbnail: "/img/thumbnails/python.png"
 ---
 

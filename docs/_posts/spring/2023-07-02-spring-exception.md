@@ -7,6 +7,7 @@ tags:
   - custom response
   - exception
   - controller advice
+toc: true
 thumbnail: "/img/thumbnails/spring-exception.png"
 ---
 

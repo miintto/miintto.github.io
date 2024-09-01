@@ -8,6 +8,7 @@ tags:
   - setnx
   - spin lock
   - redisson
+toc: true
 thumbnail: "/img/thumbnails/redis.png"
 ---
 
