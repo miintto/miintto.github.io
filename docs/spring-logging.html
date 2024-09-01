@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+
+<html>
+
+
+
+
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>Spring 로깅 - miintto.log</title>
+
+  <meta name="description" content="어플리케이션이 이상 없이 잘 돌아가고 있는지 확인하기 위해 필요한 부분에 로깅 메시지를 남겨두는 것은 중요합니다. 로그가 적절하게 잘 남아있다면 장애 발생 시 신속하게 원인을 찾을 수 있으며 추후 어플리케이션 성능 측정 등에도 활용될 수 있습니다.">
+
+  <meta name="google-site-verification" content="wGN_mZVjgAC8sdItYCBTkSMwLrgNSWPY6sicU3MuSQw" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital@1&display=swap">
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://miintto.github.io/docs/spring-logging">
+  <link rel="alternate" type="application/rss+xml" title="Spring 로깅 - miintto.log" href="/feed.xml">
+
+  <link rel="apple-touch-icon" href="/img/favicon-128.png">
+  <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+
+  <meta prefix="og: http://ogp.me/ns#" property="og:site_name" content="miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:type" content="blog"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:title" content="Spring 로깅 - miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:description" content="어플리케이션이 이상 없이 잘 돌아가고 있는지 확인하기 위해 필요한 부분에 로깅 메시지를 남겨두는 것은 중요합니다. 로그가 적절하게 잘 남아있다면 장애 발생 시 신속하게 원인을 찾을 수 있으며 추후 어플리케이션 성능 측정 등에도 활용될 수 있습니다."/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:locale" content="ko_KR"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:url" content="https://miintto.github.io/docs/spring-logging"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:image" content="/img/thumbnails/spring-logging.png">
+
+</head>
+
+
+<body>
+
+  <!-- Navigation -->
+
+<nav class="navbar" style="background-color: white;">
+
+  <div class="navbar-content container">
+    <a class="navbar-brand" href="/">miintto.log</a>
+    <button class="navbar-button" id="toggleButton" type="button" data-toggle="collapse" aria-controls="navbarResponsive" aria-expanded="false">
+      MENU
+      <i class="fa fa-bars"></i>
+    </button>
+    <div class="navbar-nav" id="navbarResponsive" aria-hidden="true">
+      <div class="nav-item">
+        <a class="nav-link" href="/about">ABOUT</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/posts">POSTS</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/archive">ARCHIVES</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+  <div class="article">
+  <div class="article-wrapper">
+    <div class="article-header">
+      <div class="article-info">
+        <h1>Spring 로깅</h1>
+        <div class="post-tags">
+          <p>spring</p><p>logging</p><p>interceptor</p><p>ecs logging</p>
+        </div>
+        <div class="article-meta">
+          2023.07.10 &middot; <span class="reading-time" title="Estimated read time">
+  
+   12 mins  read </span>
+
+        </div>
+      </div>
+      <div class="article-banner"">
+        <img src="/img/thumbnails/spring-logging.png">
+      </div>
+    </div>
+
+    <div class="article-content">
+      <aside>
+  <div class="section-toc">
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h1"><a href="#1-dependency">1. Dependency</a></li>
+<li class="toc-entry toc-h1"><a href="#2-configurations">2. Configurations</a></li>
+<li class="toc-entry toc-h1"><a href="#3-logging-each-request">3. Logging each Request</a></li>
+<li class="toc-entry toc-h1"><a href="#4-logging-body-stream">4. Logging Body Stream</a></li>
+</ul>
+  </div>
+</aside>
+
+
+      <p>어플리케이션이 이상 없이 잘 돌아가고 있는지 확인하기 위해 필요한 부분에 로깅 메시지를 남겨두는 것은 중요합니다.
+로그가 적절하게 잘 남아있다면 장애 발생 시 신속하게 원인을 찾을 수 있으며 추후 어플리케이션 성능 측정 등에도 활용될 수 있습니다.</p>
+
+<hr />
+
+<h1 id="1-dependency">1. Dependency</h1>
+
+<p>코틀린에서 로깅 모듈을 사용하기 위해 <code class="language-plaintext highlighter-rouge">build.gradle.kts</code> 파일에 다음 의존성을 추가합니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">dependencies</span> <span class="p">{</span>
+    <span class="o">..</span><span class="p">.</span>
+    <span class="nf">implementation</span><span class="p">(</span><span class="s">"io.github.microutils:kotlin-logging-jvm"</span><span class="p">)</span>  <span class="c1">// 추가</span>
+</code></pre></div></div>
+
+<p>위 모듈을 이용하여 아래와 같은 방식으로 로그를 남길 수 있습니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">mu.KotlinLogging</span>
+
+<span class="kd">val</span> <span class="py">logger</span> <span class="p">=</span> <span class="nc">KotlinLogging</span><span class="p">.</span><span class="nf">logger</span> <span class="p">{}</span>
+<span class="n">logger</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="s">"여기에 메시지 작성~"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="2-configurations">2. Configurations</h1>
+
+<p>어플리케이션 설정 파일에 다음과 같이 기입합니다.</p>
+
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># application-local.yml</span>
+<span class="na">logging</span><span class="pi">:</span>
+  <span class="na">config</span><span class="pi">:</span>
+    <span class="na">classpath</span><span class="pi">:</span> <span class="s">logback.xml</span>
+</code></pre></div></div>
+
+<p>그리고 logback.xml 파일에 로그와 관련된 내용을 기입합니다.
+해당 파일은 설정 파일과 같은 resources/ 디렉토리에 위치하도록 합니다.</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;</span>
+<span class="cp">&lt;!DOCTYPE configuration&gt;</span>
+
+<span class="nt">&lt;configuration&gt;</span>
+  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"LOG_FILE_PATH"</span> <span class="na">value=</span><span class="s">"logs"</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"LOG_FILE_NAME"</span> <span class="na">value=</span><span class="s">"api"</span><span class="nt">/&gt;</span>
+
+  <span class="c">&lt;!-- Appender 정의 --&gt;</span>
+  <span class="nt">&lt;appender</span> <span class="na">name=</span><span class="s">"TEXT_CONSOLE"</span> <span class="na">class=</span><span class="s">"ch.qos.logback.core.ConsoleAppender"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;encoder&gt;</span>
+      <span class="nt">&lt;charset&gt;</span>UTF-8<span class="nt">&lt;/charset&gt;</span>
+      <span class="nt">&lt;pattern&gt;</span>%d [%-5level] %logger{35} - %msg%n<span class="nt">&lt;/pattern&gt;</span>
+    <span class="nt">&lt;/encoder&gt;</span>
+  <span class="nt">&lt;/appender&gt;</span>
+
+  <span class="nt">&lt;appender</span> <span class="na">name=</span><span class="s">"TEXT_FILE"</span> <span class="na">class=</span><span class="s">"ch.qos.logback.core.rolling.RollingFileAppender"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;file&gt;</span>${LOG_FILE_PATH}/${LOG_FILE_NAME}.log<span class="nt">&lt;/file&gt;</span>
+    <span class="nt">&lt;rollingPolicy</span> <span class="na">class=</span><span class="s">"ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;fileNamePattern&gt;</span>${LOG_FILE_PATH}/${LOG_FILE_NAME}_%d{yyyy-MM-dd}.%i.log<span class="nt">&lt;/fileNamePattern&gt;</span>
+      <span class="nt">&lt;maxFileSize&gt;</span>100MB<span class="nt">&lt;/maxFileSize&gt;</span>
+      <span class="nt">&lt;maxHistory&gt;</span>10<span class="nt">&lt;/maxHistory&gt;</span>
+      <span class="nt">&lt;totalSizeCap&gt;</span>1GB<span class="nt">&lt;/totalSizeCap&gt;</span>
+    <span class="nt">&lt;/rollingPolicy&gt;</span>
+    <span class="nt">&lt;encoder&gt;</span>
+      <span class="nt">&lt;charset&gt;</span>UTF-8<span class="nt">&lt;/charset&gt;</span>
+      <span class="nt">&lt;pattern&gt;</span>%d [%-5level] %logger{35} - %msg%n<span class="nt">&lt;/pattern&gt;</span>
+    <span class="nt">&lt;/encoder&gt;</span>
+  <span class="nt">&lt;/appender&gt;</span>
+
+  <span class="c">&lt;!-- Logger 정의 --&gt;</span>
+  <span class="nt">&lt;root</span> <span class="na">level=</span><span class="s">"INFO"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;appender-ref</span> <span class="na">ref=</span><span class="s">"TEXT_CONSOLE"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;appender-ref</span> <span class="na">ref=</span><span class="s">"TEXT_FILE"</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/root&gt;</span>
+<span class="nt">&lt;/configuration&gt;</span>
+</code></pre></div></div>
+
+<p><strong>Appender</strong>는 로그 기록 작업을 수행하는 클래스입니다.
+단순히 콘솔 화면에 출력하거나(ConsoleAppender), 로그 내역을 파일로 출력하는(FileAppender) 등 여러 appender를 활용하여 로그를 기록할 수 있습니다.
+<code class="language-plaintext highlighter-rouge">&lt;appender&gt;</code> 태그 내부에 정의할 수 있습니다.
+더 자세한 appender에 대해서는 <a href="https://logback.qos.ch/manual/appenders.html">여기</a>에서 확인할 수 있습니다.</p>
+
+<p>로그 메시지 포맷은 <i>‘날짜 [레벨] 로거 - 메시지’</i> 형태로 출력되도록 하였습니다.
+<code class="language-plaintext highlighter-rouge">&lt;pattern&gt;</code> 태그에서 설정할 수 있습니다.
+주로 사용하는 패턴은 아래와 같습니다.</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">%d</code> / <code class="language-plaintext highlighter-rouge">%date</code> : 날짜
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">%d</code> - 2023-07-10 16:27:02,460</li>
+      <li><code class="language-plaintext highlighter-rouge">%date</code> - 2023-07-10 16:27:02,460</li>
+      <li><code class="language-plaintext highlighter-rouge">%date{yyyy-MM-dd HH:mm:ss}</code> - 2023-07-10 16:27:02</li>
+      <li><code class="language-plaintext highlighter-rouge">%date{dd MMM yy HH:mm:ss.SSS}</code> - 10 Sep 23 16:27:02.460</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">%-5level</code>
+    <ul>
+      <li>로그 레벨 (TRACE, DEBUG, INFO, WARN, ERROR)</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">%thread</code>
+    <ul>
+      <li>스레드 이름</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">%logger{n}</code>:
+    <ul>
+      <li>로거 정보. 최대 n자까지 기입합니다.</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">%m</code> / <code class="language-plaintext highlighter-rouge">%msg</code> / <code class="language-plaintext highlighter-rouge">%message</code>
+    <ul>
+      <li>로그 메시지</li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<h1 id="3-logging-each-request">3. Logging each Request</h1>
+
+<p>매 요청마다 request, response 정보(메소드, url 등)를 로깅 하려고 합니다.
+이때 스프링 MVC 중간에 거치는 <code class="language-plaintext highlighter-rouge">HandlerInterceptor</code> 단계에서 로그를 남기려고 합니다.</p>
+
+<p><img src="/img/posts/spring-logging-handler-intercepter.png" style="max-width:720px" /></p>
+
+<p><strong>HandlerInterceptor</strong>는 컨트롤러가 실행되기 이전, 혹은 컨트롤러 이후에 작업을 처리해야 하는 경우에 사용합니다.
+상속받은 <strong><code class="language-plaintext highlighter-rouge">preHandle</code></strong>, <strong><code class="language-plaintext highlighter-rouge">postHandle</code></strong>, <strong><code class="language-plaintext highlighter-rouge">afterCompletion</code></strong> 메소드 내부에 필요한 프로세스를 작성할 수 있습니다.
+메소드별 처리 로직은 아래와 같습니다.</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">preHandle</code>: 컨트롤러로 넘어가기 전에 실행됩니다.</li>
+  <li><code class="language-plaintext highlighter-rouge">postHandle</code>: 컨트롤러의 모든 작업을 마친 후에 실행됩니다. 컨트롤러 처리 중 에러가 발생한 경우 실행되지 않습니다.</li>
+  <li><code class="language-plaintext highlighter-rouge">afterCompletion</code>: 컨트롤러 이후 에러 처리 및 View 렌더링 작업이 마무리되면 실행됩니다.</li>
+</ul>
+
+<p>이를 이용하여 <code class="language-plaintext highlighter-rouge">preHandle</code> 메소드에서는 request 정보를, <code class="language-plaintext highlighter-rouge">afterCompletion</code> 메소드에서는 response 정보를 로깅 하도록 하겠습니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">MatstagramInterceptor</span><span class="p">:</span> <span class="nc">HandlerInterceptor</span> <span class="p">{</span>
+
+    <span class="k">private</span> <span class="kd">val</span> <span class="py">logger</span> <span class="p">=</span> <span class="nc">KotlinLogging</span><span class="p">.</span><span class="nf">logger</span> <span class="p">{}</span>
+
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">preHandle</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="nc">HttpServletRequest</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="nc">HttpServletResponse</span><span class="p">,</span> <span class="n">handler</span><span class="p">:</span> <span class="nc">Any</span><span class="p">):</span> <span class="nc">Boolean</span> <span class="p">{</span>
+        <span class="c1">// Request 로깅</span>
+        <span class="n">logger</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span> <span class="s">"Request ${getRequestURI(request)}"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="k">super</span><span class="p">.</span><span class="nf">preHandle</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">handler</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">afterCompletion</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="nc">HttpServletRequest</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="nc">HttpServletResponse</span><span class="p">,</span> <span class="n">handler</span><span class="p">:</span> <span class="nc">Any</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span> <span class="nc">Exception</span><span class="p">?)</span> <span class="p">{</span>
+        <span class="c1">// Response 로깅</span>
+        <span class="n">logger</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span> <span class="s">"Response ${getRequestURI(request)} - ${response.status}"</span><span class="p">)</span>
+        <span class="k">super</span><span class="p">.</span><span class="nf">afterCompletion</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">ex</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="k">private</span> <span class="k">fun</span> <span class="nf">getRequestURI</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="nc">HttpServletRequest</span><span class="p">):</span> <span class="nc">String</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">if</span> <span class="p">(</span><span class="n">request</span><span class="p">.</span><span class="n">queryString</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
+            <span class="s">"${request.method} ${request.requestURI}?${request.queryString}"</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="s">"${request.method} ${request.requestURI}"</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>로깅 포맷은 <i>Method + URL ( + Query Param)</i> 형태로 구성하였고 응답 시에는 추가로 status까지 넣어주었습니다.
+단순 정보 로깅이므로 로그 레벨은 info로 설정하였습니다.</p>
+
+<p>이제 작성한 interceptor를 등록해 주어야 합니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Configuration</span>
+<span class="kd">class</span> <span class="nc">WebMvcConfiguration</span> <span class="p">:</span> <span class="nc">WebMvcConfigurer</span> <span class="p">{</span>
+
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">addInterceptors</span><span class="p">(</span><span class="n">registry</span><span class="p">:</span> <span class="nc">InterceptorRegistry</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">registry</span><span class="p">.</span><span class="nf">addInterceptor</span><span class="p">(</span><span class="nc">MatstagramInterceptor</span><span class="p">()).</span><span class="nf">addPathPatterns</span><span class="p">(</span><span class="s">"/**"</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">addInterceptors</code> 메소드에서는 interceptor를 내부 registry에 등록할 수 있습니다.
+<code class="language-plaintext highlighter-rouge">"/**"</code> 패턴은 모든 URI 경로에 대해 해당 interceptor를 적용한다는 의미입니다.</p>
+
+<p>어플리케이션 실행 후 API를 호출할 때마다 아래와 같이 로그가 남는 모습을 확인할 수 있습니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>2023-07-10 16:28:52,496 <span class="o">[</span>INFO <span class="o">]</span> c.m.m.c.i.MatstagramInterceptor - Request GET /user/1
+2023-07-10 16:28:52,555 <span class="o">[</span>INFO <span class="o">]</span> c.m.m.c.i.MatstagramInterceptor - Response GET /user/1 - 200
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="4-logging-body-stream">4. Logging Body Stream</h1>
+
+<p>이제 요청 시 넣어주었던 body 및 응답 데이터도 로깅 해봅시다.</p>
+
+<p>다만 이때 문제가 있는데, 해당 데이터는 stream 형태로 되어있는데 한 번밖에 읽지 못합니다.
+즉, 로깅을 하기 위해 preHandle 단계에서 요청 body를 가져와 버리면 정작 필요한 컨트롤러에서는 해당 데이터를 사용할 수 없다는 의미입니다.</p>
+
+<p><img src="/img/posts/spring-logging-request-wrapper.png" style="max-width:720px" /></p>
+
+<p>이를 해결하기 위해서 requst 및 response를 wrapper 클래스로 한 번 감싸주어 처음 읽을때는 내부에 캐싱 해두었다가 이후 호출하는 경우에는 캐싱된 데이터를 반환하도록 하였습니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">ContentCachingRequestWrapper</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="nc">HttpServletRequest</span><span class="p">)</span> <span class="p">:</span> <span class="nc">HttpServletRequestWrapper</span><span class="p">(</span><span class="n">request</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">private</span> <span class="kd">var</span> <span class="py">content</span> <span class="p">=</span> <span class="nc">ByteArrayOutputStream</span><span class="p">()</span>  <span class="c1">// body가 저장될 공간</span>
+
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">getInputStream</span><span class="p">():</span> <span class="nc">ServletInputStream</span> <span class="p">{</span>
+        <span class="nc">IOUtils</span><span class="p">.</span><span class="nf">copy</span><span class="p">(</span><span class="k">super</span><span class="p">.</span><span class="nf">getInputStream</span><span class="p">(),</span> <span class="n">content</span><span class="p">)</span>  <span class="c1">// 최초에 stream을 읽어서 캐싱합니다.</span>
+
+        <span class="k">return</span> <span class="kd">object</span> <span class="err">: </span><span class="nc">ServletInputStream</span><span class="p">()</span> <span class="p">{</span>
+            <span class="k">private</span> <span class="kd">var</span> <span class="py">buffer</span> <span class="p">=</span> <span class="nc">ByteArrayInputStream</span><span class="p">(</span><span class="n">content</span><span class="p">.</span><span class="nf">toByteArray</span><span class="p">())</span>
+            <span class="k">override</span> <span class="k">fun</span> <span class="nf">read</span><span class="p">():</span> <span class="nc">Int</span> <span class="p">=</span> <span class="n">buffer</span><span class="p">.</span><span class="nf">read</span><span class="p">()</span>
+            <span class="k">override</span> <span class="k">fun</span> <span class="nf">isFinished</span><span class="p">():</span> <span class="nc">Boolean</span> <span class="p">=</span> <span class="n">buffer</span><span class="p">.</span><span class="nf">available</span><span class="p">()</span> <span class="p">==</span> <span class="mi">0</span>
+            <span class="k">override</span> <span class="k">fun</span> <span class="nf">isReady</span><span class="p">():</span> <span class="nc">Boolean</span> <span class="p">=</span> <span class="k">true</span>
+            <span class="k">override</span> <span class="k">fun</span> <span class="nf">setReadListener</span><span class="p">(</span><span class="n">listener</span><span class="p">:</span> <span class="nc">ReadListener</span><span class="p">?)</span> <span class="p">=</span> <span class="k">throw</span> <span class="nc">RuntimeException</span><span class="p">(</span><span class="s">"Not implemented"</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="kd">val</span> <span class="py">contentAsByteArray</span><span class="p">:</span> <span class="nc">ByteArray</span>
+        <span class="k">get</span><span class="p">()</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">inputStream</span><span class="p">.</span><span class="nf">readAllBytes</span><span class="p">()</span>  <span class="c1">// 이후 호출시에는 캐시된 body를 반환</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>위와 같이 데이터를 가져오기 위해 <code class="language-plaintext highlighter-rouge">getInputStream()</code>를 호출하는 경우 내부 공간에 미리 캐싱해 두고, 리턴값으로 캐싱된 데이터를 읽어가도록 구성된 <code class="language-plaintext highlighter-rouge">ServletInputStream</code> 클래스를 반환합니다.</p>
+
+<p>이제 request를 작성했던 <code class="language-plaintext highlighter-rouge">ContentCachingRequestWrapper</code>로 감싸주기 위해 필터를 추가합니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Component</span>
+<span class="kd">class</span> <span class="nc">RequestWrappingFilter</span> <span class="p">:</span> <span class="nc">OncePerRequestFilter</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">doFilterInternal</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="nc">HttpServletRequest</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="nc">HttpServletResponse</span><span class="p">,</span> <span class="n">filterChain</span><span class="p">:</span> <span class="nc">FilterChain</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">val</span> <span class="py">wrapRequest</span> <span class="p">=</span> <span class="nc">ContentCachingRequestWrapper</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="kd">val</span> <span class="py">wrapResponse</span> <span class="p">=</span> <span class="nc">ContentCachingResponseWrapper</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        <span class="n">filterChain</span><span class="p">.</span><span class="nf">doFilter</span><span class="p">(</span><span class="n">wrapRequest</span><span class="p">,</span> <span class="n">wrapResponse</span><span class="p">)</span>
+        <span class="n">wrapResponse</span><span class="p">.</span><span class="nf">copyBodyToResponse</span><span class="p">()</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Response에 대응되는 클래스 <code class="language-plaintext highlighter-rouge">ContentCachingResponseWrapper</code>는 이미 스프링 프레임워크 내부에 구현되어 있으므로 그대로 가져와서 사용하도록 합니다.</p>
+
+<p>이전에 생성했던 interceptor에서 다시 로깅 작업을 추가합니다.
+Request body의 경우 POST 메소드와 같이 데이터가 존재하는 경우에만 로깅 하도록 하였습니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">MatstagramInterceptor</span><span class="p">:</span> <span class="nc">HandlerInterceptor</span> <span class="p">{</span>
+
+    <span class="k">private</span> <span class="kd">val</span> <span class="py">logger</span> <span class="p">=</span> <span class="nc">KotlinLogging</span><span class="p">.</span><span class="nf">logger</span> <span class="p">{}</span>
+
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">preHandle</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="nc">HttpServletRequest</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="nc">HttpServletResponse</span><span class="p">,</span> <span class="n">handler</span><span class="p">:</span> <span class="nc">Any</span><span class="p">):</span> <span class="nc">Boolean</span> <span class="p">{</span>
+        <span class="n">logger</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span> <span class="s">"Request ${getRequestURI(request)}"</span><span class="p">)</span>
+        <span class="kd">val</span> <span class="py">wrapRequest</span> <span class="p">=</span> <span class="n">request</span> <span class="k">as</span> <span class="nc">ContentCachingRequestWrapper</span>
+        <span class="kd">val</span> <span class="py">requestBody</span> <span class="p">=</span> <span class="nc">String</span><span class="p">(</span><span class="n">wrapRequest</span><span class="p">.</span><span class="n">contentAsByteArray</span><span class="p">,</span> <span class="nc">Charsets</span><span class="p">.</span><span class="nc">UTF_8</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">requestBody</span><span class="p">.</span><span class="nf">isNotBlank</span><span class="p">())</span> <span class="p">{</span>
+            <span class="n">logger</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="s">"Request Body - $requestBody"</span><span class="p">)</span>  <span class="c1">// 요청 body 로깅</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="k">super</span><span class="p">.</span><span class="nf">preHandle</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">handler</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">afterCompletion</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="nc">HttpServletRequest</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="nc">HttpServletResponse</span><span class="p">,</span> <span class="n">handler</span><span class="p">:</span> <span class="nc">Any</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span> <span class="nc">Exception</span><span class="p">?)</span> <span class="p">{</span>
+        <span class="n">logger</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span> <span class="s">"Response ${getRequestURI(request)} - ${response.status}"</span><span class="p">)</span>
+        <span class="kd">val</span> <span class="py">wrapResponse</span> <span class="p">=</span> <span class="n">response</span> <span class="k">as</span> <span class="nc">ContentCachingResponseWrapper</span>
+        <span class="kd">val</span> <span class="py">responseBody</span> <span class="p">=</span> <span class="nc">String</span><span class="p">(</span><span class="n">wrapResponse</span><span class="p">.</span><span class="n">contentAsByteArray</span><span class="p">,</span> <span class="nc">Charsets</span><span class="p">.</span><span class="nc">UTF_8</span><span class="p">)</span>
+        <span class="n">logger</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="s">"Response Body - $responseBody"</span><span class="p">)</span>  <span class="c1">// 응답 데이터 로깅</span>
+        <span class="k">super</span><span class="p">.</span><span class="nf">afterCompletion</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">ex</span><span class="p">)</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>다시 API를 호출하면 이번엔 요청/응답 데이터까지 기입되는 것을 확인할 수 있습니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>2023-07-10 16:29:03,225 <span class="o">[</span>INFO <span class="o">]</span> c.m.m.c.i.MatstagramInterceptor - Request GET /user/1
+2023-07-10 16:29:03,276 <span class="o">[</span>INFO <span class="o">]</span> c.m.m.c.i.MatstagramInterceptor - Response GET /user/1 - 200
+2023-07-10 16:29:03,276 <span class="o">[</span>INFO <span class="o">]</span> c.m.m.c.i.MatstagramInterceptor - Response Body - <span class="o">{</span><span class="s2">"code"</span>:<span class="s2">"S001"</span>,<span class="s2">"message"</span>:<span class="s2">"성공"</span>,<span class="s2">"data"</span>:<span class="o">{</span><span class="s2">"id"</span>:1,<span class="s2">"userName"</span>: ...
+</code></pre></div></div>
+
+<hr />
+
+<p>References</p>
+
+<ul>
+  <li><a href="https://jsonobject.tistory.com/500">Spring Boot, Kotlin, 로깅 정책 수립 및 방법 정리</a></li>
+  <li><a href="https://okky.kr/articles/890310">OKKY - Spring Boot, Kotlin, 로거 설정하기</a></li>
+  <li><a href="https://logback.qos.ch/manual/layouts.html">Chapter 6: Layouts - Logback</a></li>
+  <li><a href="https://huisam.tistory.com/entry/springlogging">Spring Boot 에서 log를 남기는 방법 - Spring log 남기기 — 천천히 올바르게</a></li>
+  <li><a href="https://mopil.tistory.com/74#%25--%25--%25EC%25--%25AC%25EC%25A-%25--%25EC%25A-%25--%25EC%25-B%25-D%25---%25--%25EC%25--%25-C%25EB%25B-%25--%25EB%25A-%25BF%25--Reqeust%25-C%25--Response%25EB%25-A%25--%25--%25EB%25-B%25A-%25--%25ED%25--%25-C%25EB%25B-%25--%25EB%25A-%25-C%25--%25EC%25-D%25BD%25EC%25-D%25--%25--%25EC%25--%25--%25--%25EC%25-E%25--%25EB%25-B%25A-">[Spring Boot] Request body, Response body 로깅 하는 법 (with 코틀린) — mopil devlog</a></li>
+</ul>
+
+
+      <hr>
+
+      <div id="disqus_thread"></div>
+      <script>
+          (function() {
+          var d = document, s = d.createElement('script');
+          s.src = 'https://miintto-github-io.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+          })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+      <hr>
+
+    </div>
+  </div>
+</div>
+
+
+  <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="footer-content container">
+    <p class="copyright text-muted">Copyright &copy; miintto 2024</p>
+  </div>
+</footer>
+
+
+  <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
+<script src="/assets/scripts.js"></script>
+
+
+  <script src="/assets/vendor/miintto/js/toc.js"></script>
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXXXX-X"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-XXXXXXXXX-X');
+</script>
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+
+<html>
+
+
+
+
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>HTTP status code - miintto.log</title>
+
+  <meta name="description" content="얼마전 회사에서 PR을 리뷰하다가 status 처리 방식에 대한 재미있는 논쟁이 있었습니다. 주요 논지는 우리 자체 서비스의 클라이언트가 아닌 외부에서 호출이 발생한 경우에 어떤 status 정책을 가져가야 하는가에 대한 것 이었습니다.">
+
+  <meta name="google-site-verification" content="wGN_mZVjgAC8sdItYCBTkSMwLrgNSWPY6sicU3MuSQw" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital@1&display=swap">
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://miintto.github.io/docs/http-status">
+  <link rel="alternate" type="application/rss+xml" title="HTTP status code - miintto.log" href="/feed.xml">
+
+  <link rel="apple-touch-icon" href="/img/favicon-128.png">
+  <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+
+  <meta prefix="og: http://ogp.me/ns#" property="og:site_name" content="miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:type" content="blog"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:title" content="HTTP status code - miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:description" content="얼마전 회사에서 PR을 리뷰하다가 status 처리 방식에 대한 재미있는 논쟁이 있었습니다. 주요 논지는 우리 자체 서비스의 클라이언트가 아닌 외부에서 호출이 발생한 경우에 어떤 status 정책을 가져가야 하는가에 대한 것 이었습니다."/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:locale" content="ko_KR"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:url" content="https://miintto.github.io/docs/http-status"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:image" content="/img/thumbnails/http-status.png">
+
+</head>
+
+
+<body>
+
+  <!-- Navigation -->
+
+<nav class="navbar" style="background-color: white;">
+
+  <div class="navbar-content container">
+    <a class="navbar-brand" href="/">miintto.log</a>
+    <button class="navbar-button" id="toggleButton" type="button" data-toggle="collapse" aria-controls="navbarResponsive" aria-expanded="false">
+      MENU
+      <i class="fa fa-bars"></i>
+    </button>
+    <div class="navbar-nav" id="navbarResponsive" aria-hidden="true">
+      <div class="nav-item">
+        <a class="nav-link" href="/about">ABOUT</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/posts">POSTS</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/archive">ARCHIVES</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+  <div class="article">
+  <div class="article-wrapper">
+    <div class="article-header">
+      <div class="article-info">
+        <h1>HTTP status code</h1>
+        <div class="post-tags">
+          <p>network</p><p>http</p>
+        </div>
+        <div class="article-meta">
+          2022.04.05 &middot; <span class="reading-time" title="Estimated read time">
+  
+   4 mins  read </span>
+
+        </div>
+      </div>
+      <div class="article-banner"">
+        <img src="/img/thumbnails/http-status.png">
+      </div>
+    </div>
+
+    <div class="article-content">
+      <aside>
+  <div class="section-toc">
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h1"><a href="#2xx">[2XX]</a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#200---ok">200 - OK</a></li>
+<li class="toc-entry toc-h2"><a href="#201---created">201 - Created</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h1"><a href="#4xx">[4XX]</a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#400---bad-request">400 - Bad Request</a></li>
+<li class="toc-entry toc-h2"><a href="#401---unauthorized">401 - Unauthorized</a></li>
+<li class="toc-entry toc-h2"><a href="#403---forbidden">403 - Forbidden</a></li>
+<li class="toc-entry toc-h2"><a href="#405---method-not-allowed">405 - Method Not Allowed</a></li>
+<li class="toc-entry toc-h2"><a href="#422---unprocessable-entity">422 - Unprocessable Entity</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h1"><a href="#5xx">[5XX]</a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#500---internal-server-error">500 - Internal Server Error</a></li>
+</ul>
+</li>
+</ul>
+  </div>
+</aside>
+
+
+      <p>얼마전 회사에서 PR을 리뷰하다가 status 처리 방식에 대한 재미있는 논쟁이 있었습니다.
+주요 논지는 우리 자체 서비스의 클라이언트가 아닌 외부에서 호출이 발생한 경우에 어떤 status 정책을 가져가야 하는가에 대한 것 이었습니다.</p>
+
+<p>우리 서비스에 한 외부 플랫폼이 입점했는데 해당 업체에게 일부 상품에 대한 사용 완료 및 환불 등을 호출 할 수 있도록 권한을 주었습니다.
+API 연동 당시에는 큰 이슈 없이 순조롭게 마무리 되었지만, 시간이 지나 저희 서비스의 내부 정책 변경 등으로 일부 케이스에 대해 환불에 제약이 생겼습니다.
+여전히 외부에서는 해당 API를 호출하고 있지만 간헐적으로 환불이 동작하지 않고 에러가 발생하게 됩니다.
+이러한 경우 어떠한 상태 코드를 반환해야 하는지가 큰 논점이었습니다.</p>
+
+<p>한 의견은 API 연동 당시 규격대로 호출하는 클라이언트 단에서는 잘못한 게 없으므로 에러의 원인을 우리 내부 이슈로 보아 400번 보다는 500번이 적합하하다는 주장이었고,
+다른 하나는 어쨋튼 비즈니스 로직단에서 발생하는 에러는 400 에러로 처리해야 하며 500 에러는 개발자들이 예측하지 못하는 서버의 이슈를 나타내는데 적합하지 않은가 하는 주장이었습니다.</p>
+
+<p>서로의 머리를 맞대고 긴 고민 끝에 결국 422번 에러로 처리하는 것으로 결론이 났습니다.
+사실 그 분이 저보다 경력도 훨씬 더 많아서 웬만하면 내 의견을 굽히는 방향으로 가려 했으나 건강한 토론 끝에 꽤 의미있는 결론이 나오게 되었습니다.</p>
+
+<p>이를 계기로 정말 많은 HTTP status 를 찾아보고 또 접하게 되었는데, 생각보다 요긴한 내용도 많을 것 같아 이번 기회에 정리해 봅니다.
+모든 status를 다 다루지는 않았고 실무에 요긴하게 쓰일 것 같은 내용만 다루었습니다.</p>
+
+<hr />
+
+<h1 id="2xx">[2XX]</h1>
+
+<h2 id="200---ok">200 - OK</h2>
+
+<p>정상적으로 요청을 수행한 경우 나타냅니다. 특별히 문제가 없는 경우 대부분의 성공 응답은 200번으로 처리하여도 무방합니다.</p>
+
+<h2 id="201---created">201 - Created</h2>
+
+<p>요청은 성공적으로 수행되었지만 그 과정에서 데이터가 추가적으로 생성한 경우에 해당됩니다.
+회원 가입, 상품 등록 및 쿠폰 발급 등이 성공적으로 완료된 경우를 예시로 들 수 있습니다.</p>
+
+<hr />
+
+<h1 id="4xx">[4XX]</h1>
+
+<h2 id="400---bad-request">400 - Bad Request</h2>
+
+<p>클라이언트에서 올바른 요청을 보내지 않은 경우 해당 응답을 반환합니다.
+대다수의 클라이언트 에러는 보통 status 400 으로 처리를 하고 디테일한 상황은 내부 body 의 상세 코드로 구분하는 경우가 많습니다.</p>
+
+<h2 id="401---unauthorized">401 - Unauthorized</h2>
+
+<p>일반적으로 un-authorized 라는 단어는 권한이 없거나 허가를 받지 않은 상태를 설명하는데 사용됩니다.
+이러한 의미 때문에 뒤에서 설명할 403 에러와 많이 혼동되는데, 여기서 허가(authorization)는 권한(permission) 보다는 인증(authentication)에 대한 조건에 더 가깝습니다.</p>
+
+<p>간단히 말해 인증 정보에 대한 클라이언트 에러인 경우 401 status를 응답합니다.
+세션이 만료된 경우, 혹은 인증 토큰이 올바르지 않거나 누락된 경우가 이에 해당됩니다.
+<em>Unauthorized</em> 라는 단어 때문에 언듯 보면 헷갈릴 수 있는데 엄밀히 말하자면 <em>Unauthenticated</em> 이 좀 더 명확하게 설명해 준다고 할 수 있습니다.</p>
+
+<h2 id="403---forbidden">403 - Forbidden</h2>
+
+<p>컨텐츠에 접근할 권한(permission)이 없는 경우인데, 401과는 구분되어 인증은 정상적으로 완료되었으나 컨텐츠를 열람할 자격이 되지 않는 경우에 해당됩니다.
+예를 들면 VIP 고객만 접근 가능한 페이지에 일반 고객이 접근한 경우, 인증은 정상적으로 진행되어 “일반 고객”으로 판별되었으나 페이지에 접근할 권한이 부여되지 않아 403번 상태를 발생하게 됩니다.</p>
+
+<h2 id="405---method-not-allowed">405 - Method Not Allowed</h2>
+
+<p>허용되지 않은 메소드로 요청을 보낸 경우입니다.
+웬만한 프레임워크에서는 정의되지 않은 메소드로 호출하는 경우 해당 405 status를 반환하도록 되어있습니다.</p>
+
+<h2 id="422---unprocessable-entity">422 - Unprocessable Entity</h2>
+
+<p>요청의 content-type과 입력받은 파라미터들은 정상적인 형태로 보여지지만 그 값을 검증하는 과정 중 비즈니스 로직에서 벗어나는 경우에 해당됩니다.
+400번으로 처리하고 있는 대부분의 예외들은 엄밀히 따져보면 422번으로 구분되는 경우가 많을 것입니다.
+FastAPI 프레임워크에서는 기본적으로 validation 에러를 422번으로 처리하고 있습니다.</p>
+
+<hr />
+
+<h1 id="5xx">[5XX]</h1>
+
+<h2 id="500---internal-server-error">500 - Internal Server Error</h2>
+
+<p>요청 처리 중 서버 자체에 문제가 생긴 경우입니다. 예상할 수 있는 예외 케이스는 400번대로 처리하여 500번 에러는 최대한 내보내지 않도록 해야 합니다.</p>
+
+<hr />
+
+<p>Reference</p>
+
+<ul>
+  <li><a href="https://stackoverflow.com/questions/3297048/403-forbidden-vs-401-unauthorized-http-responses">403 Forbidden vs 401 Unauthorized HTTP responses</a></li>
+  <li><a href="https://greenbytes.de/tech/webdav/rfc4918.html#rfc.section.11.2">HTTP Extensions for Web Distributed Authoring and Versioning (WebDAV)</a></li>
+</ul>
+
+
+      <hr>
+
+      <div id="disqus_thread"></div>
+      <script>
+          (function() {
+          var d = document, s = d.createElement('script');
+          s.src = 'https://miintto-github-io.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+          })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+      <hr>
+
+    </div>
+  </div>
+</div>
+
+
+  <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="footer-content container">
+    <p class="copyright text-muted">Copyright &copy; miintto 2024</p>
+  </div>
+</footer>
+
+
+  <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
+<script src="/assets/scripts.js"></script>
+
+
+  <script src="/assets/vendor/miintto/js/toc.js"></script>
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXXXX-X"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-XXXXXXXXX-X');
+</script>
+
+
+
+</body>
+
+</html>

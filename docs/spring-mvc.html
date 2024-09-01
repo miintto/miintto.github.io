@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+
+<html>
+
+
+
+
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>Spring MVC 구조 - miintto.log</title>
+
+  <meta name="description" content="일반적으로 MVC 라고 하면 어플리케이션의 구성 요소를 역할에 따라 모델, 뷰, 컨트롤러로 구분하는 소프트웨어 디자인 패턴을 의미합니다. 스프링에서도 MVC 패턴에 기반을 둔 모듈을 제공하여 쉽게 웹 어플리케이션을 작성할 수 있도록 지원하고 있습니다. 아래에서 예시로 간단한 API...">
+
+  <meta name="google-site-verification" content="wGN_mZVjgAC8sdItYCBTkSMwLrgNSWPY6sicU3MuSQw" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital@1&display=swap">
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://miintto.github.io/docs/spring-mvc">
+  <link rel="alternate" type="application/rss+xml" title="Spring MVC 구조 - miintto.log" href="/feed.xml">
+
+  <link rel="apple-touch-icon" href="/img/favicon-128.png">
+  <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+
+  <meta prefix="og: http://ogp.me/ns#" property="og:site_name" content="miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:type" content="blog"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:title" content="Spring MVC 구조 - miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:description" content="일반적으로 MVC 라고 하면 어플리케이션의 구성 요소를 역할에 따라 모델, 뷰, 컨트롤러로 구분하는 소프트웨어 디자인 패턴을 의미합니다. 스프링에서도 MVC 패턴에 기반을 둔 모듈을 제공하여 쉽게 웹 어플리케이션을 작성할 수 있도록 지원하고 있습니다. 아래에서 예시로 간단한 API..."/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:locale" content="ko_KR"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:url" content="https://miintto.github.io/docs/spring-mvc"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:image" content="/img/thumbnails/spring-mvc.png">
+
+</head>
+
+
+<body>
+
+  <!-- Navigation -->
+
+<nav class="navbar" style="background-color: white;">
+
+  <div class="navbar-content container">
+    <a class="navbar-brand" href="/">miintto.log</a>
+    <button class="navbar-button" id="toggleButton" type="button" data-toggle="collapse" aria-controls="navbarResponsive" aria-expanded="false">
+      MENU
+      <i class="fa fa-bars"></i>
+    </button>
+    <div class="navbar-nav" id="navbarResponsive" aria-hidden="true">
+      <div class="nav-item">
+        <a class="nav-link" href="/about">ABOUT</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/posts">POSTS</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/archive">ARCHIVES</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+  <div class="article">
+  <div class="article-wrapper">
+    <div class="article-header">
+      <div class="article-info">
+        <h1>Spring MVC 구조</h1>
+        <div class="post-tags">
+          <p>spring</p><p>mvc</p><p>controller</p><p>entity</p>
+        </div>
+        <div class="article-meta">
+          2023.06.13 &middot; <span class="reading-time" title="Estimated read time">
+  
+   13 mins  read </span>
+
+        </div>
+      </div>
+      <div class="article-banner"">
+        <img src="/img/thumbnails/spring-mvc.png">
+      </div>
+    </div>
+
+    <div class="article-content">
+      <aside>
+  <div class="section-toc">
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h1"><a href="#1-spring-mvc-lifecycle">1. Spring MVC Lifecycle</a></li>
+<li class="toc-entry toc-h1"><a href="#2-controller">2 Controller</a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#21-의존성-추가">2.1 의존성 추가</a></li>
+<li class="toc-entry toc-h2"><a href="#22-controller-작성">2.2 Controller 작성</a></li>
+<li class="toc-entry toc-h2"><a href="#23-controller-vs-restcontroller">2.3 Controller VS RestController</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h1"><a href="#3-model">3. Model</a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#31-의존성-추가">3.1 의존성 추가</a></li>
+<li class="toc-entry toc-h2"><a href="#32-entity">3.2 Entity</a></li>
+<li class="toc-entry toc-h2"><a href="#32-repository">3.2 Repository</a></li>
+<li class="toc-entry toc-h2"><a href="#33-service">3.3 Service</a></li>
+</ul>
+</li>
+</ul>
+  </div>
+</aside>
+
+
+      <p>일반적으로 <strong>MVC</strong> 라고 하면 어플리케이션의 구성 요소를 역할에 따라 <strong>모델</strong>, <strong>뷰</strong>, <strong>컨트롤러</strong>로 구분하는 소프트웨어 디자인 패턴을 의미합니다.
+스프링에서도 MVC 패턴에 기반을 둔 모듈을 제공하여 쉽게 웹 어플리케이션을 작성할 수 있도록 지원하고 있습니다.
+아래에서 예시로 간단한 API를 만들어 보면서 스프링 MVC의 기본적인 구조를 살펴봅시다.</p>
+
+<hr />
+
+<h1 id="1-spring-mvc-lifecycle">1. Spring MVC Lifecycle</h1>
+
+<p>개발자가 주로 작성하는 부분은 컨트롤러 이후 로직이지만, 클라이언트로부터 들어온 요청은 스프링 내부 여러 구성 요소들을 거쳐 컨트롤러에 도달하게 됩니다.
+도식도를 그려보면 대략 아래와 같습니다.</p>
+
+<p><img src="/img/posts/spring-mvc-lifecycle.png" style="max-width:720px" /></p>
+
+<ol>
+  <li>어플리케이션으로 들어온 요청은 여러 Filter들을 거쳐서 <code class="language-plaintext highlighter-rouge">DispatcherServlet</code>에 도달합니다.</li>
+  <li>등록된 <code class="language-plaintext highlighter-rouge">HandlerMapping</code>을 모두 조회하여 요청에 알맞은 핸들러(Controller)를 가져옵니다.</li>
+  <li>해당 핸들러를 실행할 수 있는 <code class="language-plaintext highlighter-rouge">HandlerAdapter</code> 를 가져옵니다.</li>
+  <li><code class="language-plaintext highlighter-rouge">HandlerAdapter</code>의 <code class="language-plaintext highlighter-rouge">handle()</code> 메소드를 호출하여 핸들러를 실행후 <code class="language-plaintext highlighter-rouge">ModelAndView</code> 객체를 반환합니다.</li>
+  <li><code class="language-plaintext highlighter-rouge">ModelAndView</code> 객체가 null이 아닌 경우 <code class="language-plaintext highlighter-rouge">ViewResolver</code>로부터 매칭되는 <code class="language-plaintext highlighter-rouge">View</code>를 가져와 렌더링합니다.</li>
+  <li>실행 중 예외가 발생한 경우 <code class="language-plaintext highlighter-rouge">HandlerExceptionResolver</code>에서 처리합니다.</li>
+  <li>처리된 응답은 다시 Filter를 거쳐서 클라이언트로 반환됩니다.</li>
+</ol>
+
+<p>아래는 <code class="language-plaintext highlighter-rouge">DispatcherServlet</code> 클래스의 일부분을 가져왔습니다.
+<code class="language-plaintext highlighter-rouge">doDispatch()</code> 메소드에서 주요 과정이 이루어집니다.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// org.springframework.web.servlet.DispatcherServlet.java</span>
+
+<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doDispatch</span><span class="o">(</span><span class="nc">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="nc">HttpServletResponse</span> <span class="n">response</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="n">processedRequest</span> <span class="o">=</span> <span class="n">checkMultipart</span><span class="o">(</span><span class="n">request</span><span class="o">);</span>
+        <span class="n">multipartRequestParsed</span> <span class="o">=</span> <span class="o">(</span><span class="n">processedRequest</span> <span class="o">!=</span> <span class="n">request</span><span class="o">);</span>
+
+        <span class="c1">// HandlerMapping에서 요청에 알맞은 핸들러 조회</span>
+        <span class="n">mappedHandler</span> <span class="o">=</span> <span class="n">getHandler</span><span class="o">(</span><span class="n">processedRequest</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">mappedHandler</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">noHandlerFound</span><span class="o">(</span><span class="n">processedRequest</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="c1">// 핸들러 실행 가능한 어댑터 조회</span>
+        <span class="nc">HandlerAdapter</span> <span class="n">ha</span> <span class="o">=</span> <span class="n">getHandlerAdapter</span><span class="o">(</span><span class="n">mappedHandler</span><span class="o">.</span><span class="na">getHandler</span><span class="o">());</span>
+
+        <span class="nc">String</span> <span class="n">method</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getMethod</span><span class="o">();</span>
+        <span class="kt">boolean</span> <span class="n">isGet</span> <span class="o">=</span> <span class="nc">HttpMethod</span><span class="o">.</span><span class="na">GET</span><span class="o">.</span><span class="na">matches</span><span class="o">(</span><span class="n">method</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">isGet</span> <span class="o">||</span> <span class="nc">HttpMethod</span><span class="o">.</span><span class="na">HEAD</span><span class="o">.</span><span class="na">matches</span><span class="o">(</span><span class="n">method</span><span class="o">))</span> <span class="o">{</span>
+            <span class="kt">long</span> <span class="n">lastModified</span> <span class="o">=</span> <span class="n">ha</span><span class="o">.</span><span class="na">getLastModified</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">mappedHandler</span><span class="o">.</span><span class="na">getHandler</span><span class="o">());</span>
+            <span class="k">if</span> <span class="o">(</span><span class="k">new</span> <span class="nc">ServletWebRequest</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">).</span><span class="na">checkNotModified</span><span class="o">(</span><span class="n">lastModified</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">isGet</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">return</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="c1">// 등록된 HandlerIntercepter들의 preHandle 메소드 실행</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">mappedHandler</span><span class="o">.</span><span class="na">applyPreHandle</span><span class="o">(</span><span class="n">processedRequest</span><span class="o">,</span> <span class="n">response</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="c1">// 해당 부분에서 Controller 실행</span>
+        <span class="n">mv</span> <span class="o">=</span> <span class="n">ha</span><span class="o">.</span><span class="na">handle</span><span class="o">(</span><span class="n">processedRequest</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">mappedHandler</span><span class="o">.</span><span class="na">getHandler</span><span class="o">());</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">asyncManager</span><span class="o">.</span><span class="na">isConcurrentHandlingStarted</span><span class="o">())</span> <span class="o">{</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="n">applyDefaultViewName</span><span class="o">(</span><span class="n">processedRequest</span><span class="o">,</span> <span class="n">mv</span><span class="o">);</span>
+        <span class="c1">// 등록된 HandlerIntercepter들의 postHandle 메소드 실행</span>
+        <span class="n">mappedHandler</span><span class="o">.</span><span class="na">applyPostHandle</span><span class="o">(</span><span class="n">processedRequest</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">mv</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">dispatchException</span> <span class="o">=</span> <span class="n">ex</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">catch</span> <span class="o">(</span><span class="nc">Throwable</span> <span class="n">err</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">dispatchException</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NestedServletException</span><span class="o">(</span><span class="s">"Handler dispatch failed"</span><span class="o">,</span> <span class="n">err</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="c1">// 실행 중 exception이 발생한 경우 에러 처리</span>
+    <span class="c1">// 매칭되는 View 렌더링</span>
+    <span class="c1">// HandlerIntercepter들의 afterCompletion 메소드 실행</span>
+    <span class="n">processDispatchResult</span><span class="o">(</span><span class="n">processedRequest</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">mappedHandler</span><span class="o">,</span> <span class="n">mv</span><span class="o">,</span> <span class="n">dispatchException</span><span class="o">);</span>
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="2-controller">2 Controller</h1>
+
+<p>이제 간단한 API를 작성해 봅시다.
+기본적으로 루트 <code class="language-plaintext highlighter-rouge">GET /</code> 경로 호출시 ‘ok’ 응답을 반환하도록 설계하려고 합니다.</p>
+
+<h2 id="21-의존성-추가">2.1 의존성 추가</h2>
+
+<p>스프링 MVC를 사용하기 위해 <code class="language-plaintext highlighter-rouge">build.gradle.kts</code> 파일에 <strong>spring-boot-starter-web</strong> 의존성을 추가합니다.
+해당 의존성에는 톰캣(Tomcat)과 같이 MVC 기반의 RESTful 어플리케이션을 만들기 위한 구성 요소들이 포함되어 있습니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">dependencies</span> <span class="p">{</span>
+    <span class="nf">implementation</span><span class="p">(</span><span class="s">"org.springframework.boot:spring-boot-starter-web"</span><span class="p">)</span>  <span class="c1">// 추가</span>
+    <span class="o">..</span><span class="p">.</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>위와 같이 필요할 때마다 일일이 의존성을 추가해도 되지만,
+<a href="https://start.spring.io">Spring Initializer</a> 사이트에서 초기 프로젝트를 만들 때 기본적으로 많이 사용하는 의존성들을 선택한 채로 생성할 수도 있습니다.</p>
+
+<p>해당 의존성 추가 후 어플리케이션 실행시 톰캣 서버가 구동되어서 임의로 중지할 때까지 종료되지 않고 계속 실행됩니다.
+기본적으로 8080 포트가 활성화됩니다.</p>
+
+<h2 id="22-controller-작성">2.2 Controller 작성</h2>
+
+<p>새로운 패키지를 만들고 컨트롤러 클래스를 생성합니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>└── com.miintto.matstagram
+    ├── api
+    │   └── home
+    │       └── HomeController  <span class="c"># 생성</span>
+    └── MatstagramApplication.kt
+</code></pre></div></div>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@RestController</span>
+<span class="kd">class</span> <span class="nc">HomeController</span> <span class="p">{</span>
+    <span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/"</span><span class="p">)</span>
+    <span class="k">fun</span> <span class="nf">index</span><span class="p">()</span> <span class="p">=</span> <span class="nc">ResponseEntity</span><span class="p">&lt;</span><span class="nc">String</span><span class="p">&gt;(</span><span class="s">"ok"</span><span class="p">,</span> <span class="nc">HttpStatus</span><span class="p">.</span><span class="nc">OK</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">@RestController</code> 어노테이션을 입력하면 해당 클래스는 컨트롤러로 지정됩니다.
+또한 <code class="language-plaintext highlighter-rouge">@GetMapping</code> 어노테이션을 등록하면 해당하는 uri 및 메소드는 <code class="language-plaintext highlighter-rouge">HandlerMapping</code> 클래스 내부 registry에 등록됩니다.
+등록된 uri는 클라이언트로부터 요청이 왔을때 요청 uri와 비교하여 일치하는 핸들러를 찾을 때 사용됩니다.</p>
+
+<h2 id="23-controller-vs-restcontroller">2.3 Controller VS RestController</h2>
+
+<p>두 어노테이션 <code class="language-plaintext highlighter-rouge">@Controller</code>, <code class="language-plaintext highlighter-rouge">@RestController</code>은 특정 클래스를 컨트롤러로 명시할 때 사용하지만 미묘한 차이가 있습니다.</p>
+
+<p><strong>Controller</strong>는 기본적으로 View를 렌더링 하기 위해 사용합니다.
+위에서 설명했듯이 <code class="language-plaintext highlighter-rouge">HandlerAdapter</code>의 실행 결과로 <code class="language-plaintext highlighter-rouge">ModelAndView</code> 객체가 반환된다고 했는데, 그 내부에 ViewName을 가지고 있습니다.
+해당 값은 컨트롤러 메소드에서 반환값이 스트링(string)인 경우 그 스트링이 ViewName 으로 지정됩니다.
+그 후 <code class="language-plaintext highlighter-rouge">ViewResolver</code>가 ViewName과 일치하는 <code class="language-plaintext highlighter-rouge">View</code>를 가져와 렌더링 합니다.</p>
+
+<p>이때 만일 <code class="language-plaintext highlighter-rouge">View</code>를 사용하지 않고 해당 스트링을 그대로 반환하고 싶다면 <code class="language-plaintext highlighter-rouge">@ResponseBody</code> 어노테이션을 사용해야합니다.
+해당 어노테이션을 메소드에 기입하면 추가적인 렌더링 과정 없이 그 문자열을 응답으로 내려줍니다.
+꼭 String에만 국한되어있는건 아니고 객체를 응답하는 경우에도 해당 방법이 사용됩니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Controller</span>
+<span class="kd">class</span> <span class="nc">HomeController</span> <span class="p">{</span>
+    <span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/"</span><span class="p">)</span>
+    <span class="nd">@ResponseBody</span> <span class="k">fun</span> <span class="nf">index</span><span class="p">()</span> <span class="p">=</span> <span class="s">"ok"</span>
+</code></pre></div></div>
+
+<p><strong>RestController</strong>는 여기서 <code class="language-plaintext highlighter-rouge">@Controller</code>와 <code class="language-plaintext highlighter-rouge">@ResponseBody</code>가 합쳐진 역할을 합니다.
+굳이 어노테이션을 두 개 적을 필요 없이 <code class="language-plaintext highlighter-rouge">@RestController</code> 하나만으로 같은 효과를 낼 수 있습니다.
+아래 코드는 바로 위에서 정의한 컨트롤러와 동일하게 동작합니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@RestController</span>
+<span class="kd">class</span> <span class="nc">HomeController</span> <span class="p">{</span>
+    <span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/"</span><span class="p">)</span>
+    <span class="k">fun</span> <span class="nf">index</span><span class="p">()</span> <span class="p">=</span> <span class="s">"ok"</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">RestController</code>에서는 단순히 스트링으로만 반환하는 경우 언제나 Http 200으로만 응답됩니다.
+예제에서는 <code class="language-plaintext highlighter-rouge">ResponseEntity</code> 객체를 이용하여 응답을 반환하였는데, 해당 객체를 이용하면 Http Status, 헤더 등의 정보를 상황에 알맞게 관리할 수 있습니다.</p>
+
+<hr />
+
+<h1 id="3-model">3. Model</h1>
+
+<p>이번에는 MVC에서 M에 해당하는 <strong>모델</strong>(Model)에 집중해봅시다.
+모델은 데이터 저장소를 정의하고, 저장소에서 가져온 데이터를 가공할 수 있는 기능을 제공합니다.
+일반적으로 데이터베이스와 밀접하게 관련이 있습니다.
+모델에서 가져온 데이터는 컨트롤러(Controller)에 전달되어 뷰(View)에 보여지게 됩니다.</p>
+
+<h2 id="31-의존성-추가">3.1 의존성 추가</h2>
+
+<p>데이터베이스와 연결하기 위해 아래와 같은 의존성들을 추가해줍니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">plugins</span> <span class="p">{</span>
+    <span class="o">..</span><span class="p">.</span>
+    <span class="nf">kotlin</span><span class="p">(</span><span class="s">"plugin.jpa"</span><span class="p">)</span> <span class="n">version</span> <span class="s">"1.6.21"</span>  <span class="c1">// 추가</span>
+<span class="p">}</span>
+
+<span class="nf">dependencies</span> <span class="p">{</span>
+    <span class="nf">implementation</span><span class="p">(</span><span class="s">"org.springframework.boot:spring-boot-starter-data-jpa"</span><span class="p">)</span>  <span class="c1">// 추가</span>
+    <span class="nf">implementation</span><span class="p">(</span><span class="s">"org.springframework.boot:spring-boot-starter-jdbc"</span><span class="p">)</span>  <span class="c1">// 추가</span>
+    <span class="nf">implementation</span><span class="p">(</span><span class="s">"org.postgresql:postgresql"</span><span class="p">)</span>  <span class="c1">// 추가</span>
+    <span class="o">..</span><span class="p">.</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><strong>spring-boot-starter-data-jpa</strong>를 추가하면 자바 ORM으로 JPA 및 Hibernate를 사용할 수 있습니다.
+<strong>spring-boot-starter-jdbc</strong>에는 자바 프로그램과 DB를 연결해주는 인터페이스가 포함되어 있습니다.
+<strong>org.postgresql</strong>은 데이터베이스와 연결할 드라이버를 위한 라이브러리입니다.</p>
+
+<p>DB 연결을 위해 설정 파일에 아래와 같이 작성합니다.</p>
+
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># application-local.yml</span>
+<span class="na">spring</span><span class="pi">:</span>
+  <span class="na">datasource</span><span class="pi">:</span>
+    <span class="na">driver-class-name</span><span class="pi">:</span> <span class="s">org.postgresql.Driver</span>
+    <span class="na">url</span><span class="pi">:</span> <span class="s">jdbc:postgresql://localhost:5432/dbname</span>
+    <span class="na">username</span><span class="pi">:</span> <span class="s">user</span>
+    <span class="na">password</span><span class="pi">:</span> <span class="s">password</span>
+</code></pre></div></div>
+
+<h2 id="32-entity">3.2 Entity</h2>
+
+<p><strong>엔티티</strong>(Entity)는 데이터베이스와의 연관 관계를 정의한 클래스입니다.
+보통 하나의 테이블에 하나의 엔티티가 매핑됩니다.</p>
+
+<p>아래와 같이 회원 테이블 스키마에 알맞게 정의할 수 있습니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">enum</span> <span class="kd">class</span> <span class="nc">UserPermission</span> <span class="p">{</span>
+    <span class="nc">ANONYMOUS</span><span class="p">,</span>
+    <span class="nc">NORMAL</span><span class="p">,</span>
+    <span class="nc">ADMIN</span>
+<span class="p">}</span>
+
+<span class="nd">@Entity</span>
+<span class="nd">@Table</span><span class="p">(</span><span class="n">name</span> <span class="p">=</span> <span class="s">"t_auth_user"</span><span class="p">)</span>
+<span class="kd">class</span> <span class="nc">AuthUser</span> <span class="p">(</span>
+
+    <span class="nd">@Id</span>
+    <span class="nd">@GeneratedValue</span><span class="p">(</span><span class="n">strategy</span> <span class="p">=</span> <span class="nc">GenerationType</span><span class="p">.</span><span class="nc">IDENTITY</span><span class="p">)</span>
+    <span class="kd">var</span> <span class="py">id</span><span class="p">:</span> <span class="nc">Long</span> <span class="p">=</span> <span class="mi">0</span><span class="p">,</span>
+
+    <span class="kd">var</span> <span class="py">userName</span><span class="p">:</span> <span class="nc">String</span><span class="p">,</span>
+
+    <span class="kd">var</span> <span class="py">userEmail</span><span class="p">:</span> <span class="nc">String</span><span class="p">,</span>
+
+    <span class="kd">var</span> <span class="py">password</span><span class="p">:</span> <span class="nc">String</span><span class="p">?</span> <span class="p">=</span> <span class="k">null</span><span class="p">,</span>
+
+    <span class="nd">@Enumerated</span><span class="p">(</span><span class="nc">EnumType</span><span class="p">.</span><span class="nc">STRING</span><span class="p">)</span>
+    <span class="kd">var</span> <span class="py">userPermission</span><span class="p">:</span> <span class="nc">UserPermission</span> <span class="p">=</span> <span class="nc">UserPermission</span><span class="p">.</span><span class="nc">NORMAL</span><span class="p">,</span>
+
+    <span class="kd">var</span> <span class="py">isActive</span><span class="p">:</span> <span class="nc">Boolean</span> <span class="p">=</span> <span class="k">true</span><span class="p">,</span>
+
+    <span class="kd">var</span> <span class="py">createdDtm</span><span class="p">:</span> <span class="nc">LocalDateTime</span> <span class="p">=</span> <span class="nc">LocalDateTime</span><span class="p">.</span><span class="nf">now</span><span class="p">()</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>위와 같이 <code class="language-plaintext highlighter-rouge">@Entity</code> 어노테이션을 작성하여 해당 클래스가 엔티티라는 것을 명시할 수 있습니다.
+일반적으로 엔티티 클래스에는 setter를 설정하지 않는 것이 관례입니다.</p>
+
+<p>엔티티는 class로 작성할 수도 있고 data class로 작성할 수도 있지만, 보통은 class를 사용하는 것을 권장합니다.</p>
+
+<h2 id="32-repository">3.2 Repository</h2>
+
+<p><strong>Repository</strong>는 엔티티를 이용해 데이터를 가지고 올 수 있는 인터페이스입니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Repository</span>
+<span class="kd">interface</span> <span class="nc">AuthUserRepository</span> <span class="p">:</span> <span class="nc">JpaRepository</span><span class="p">&lt;</span><span class="nc">AuthUser</span><span class="p">,</span> <span class="nc">Long</span><span class="p">&gt;</span>
+</code></pre></div></div>
+
+<p>일반적으로 <code class="language-plaintext highlighter-rouge">JpaRepository</code>를 상속받아 사용합니다.
+&lt;&gt; 내부에는 엔티티 클래스와 pk 필드 타입을 입력합니다.
+또한 <code class="language-plaintext highlighter-rouge">@Repository</code> 어노테이션을 선언하여 해당 인터페이스가 Repository인것을 나타낼 수 있습니다.</p>
+
+<p>내부에 아무 메소드도 정의하지 않았지만 기본적으로 사용할 수 있는 표준 메소드들이 있습니다.
+또한 추가적으로 필요한 메소드는 인터페이스 내부에서 선언하여 활용할 수 있습니다.</p>
+
+<h2 id="33-service">3.3 Service</h2>
+
+<p>비즈니스의 로직이 복잡해지면 컨트롤러에서만 처리하는 것이 아니라 <strong>서비스</strong>(Service)라는 하나의 계층을 더 만들어서 해당 부분에서 처리합니다.</p>
+
+<p>아래 회원 테이블에서 특정 유저의 정보를 조회하는 API를 작성하였습니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Service</span>
+<span class="kd">class</span> <span class="nc">UserService</span> <span class="p">{</span>
+
+    <span class="nd">@Autowired</span>
+    <span class="k">lateinit</span> <span class="kd">var</span> <span class="py">authUserRepository</span><span class="p">:</span> <span class="nc">AuthUserRepository</span>
+
+    <span class="k">fun</span> <span class="nf">getUserById</span><span class="p">(</span><span class="n">userId</span><span class="p">:</span> <span class="nc">Long</span><span class="p">):</span> <span class="nc">AuthUser</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">authUserRepository</span><span class="p">.</span><span class="nf">findByIdOrNull</span><span class="p">(</span><span class="n">userId</span><span class="p">)</span>
+            <span class="o">?:</span> <span class="k">throw</span> <span class="nc">Exception</span><span class="p">(</span><span class="s">"User does not exist!"</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>서비스 클래스에는 <code class="language-plaintext highlighter-rouge">@Service</code> 어노테이션을 붙여줍니다.
+기능적으로 <code class="language-plaintext highlighter-rouge">@Repository</code>, <code class="language-plaintext highlighter-rouge">@Service</code> 모두 <code class="language-plaintext highlighter-rouge">Component</code> 클래스를 상속하고 있어서 기능적으로는 큰 차이가 없지만 기능을 명시적으로 표기하기 위해 <code class="language-plaintext highlighter-rouge">@Component</code>보다는 적절하게 어노테이션을 붙여주는것을 권장합니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@RestController</span>
+<span class="nd">@RequestMapping</span><span class="p">(</span><span class="s">"/user"</span><span class="p">)</span>
+<span class="kd">class</span> <span class="nc">UserController</span> <span class="p">{</span>
+
+    <span class="nd">@Autowired</span>
+    <span class="k">private</span> <span class="k">lateinit</span> <span class="kd">var</span> <span class="py">userService</span><span class="p">:</span> <span class="nc">UserService</span>
+
+    <span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/{user-id}"</span><span class="p">)</span>
+    <span class="k">fun</span> <span class="nf">getUser</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="p">(</span><span class="s">"user-id"</span><span class="p">)</span> <span class="n">userId</span><span class="p">:</span> <span class="nc">Long</span><span class="p">):</span> <span class="nc">ResponseEntity</span><span class="p">&lt;</span><span class="nc">AuthUser</span><span class="p">&gt;</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nc">ResponseEntity</span><span class="p">&lt;</span><span class="nc">AuthUser</span><span class="p">&gt;(</span><span class="n">userService</span><span class="p">.</span><span class="nf">getUserById</span><span class="p">(</span><span class="n">userId</span><span class="p">),</span> <span class="nc">HttpStatus</span><span class="p">.</span><span class="nc">OK</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>그리고 컨트롤러에서 서비스의 로직과 연결합니다.</p>
+
+<p>URI 경로를 변수로 이용하려면 <code class="language-plaintext highlighter-rouge">path</code> 인자를 선언할 때 대괄호 <code class="language-plaintext highlighter-rouge">{}</code> 내부에 변수명을 입력합니다.
+또한 <code class="language-plaintext highlighter-rouge">@PathVariable</code>를 이용하여 경로에 입력된 값을 컨트롤러 내부로 가져올 수 있습니다.</p>
+
+<p>어플리케이션 실행후 아래와 같이 요청하면 데이터베이스에 있는 사용자 정보를 반환합니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET /user/1
+Response
+<span class="o">{</span>
+    <span class="s2">"id"</span>: 1,
+    <span class="s2">"userName"</span>: <span class="s2">"miintto.log@gmail.com"</span>,
+    <span class="s2">"userEmail"</span>: <span class="s2">"miintto.log@gmail.com"</span>,
+    <span class="s2">"password"</span>: <span class="s2">"</span><span class="nv">$2b$12$XCJfOKShSppXRwuX</span><span class="s2">"</span>,
+    <span class="s2">"userPermission"</span>: <span class="s2">"ADMIN"</span>,
+    <span class="s2">"createdDtm"</span>: <span class="s2">"2023-04-15T15:38:51.307531"</span>,
+    <span class="s2">"active"</span>: <span class="nb">true</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>프로젝트 구조는 다음과 같이 작성하였습니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>└── com.miintto.matstagram
+    ├── api
+    │   ├── home
+    │   └── user
+    │       ├── domain
+    │       │   └── AuthUser
+    │       ├── repository
+    │       │   └── AuthUserRepository
+    │       ├── UserController
+    │       └── UserService
+    └── MatstagramApplication.kt
+</code></pre></div></div>
+
+<hr />
+
+<p>References</p>
+
+<ul>
+  <li><a href="https://catsbi.oopy.io/f52511f3-1455-4a01-b8b7-f10875895d5b">스프링 MVC - 구조 이해</a></li>
+  <li><a href="https://mangkyu.tistory.com/49">[Spring] @Controller와 @RestController 차이</a></li>
+  <li><a href="https://devlog-wjdrbs96.tistory.com/182">[Spring Boot] ResponseEntity란 무엇인가?</a></li>
+  <li><a href="https://www.woolog.dev/backend/spring-boot/springboot-kotlin-simple-starter/">SpringBoot Kotlin으로 작성하기 - woolog 개발자 울이</a></li>
+  <li><a href="https://velog.io/@jayjay28/엔티티Entity">엔티티(Entity) - jayjay28.log</a></li>
+  <li><a href="https://multifrontgarden.tistory.com/286">jpa entity 에 data class 를 사용해도 될까?</a></li>
+  <li><a href="https://spoqa.github.io/2022/08/16/kotlin-jpa-entity.html">Spoqa 기술 블로그 - 스포카에서 Kotlin으로 JPA Entity를 정의하는 방법</a></li>
+  <li><a href="https://araikuma.tistory.com/329">[Spring] JpaRepository 이용</a></li>
+</ul>
+
+
+      <hr>
+
+      <div id="disqus_thread"></div>
+      <script>
+          (function() {
+          var d = document, s = d.createElement('script');
+          s.src = 'https://miintto-github-io.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+          })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+      <hr>
+
+    </div>
+  </div>
+</div>
+
+
+  <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="footer-content container">
+    <p class="copyright text-muted">Copyright &copy; miintto 2024</p>
+  </div>
+</footer>
+
+
+  <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
+<script src="/assets/scripts.js"></script>
+
+
+  <script src="/assets/vendor/miintto/js/toc.js"></script>
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXXXX-X"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-XXXXXXXXX-X');
+</script>
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+
+<html>
+
+
+
+
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>[파이썬] pyc 파일은 왜 생기는걸까? - miintto.log</title>
+
+  <meta name="description" content="파이썬 기반의 프로젝트를 작업하다 보면 __pycache__ 디렉토리와 .pyc확장자의 파일을 본 적이 있을 겁니다. 혹은 저장소에 올라가지 않도록 해당 파일과 디렉토리를 gitignore 파일에 추가한 적도 있을 겁니다. 그런 파일을 작성한 적이 없다며 의아할 수 있겠지만, 해당...">
+
+  <meta name="google-site-verification" content="wGN_mZVjgAC8sdItYCBTkSMwLrgNSWPY6sicU3MuSQw" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital@1&display=swap">
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://miintto.github.io/docs/python-pycache">
+  <link rel="alternate" type="application/rss+xml" title="[파이썬] pyc 파일은 왜 생기는걸까? - miintto.log" href="/feed.xml">
+
+  <link rel="apple-touch-icon" href="/img/favicon-128.png">
+  <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+
+  <meta prefix="og: http://ogp.me/ns#" property="og:site_name" content="miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:type" content="blog"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:title" content="[파이썬] pyc 파일은 왜 생기는걸까? - miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:description" content="파이썬 기반의 프로젝트를 작업하다 보면 __pycache__ 디렉토리와 .pyc확장자의 파일을 본 적이 있을 겁니다. 혹은 저장소에 올라가지 않도록 해당 파일과 디렉토리를 gitignore 파일에 추가한 적도 있을 겁니다. 그런 파일을 작성한 적이 없다며 의아할 수 있겠지만, 해당..."/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:locale" content="ko_KR"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:url" content="https://miintto.github.io/docs/python-pycache"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:image" content="/img/thumbnails/python.png">
+
+</head>
+
+
+<body>
+
+  <!-- Navigation -->
+
+<nav class="navbar" style="background-color: white;">
+
+  <div class="navbar-content container">
+    <a class="navbar-brand" href="/">miintto.log</a>
+    <button class="navbar-button" id="toggleButton" type="button" data-toggle="collapse" aria-controls="navbarResponsive" aria-expanded="false">
+      MENU
+      <i class="fa fa-bars"></i>
+    </button>
+    <div class="navbar-nav" id="navbarResponsive" aria-hidden="true">
+      <div class="nav-item">
+        <a class="nav-link" href="/about">ABOUT</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/posts">POSTS</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/archive">ARCHIVES</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+  <div class="article">
+  <div class="article-wrapper">
+    <div class="article-header">
+      <div class="article-info">
+        <h1>[파이썬] pyc 파일은 왜 생기는걸까?</h1>
+        <div class="post-tags">
+          <p>python</p><p>cache</p><p>interpreter</p><p>compiler</p>
+        </div>
+        <div class="article-meta">
+          2023.09.17 &middot; <span class="reading-time" title="Estimated read time">
+  
+   5 mins  read </span>
+
+        </div>
+      </div>
+      <div class="article-banner"">
+        <img src="/img/thumbnails/python.png">
+      </div>
+    </div>
+
+    <div class="article-content">
+      <aside>
+  <div class="section-toc">
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h1"><a href="#1-interpreted-language">1. Interpreted Language</a></li>
+<li class="toc-entry toc-h1"><a href="#2-pycache">2. pycache</a></li>
+<li class="toc-entry toc-h1"><a href="#3-compile">3. Compile</a></li>
+</ul>
+  </div>
+</aside>
+
+
+      <p>파이썬 기반의 프로젝트를 작업하다 보면 <code class="language-plaintext highlighter-rouge">__pycache__</code> 디렉토리와 <code class="language-plaintext highlighter-rouge">.pyc</code>확장자의 파일을 본 적이 있을 겁니다.
+혹은 저장소에 올라가지 않도록 해당 파일과 디렉토리를 gitignore 파일에 추가한 적도 있을 겁니다.
+그런 파일을 작성한 적이 없다며 의아할 수 있겠지만, 해당 파일은 이름에서 유추할 수 있듯이 캐시와 비슷한 역할을 합니다.
+파이썬을 사용하면서 캐시가 왜 필요하며 어떻게 동작하는지 자세히 살펴봅시다.</p>
+
+<hr />
+
+<h1 id="1-interpreted-language">1. Interpreted Language</h1>
+
+<p>파이썬의 가장 큰 특징은 <strong>인터프리터 언어</strong>(interpreted language)라는 점입니다.
+C, C++과 같은 <strong>컴파일 언어</strong>(compiled language)는 작성한 소스 코드를 컴파일하여 기계어(machine code)와 같은 중간 언어로 바꾸어 주는 작업이 필요합니다.
+보통 바이너리 파일 혹은 실행 파일 형식으로 변환되며 해당 파일은 특정 운영체제나 아키텍쳐에 종속적일 수 있습니다.
+따라서 만일 컴파일된 파일을 다른 운영체제에서 실행하려면 해당 환경에서 다시 컴파일 과정이 필요합니다.</p>
+
+<p><img src="/img/posts/python-pycache-compiled-language.png" style="max-width:640px" /></p>
+
+<p>하지만 Python, Javascript와 같은 인터프리터 언어는 별도로 컴파일 과정 없이 소스 코드를 직접 한 줄씩 읽으면서 실행됩니다.
+소스 코드를 직접 읽는 방식이므로 특정 운영체제에 종속되지 않고 어느 환경에서나 실행할 수 있습니다.
+또한 코드 수정한 후에도 별도 컴파일 과정이 필요 없어서 곧바로 실행할 수 있다는 장점이 있습니다.</p>
+
+<p>언어마다 조금씩 차이가 있긴 하지만 일반적으로 컴파일 언어는 인터프리터 언어보다 실행 속도가 빠릅니다.
+사람이 직접 작성한 소스 코드보다는 컴파일을 거친 기계어가 좀 더 실행에 최적화된 상태이기 때문입니다.</p>
+
+<hr />
+
+<h1 id="2-pycache">2. pycache</h1>
+
+<p>파이썬은 속도 이슈를 개선하기 위해 소스 코드를 캐싱하는 전략을 택하였습니다.
+인터프리터가 소스 코드를 직접 읽는 대신 그보다는 읽기 쉬운 중간 산출물로 변환하고 해당 파일을 읽는 방식으로 동작합니다.
+이렇게 파이썬 소스 코드가 변환된 결과가 바로 <code class="language-plaintext highlighter-rouge">.pyc</code> 확장자를 가진 캐시 파일입니다.</p>
+
+<p>앞서 인터프리터 언어를 설명하면서 파이썬 인터프리터가 소스 코드를 직접 읽는다고 했지만, 엄밀히 말하면 파이썬에서도 컴파일 과정이 존재합니다.
+파이썬은 이러한 컴파일 과정을 거쳐서 캐시 파일을 생성하는데, 일반적인 컴파일 과정으로 생성되는 바이너리 파일이나 실행 파일 형식과 달리 파이썬은 좀 덜 추상화된 <strong>바이트 코드</strong>(bytecode)를 만들어 냅니다.
+바이트 코드는 기계어와는 달리 특정 운영체제에 종속적이지 않습니다.
+즉 한번 컴파일된 바이트 코드는 어떤 환경에서나 동일하게 실행될 수 있습니다.</p>
+
+<p><img src="/img/posts/python-pycache-interpreter.png" style="max-width:720px" /></p>
+
+<p>바이트 코드로 이루어진 캐시 파일은 운영체제와는 독립적이지만 파이썬 버전 간에는 이슈가 생길 수 있습니다.
+파이썬 3.8과 3.9 같이 인접한 버전의 인터프리터가 생성한 바이트 코드는 어느 정도 호환이 가능합니다.
+하지만 파이썬 2 와 3처럼 메이저 버전이 변경된 경우 호환이 힘들 수 있습니다.
+또한 인접한 버전이더라도 특정 버전에서만 작동되는 라이브러리가 존재하거나 버전이 올라가면서 도입된 새로운 기능을 사용하는 경우 문제가 발생할 수 있습니다.
+따라서 되도록 같은 버전으로 컴파일하고 실행하는 것을 권장하고 있습니다.</p>
+
+<hr />
+
+<h1 id="3-compile">3. Compile</h1>
+
+<p>아래와 같은 간단한 스크립트를 작성해 봅시다.
+단순히 현재 파이썬이 실행되고 있는 프로세스의 id를 반환하는 내용입니다.
+해당 디렉토리에는 파이썬 소스 코드 외에는 어떤 파일도 존재하지 않고 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># sample.py
+</span><span class="kn">import</span> <span class="n">os</span>
+
+<span class="nf">print</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="nf">getpid</span><span class="p">())</span>
+</code></pre></div></div>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> <span class="nb">ls
+</span>sample.py
+</code></pre></div></div>
+
+<p>아래 명령어를 이용하여 강제로 바이트 코드를 생성할 수 있습니다.
+<code class="language-plaintext highlighter-rouge">py_compile</code>은 파이썬 내장 모듈로 파이썬 소스 코드를 컴파일하여 <code class="language-plaintext highlighter-rouge">.pyc</code> 파일을 만들어 내는 함수와 클래스를 담고 있습니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> python <span class="nt">-m</span> py_compile sample.py
+
+<span class="nv">$&gt;</span> <span class="nb">ls
+</span>__pycache__     sample.py
+
+<span class="nv">$&gt;</span> <span class="nb">ls </span>__pycache__
+sample.cpython-311.pyc
+</code></pre></div></div>
+
+<p>컴파일 과정 후에 <code class="language-plaintext highlighter-rouge">__pycache__</code> 디렉토리가 생겨난 것을 확인할 수 있습니다.
+또한 그 디렉토리 내부에는 .pyc 파일이 생성되어 있습니다.
+해당 파일은 바이트 코드 명령어를 포함하고 있어서 사람이 읽을 수 없는 형태이고 텍스트 편집기에서 열 수도 없습니다.</p>
+
+<p>캐시 파일은 소스 코드와 동일한 이름으로 생성됩니다.
+또한 이름 뒤에 <code class="language-plaintext highlighter-rouge">cpython-311</code>과 같이 컴파일된 인터프리터와 버전 정보까지 명시되어 있습니다.
+이러한 명명 규칙을 통해 여러 버전에서 컴파일된 캐시 파일이 공존할 수 있고, 인터프리터는 적합한 버전의 바이트 코드를 실행할 수 있습니다.</p>
+
+<p>또한 파이썬 인터프리터는 소스 코드와 캐시 파일의 수정 시간을 비교하여 캐시 된 바이너리 파일이 최신 상태인지를 비교합니다.
+로직은 아래와 같은 순서로 진행됩니다.</p>
+
+<ol>
+  <li>먼저 파이썬 인터프리터는 먼저 실행할 <code class="language-plaintext highlighter-rouge">.py</code> 파일과 동일한 경로의 <code class="language-plaintext highlighter-rouge">__pycache__</code> 디렉토리에서 같은 파일명의 <code class="language-plaintext highlighter-rouge">.pyc</code> 파일을 찾습니다.</li>
+  <li>그리고 두 파일의 수정 시간을 비교하는데, 만일 <code class="language-plaintext highlighter-rouge">.pyc</code> 파일이 최신이 아닌 경우 원본 소스 코드 파일이 수정되었다고 간주하고 <code class="language-plaintext highlighter-rouge">.py</code> 파일을 다시 컴파일한 후에 갱신된 <code class="language-plaintext highlighter-rouge">.pyc</code> 파일을 실행합니다.</li>
+  <li><code class="language-plaintext highlighter-rouge">.pyc</code> 파일이 최신인 경우에는 해당 바이트 코드를 로드하여 실행합니다.</li>
+</ol>
+
+<p>이러한 방식으로 파이썬 코드가 변경될 때마다 바이트 코드는 업데이트되며 인터프리터는 상항 최신으로 반영된 바이트 코드를 읽을 수 있습니다.
+또한 소스 코드를 미리 파싱해 두고 이후에는 바이트 코드를 실행하게 되어 성능을 향상할 수 있습니다.</p>
+
+<hr />
+
+<p>References</p>
+
+<ul>
+  <li>Antony Shaw, CPython 파헤치기: 따라 하면서 이해하는 파이썬 내부 동작 원리, 김성현, 인사이트, 2022-09-23</li>
+  <li><a href="https://docs.python.org/3/tutorial/modules.html#compiled-python-files">6. Modules — Python 3.11.5 documentation</a></li>
+  <li><a href="https://peps.python.org/pep-0552/">PEP 552 – Deterministic pycs | peps.python.org</a></li>
+</ul>
+
+
+      <hr>
+
+      <div id="disqus_thread"></div>
+      <script>
+          (function() {
+          var d = document, s = d.createElement('script');
+          s.src = 'https://miintto-github-io.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+          })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+      <hr>
+
+    </div>
+  </div>
+</div>
+
+
+  <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="footer-content container">
+    <p class="copyright text-muted">Copyright &copy; miintto 2024</p>
+  </div>
+</footer>
+
+
+  <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
+<script src="/assets/scripts.js"></script>
+
+
+  <script src="/assets/vendor/miintto/js/toc.js"></script>
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXXXX-X"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-XXXXXXXXX-X');
+</script>
+
+
+
+</body>
+
+</html>

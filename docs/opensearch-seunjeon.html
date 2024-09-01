@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+
+<html>
+
+
+
+
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>[OpenSearch] 은전한닢 설치하기 - miintto.log</title>
+
+  <meta name="description" content="저희 회사에서는 검색 엔진으로 엘라스틱서치를 사용하고 있습니다. 초창기에는 Elastic 클라우드 서비스를 활용하여 운영하였으나 인프라 아키텍처를 재편성하면서 AWS OpenSearch로 이관하였습니다. 개발기는 별도 AWS OpenSearch 도메인을 구성하는 대신 개발 인스턴스...">
+
+  <meta name="google-site-verification" content="wGN_mZVjgAC8sdItYCBTkSMwLrgNSWPY6sicU3MuSQw" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital@1&display=swap">
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://miintto.github.io/docs/opensearch-seunjeon">
+  <link rel="alternate" type="application/rss+xml" title="[OpenSearch] 은전한닢 설치하기 - miintto.log" href="/feed.xml">
+
+  <link rel="apple-touch-icon" href="/img/favicon-128.png">
+  <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+
+  <meta prefix="og: http://ogp.me/ns#" property="og:site_name" content="miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:type" content="blog"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:title" content="[OpenSearch] 은전한닢 설치하기 - miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:description" content="저희 회사에서는 검색 엔진으로 엘라스틱서치를 사용하고 있습니다. 초창기에는 Elastic 클라우드 서비스를 활용하여 운영하였으나 인프라 아키텍처를 재편성하면서 AWS OpenSearch로 이관하였습니다. 개발기는 별도 AWS OpenSearch 도메인을 구성하는 대신 개발 인스턴스..."/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:locale" content="ko_KR"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:url" content="https://miintto.github.io/docs/opensearch-seunjeon"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:image" content="/img/thumbnails/opensearch-seunjeon.png">
+
+</head>
+
+
+<body>
+
+  <!-- Navigation -->
+
+<nav class="navbar" style="background-color: white;">
+
+  <div class="navbar-content container">
+    <a class="navbar-brand" href="/">miintto.log</a>
+    <button class="navbar-button" id="toggleButton" type="button" data-toggle="collapse" aria-controls="navbarResponsive" aria-expanded="false">
+      MENU
+      <i class="fa fa-bars"></i>
+    </button>
+    <div class="navbar-nav" id="navbarResponsive" aria-hidden="true">
+      <div class="nav-item">
+        <a class="nav-link" href="/about">ABOUT</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/posts">POSTS</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/archive">ARCHIVES</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+  <div class="article">
+  <div class="article-wrapper">
+    <div class="article-header">
+      <div class="article-info">
+        <h1>[OpenSearch] 은전한닢 설치하기</h1>
+        <div class="post-tags">
+          <p>opensearch</p><p>plugin</p><p>sbt</p><p>seunjeon</p>
+        </div>
+        <div class="article-meta">
+          2024.06.30 &middot; <span class="reading-time" title="Estimated read time">
+  
+   10 mins  read </span>
+
+        </div>
+      </div>
+      <div class="article-banner"">
+        <img src="/img/thumbnails/opensearch-seunjeon.png">
+      </div>
+    </div>
+
+    <div class="article-content">
+      <aside>
+  <div class="section-toc">
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h1"><a href="#1-plugin">1. Plugin</a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#11-structure">1.1 Structure</a></li>
+<li class="toc-entry toc-h2"><a href="#12-installation">1.2 Installation</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h1"><a href="#2-apply-to-opensearch">2. Apply to OpenSearch</a></li>
+<li class="toc-entry toc-h1"><a href="#3-build-with-sbt">3. Build with sbt</a></li>
+</ul>
+  </div>
+</aside>
+
+
+      <p>저희 회사에서는 검색 엔진으로 엘라스틱서치를 사용하고 있습니다.
+초창기에는 Elastic 클라우드 서비스를 활용하여 운영하였으나 인프라 아키텍처를 재편성하면서 <strong>AWS OpenSearch</strong>로 이관하였습니다.
+개발기는 별도 AWS OpenSearch 도메인을 구성하는 대신 개발 인스턴스의 남는 자원을 활용하여 오픈서치를 직접 구동시키는 방법으로 운영하였습니다.</p>
+
+<p>운영기에 맞추어 개발기의 버전도 1.2.4로 통일하였지만, 문제가 되었던 부분은 형태소 분석기였습니다.
+AWS OpenSearch에서는 공식적으로 한글 분석을 위해 <strong>은전한닢(Seunjeon)</strong> 분석기를 지원하고 있습니다.
+2023년부터 nori 분석기도 지원하고 있지만 <a href="https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-plugins.html">공식 문서</a>에 따르면 1.3 버전부터 사용할 수 있게 되어있습니다.
+반면 개발기의 경우 플러그인을 직접 설치해 주어야 하는데 <a href="https://bitbucket.org/eunjeon/seunjeon">공식 은전한닢 프로젝트</a>는 엘라스틱서치 6 버전까지만 지원하고 있어서 엘라스틱서치 7 버전이나 오픈서치에서는 직접 설치가 불가능한 상황이었습니다.</p>
+
+<p>어쨋든 개발을 위해 개발 &amp; 운영 간 통일된 형태소 분석기를 구성하는 건 반드시 필요한 일이었습니다.
+AWS에서 버젓이 은전한닢을 공식적으로 지원하는 걸 보면 오픈서치에 어떻게든 설치할 방법이 있지 않을까 하는 막연한 생각에 개발 오픈서치에 은전한닢 분석기를 설치하기로 했습니다.</p>
+
+<hr />
+
+<h1 id="1-plugin">1. Plugin</h1>
+
+<p>엘라스틱서치에도 기본적으로 많은 기능이 있지만 다양한 기능과 확장성을 위해 부가적으로 다양한 플러그인을 지원하고 있습니다.
+위에서 설명한 형태소 분석기 외에도 보안, 모니터링, 알림 등의 기능을 하는 여러 플러그인이 존재합니다.</p>
+
+<p>동일한 기능을 하는 플러그인이더라도 엘라스틱서치의 버전에 따라 여러 버전이 존재할 수 있습니다.
+엘라스틱서치의 버전이 올라가면서 플러그인과 호환성이 어그러질 수 있기 때문에 웬만하면 동일한 버전을 설치하는 걸 권장하고 있습니다.
+예를 들어 엘라스틱서치 6.x 버전과 7.x 버전은 플러그인 디렉토리 구조가 달라서 서로 호환이 되지 않습니다.</p>
+
+<p>아래와 같이 현재 설치된 플러그인과 버전을 조회할 수 있습니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET /_cat/plugins?v
+
+name          component      version
+60958e271a6b  analysis-icu   7.16.1
+60958e271a6b  analysis-nori  7.16.1
+...
+</code></pre></div></div>
+
+<h2 id="11-structure">1.1 Structure</h2>
+
+<p>대다수의 플러그인은 ZIP 파일 형태로 배포되는데 기본적으로 아래와 같은 구조로 되어있습니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>custom-plugin-7.x.x.zip
+├── custom-plugin-7.x.x.jar
+└── plugin-descriptor.properties
+</code></pre></div></div>
+
+<p>JAR 파일은 플러그인의 주 실행 파일입니다.
+플러그인의 주요 기능을 구성하는 Java 클래스 파일들이 포함되어 있습니다.</p>
+
+<p>plugin-descriptor.properties 파일에는 메타데이터가 정의되어 있습니다.
+아래와 같이 플러그인의 이름과 버전, 메인 클래스, 엘라스틱서치 호환 버전 등을 포함하고 있습니다.</p>
+
+<div class="language-conf highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">description</span>=<span class="n">The</span> <span class="n">Korean</span>(<span class="n">seunjeon</span>) <span class="n">analysis</span> <span class="n">plugin</span>.
+<span class="n">version</span>=<span class="m">6</span>.<span class="m">1</span>.<span class="m">1</span>.<span class="m">0</span>
+<span class="n">name</span>=<span class="n">analysis</span>-<span class="n">seunjeon</span>
+<span class="n">classname</span>=<span class="n">org</span>.<span class="n">bitbucket</span>.<span class="n">eunjeon</span>.<span class="n">seunjeon</span>.<span class="n">elasticsearch</span>.<span class="n">plugin</span>.<span class="n">analysis</span>.<span class="n">AnalysisSeunjeonPlugin</span>
+<span class="n">java</span>.<span class="n">version</span>=<span class="m">1</span>.<span class="m">8</span>
+<span class="n">elasticsearch</span>.<span class="n">version</span>=<span class="m">6</span>.<span class="m">1</span>.<span class="m">1</span>
+</code></pre></div></div>
+
+<p>엘라스틱서치 6 이하 버전의 플러그인은 다른 구조로 되어있습니다.
+구성 파일이 루트 디렉토리가 아닌 elasticsearch/ 디렉토리 하위에 위치해야 합니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>custom-plugin-6.x.x.zip
+└── elasticsearch/
+    ├── custom-plugin-6.x.x.jar
+    └── plugin-descriptor.properties
+</code></pre></div></div>
+
+<h2 id="12-installation">1.2 Installation</h2>
+
+<p>플러그인은 <code class="language-plaintext highlighter-rouge">elasticsearch-plugin</code> 명령어를 사용하여 설치할 수 있습니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 플러그인 다운로드</span>
+<span class="nv">$&gt;</span> wget https://example.com/plugins/custom-plugin-7.16.1.zip
+<span class="c"># 플러그인 설치</span>
+<span class="nv">$&gt;</span> bin/elasticsearch-plugin <span class="nb">install </span>file:///path/custom-plugin-7.16.1.zip
+
+-&gt; Installing file:///path/custom-plugin-7.16.1.zip
+-&gt; Downloading file:///path/custom-plugin-7.16.1.zip
+-&gt; Installed custom-plugin with folder name custom-plugin
+</code></pre></div></div>
+
+<p>플러그인 설치 과정에서 엘라스틱서치는 메타데이터(plugin-descriptor.properties) 파일을 읽고 <code class="language-plaintext highlighter-rouge">elasticsearch.version</code> 값이 버전과 일치하는지 검증합니다.
+만일 버전이 일치하지 않으면 설치 과정에서 아래 에러가 발생합니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Exception <span class="k">in </span>thread <span class="s2">"main"</span> java.lang.IllegalArgumentException: Plugin <span class="o">[</span>custom-plugin] was built <span class="k">for </span>Elasticsearch version 6.1.1 but version 7.16.1 is running
+    at org.elasticsearch.plugins.PluginsService.verifyCompatibility<span class="o">(</span>PluginsService.java:391<span class="o">)</span>
+    at org.elasticsearch.plugins.cli.InstallPluginAction.loadPluginInfo<span class="o">(</span>InstallPluginAction.java:831<span class="o">)</span>
+    at org.elasticsearch.plugins.cli.InstallPluginAction.installPlugin<span class="o">(</span>InstallPluginAction.java:887<span class="o">)</span>
+</code></pre></div></div>
+
+<p>만일 공식 플러그인이라면 레지스트리를 통해 직접 설치할 수 있습니다.
+이 경우 엘라스틱서치 버전에 알맞은 플러그인을 자동으로 가져와 설치합니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> bin/elasticsearch-plugin <span class="nb">install </span>analysis-icu
+</code></pre></div></div>
+
+<p>설치 후에는 엘라스틱서치를 재시작해 주어야 설치한 플러그인이 반영됩니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> systemctl restart elasticsearch
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="2-apply-to-opensearch">2. Apply to OpenSearch</h1>
+
+<p>위 내용을 기반으로 오픈서치에 은전한닢 플러그인 설치를 진행했습니다.
+기본적인 원리는 엘라스틱서치와 오픈서치가 동일합니다.
+다만 설치 명령어로 <code class="language-plaintext highlighter-rouge">opensearch-plugin</code>을 사용하고, 버전 검증 과정에서 메타데이터의 <code class="language-plaintext highlighter-rouge">elasticsearch.version</code> 대신 <code class="language-plaintext highlighter-rouge">opensearch.version</code>을 확인하는 차이 정도입니다.</p>
+
+<p>은전한닢 형태소 분석기는 공식적으로 6.1.1.1 버전까지 지원하고 있지만 다행히도 <a href="https://github.com/likejazz/seunjeon-elasticsearch-7">7 버전 이상에서도 호환 가능한 플러그인을 제공하는 프로젝트</a>를 발견하였습니다.
+모든 버전이 아닌 7.9.1, 7.16.2 등과 같은 특정 버전만 지원하고 있지만, 프로젝트 내부에 plugin-descriptor.properties 파일의 엘라스틱서치 호환 버전을 임의로 변경해 주는 <a href="https://github.com/likejazz/seunjeon-elasticsearch-7/blob/master/elasticsearch/scripts/downloader.sh">스크립트</a>를 제공하고 있습니다.</p>
+
+<p>해당 스크립트를 조금 변경하여 오픈서치의 버전에 알맞게 바꾸어주었습니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/usr/bin/env bash</span>
+
+<span class="nv">OPENSEARCH_VERSION</span><span class="o">=</span><span class="s2">"1.2.4"</span>
+<span class="nv">PLUGIN_VERSION</span><span class="o">=</span><span class="s2">"7.9.1"</span>
+
+<span class="nv">ZIP_NAME</span><span class="o">=</span><span class="s2">"analysis-seunjeon-</span><span class="k">${</span><span class="nv">PLUGIN_VERSION</span><span class="k">}</span><span class="s2">.zip"</span>
+<span class="nv">TMP_DIR</span><span class="o">=</span><span class="s2">"/tmp/analysis-seunjeon"</span>
+<span class="nb">mkdir</span> <span class="nt">-p</span> <span class="nv">$TMP_DIR</span>
+
+<span class="c">########################################################################################################################</span>
+<span class="c"># download zip</span>
+<span class="nv">REMOTE_FILE_NAME</span><span class="o">=</span><span class="s2">"https://github.com/likejazz/seunjeon-elasticsearch-7/releases/download/</span><span class="k">${</span><span class="nv">PLUGIN_VERSION</span><span class="k">}</span><span class="s2">/</span><span class="k">${</span><span class="nv">ZIP_NAME</span><span class="k">}</span><span class="s2">"</span>
+curl <span class="nt">-L</span> <span class="nt">-o</span> <span class="k">${</span><span class="nv">TMP_DIR</span><span class="k">}</span>/<span class="k">${</span><span class="nv">ZIP_NAME</span><span class="k">}</span> <span class="nv">$REMOTE_FILE_NAME</span>
+<span class="k">if</span> <span class="o">[</span> <span class="s2">"</span><span class="nv">$?</span><span class="s2">"</span> <span class="nt">-ne</span> <span class="s2">"0"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"invalid path </span><span class="nv">$REMOTE_FILE_NAME</span><span class="s2">"</span>
+    <span class="nb">exit </span>1
+<span class="k">fi
+
+</span><span class="nb">pushd</span> <span class="nv">$TMP_DIR</span>
+
+<span class="c">########################################################################################################################</span>
+<span class="c"># build properties file</span>
+<span class="nv">PROPERTI_FILE</span><span class="o">=</span><span class="s2">"plugin-descriptor.properties"</span>
+
+<span class="nb">cat</span> <span class="o">&gt;</span> <span class="nv">$PROPERTI_FILE</span> <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh">
+description=The Korean(seunjeon) analysis plugin.
+version=</span><span class="k">${</span><span class="nv">PLUGIN_VERSION</span><span class="k">}</span><span class="sh">
+name=analysis-seunjeon
+classname=org.bitbucket.eunjeon.seunjeon.elasticsearch.plugin.analysis.AnalysisSeunjeonPlugin
+java.version=1.8
+opensearch.version=</span><span class="k">${</span><span class="nv">OPENSEARCH_VERSION</span><span class="k">}</span><span class="sh">
+</span><span class="no">EOF
+
+</span><span class="c">########################################################################################################################</span>
+<span class="c"># zipping...</span>
+zip <span class="nv">$ZIP_NAME</span> <span class="nv">$PROPERTI_FILE</span>
+<span class="k">if</span> <span class="o">[</span> <span class="s2">"</span><span class="nv">$?</span><span class="s2">"</span> <span class="nt">-ne</span> <span class="s2">"0"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">exit </span>1
+<span class="k">fi
+
+</span><span class="nb">popd</span>
+
+<span class="c">########################################################################################################################</span>
+<span class="c"># copy a plugin file to current directory.</span>
+<span class="nb">cp</span> <span class="nv">$TMP_DIR</span>/<span class="nv">$ZIP_NAME</span> <span class="nb">.</span>
+</code></pre></div></div>
+
+<p>개발 오픈서치는 도커 기반으로 구성하였는데 아래와 같이 변화를 주었습니다.
+빌드 이미지를 별도 분리하여 다운받은 플러그인을 오픈서치 1.2.4 버전으로 태깅하고, 런타임에서는 플러그인 ZIP 파일을 가져와 설치하는 방식으로 구성하였습니다.</p>
+
+<div class="language-dockerfile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">FROM</span><span class="w"> </span><span class="s">ubuntu:latest</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="s">build</span>
+<span class="k">WORKDIR</span><span class="s"> /app/build</span>
+<span class="k">RUN </span>apt-get update <span class="o">&amp;&amp;</span> apt-get <span class="nt">-y</span> upgrade <span class="se">\
+</span>    <span class="o">&amp;&amp;</span> apt-get <span class="nb">install</span> <span class="nt">-y</span> curl zip
+<span class="k">COPY</span><span class="s"> ./scripts/downloads.sh .</span>
+<span class="k">RUN </span>bash downloads.sh
+
+<span class="k">FROM</span><span class="w"> </span><span class="s">opensearchproject/opensearch:1.2.4</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="s">runtime</span>
+<span class="k">WORKDIR</span><span class="s"> /usr/share/opensearch</span>
+<span class="k">COPY</span><span class="s"> --from=build /app/build/analysis-seunjeon-7.9.1.zip .</span>
+<span class="k">RUN </span>/usr/share/opensearch/bin/opensearch-plugin <span class="nb">install</span> <span class="nt">--batch</span> file://<span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>/analysis-seunjeon-7.9.1.zip
+</code></pre></div></div>
+
+<p>이후 도커 이미지를 빌드해보았지만 아래 에러가 발생하며 실패하고 말았습니다.</p>
+
+<pre><code class="language-txt">org.opensearch.bootstrap.StartupException: OpenSearchException[Unable to load plugin class [org.bitbucket.eunjeon.seunjeon.elasticsearch.plugin.analysis.AnalysisSeunjeonPlugin]]; nested: NoClassDefFoundError[org/elasticsearch/plugins/AnalysisPlugin];
+    at org.opensearch.bootstrap.OpenSearch.init(OpenSearch.java:182) ~[opensearch-1.2.4.jar:1.2.4]
+    at org.opensearch.bootstrap.OpenSearch.execute(OpenSearch.java:169) ~[opensearch-1.2.4.jar:1.2.4]
+    at org.opensearch.cli.EnvironmentAwareCommand.execute(EnvironmentAwareCommand.java:100) ~[opensearch-1.2.4.jar:1.2.4]
+</code></pre>
+
+<p>아무래도 엘라스틱서치 플러그인을 오픈서치에 그대로 가져다가 설치해서 발생한 오류로 보여집니다.</p>
+
+<hr />
+
+<h1 id="3-build-with-sbt">3. Build with sbt</h1>
+
+<p>다른 방안을 물색하던 끝에 은전한닢을 오픈서치에 적용 가능하도록 패치한 프로젝트 <a href="https://bitbucket.org/soosinha/seunjeon-opensearch">seunjeon-opensearch</a> 를 발견했습니다.
+공식 은전한닢 repo를 포크하여 오픈서치 버전으로 리팩토링한 프로젝트였습니다.
+다만 별도 ZIP 파일을 내려받을 레지스트리가 없는 것 같아서 플러그인을 직접 빌드해야만 했습니다.</p>
+
+<p>기본적으로 은전한닢은 <strong>sbt</strong>를 이용하여 빌드하도록 되어있습니다.
+sbt란 Simple Build Tool의 약자로 Java와 Scalar로 작성된 프로젝트를 빌드하기 위한 도구입니다.
+build.sbt 파일에서 프로젝트의 빌드 과정을 정의하며 <code class="language-plaintext highlighter-rouge">libraryDependencies</code> 에서 의존성을 관리합니다.</p>
+
+<p>빌드를 위해 JDK 1.8과 스칼라 2.12 환경이 필요했는데 로컬 환경에 구성하기는 번거로울 것 같아 도커 이미지를 빌드하였습니다.
+빌드 이미지에서 sbt 환경 구성 및 플러그인 빌드를 진행하고 opensearch/target/ 경로에 생성된 ZIP 파일만 런타임 이미지로 가져와 플러그인을 설치하도록 구성하였습니다.</p>
+
+<div class="language-dockerfile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">FROM</span><span class="w"> </span><span class="s">openjdk:8</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="s">build</span>
+<span class="k">RUN </span>apt-get update <span class="o">&amp;&amp;</span> apt-get <span class="nb">install</span> <span class="nt">-y</span> curl git wget <span class="se">\
+</span>    <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">"deb https://repo.scala-sbt.org/scalasbt/debian /"</span> | <span class="nb">tee</span> <span class="nt">-a</span> /etc/apt/sources.list.d/sbt.list <span class="se">\
+</span>    <span class="o">&amp;&amp;</span> curl <span class="nt">-sL</span> <span class="s2">"https://keyserver.ubuntu.com/pks/lookup?op=get&amp;search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823"</span> | apt-key add <span class="se">\
+</span>    <span class="o">&amp;&amp;</span> apt-get update <span class="o">&amp;&amp;</span> apt-get <span class="nb">install</span> <span class="nt">-y</span> sbt
+<span class="k">WORKDIR</span><span class="s"> /app</span>
+<span class="k">RUN </span>git clone https://bitbucket.org/soosinha/seunjeon-opensearch.git
+<span class="k">WORKDIR</span><span class="s"> /app/seunjeon-opensearch</span>
+<span class="k">RUN </span><span class="nb">echo</span> <span class="s2">"addSbtPlugin(</span><span class="se">\"</span><span class="s2">com.jsuereth</span><span class="se">\"</span><span class="s2"> % </span><span class="se">\"</span><span class="s2">sbt-pgp</span><span class="se">\"</span><span class="s2"> % </span><span class="se">\"</span><span class="s2">1.1.0</span><span class="se">\"</span><span class="s2">)"</span> <span class="o">&gt;&gt;</span> ./project/plugins.sbt <span class="se">\
+</span>    <span class="o">&amp;&amp;</span> sbt update
+<span class="k">RUN </span><span class="nb">sed</span> <span class="nt">-i</span> <span class="s1">'s/val opensearchVersion = "1.0.0"/val opensearchVersion = "1.2.4"/'</span> build.sbt <span class="se">\
+</span>    <span class="o">&amp;&amp;</span> <span class="nb">sed</span> <span class="nt">-i</span> <span class="s1">'s/val opensearchJarVersion = "1.0.0-beta1"/val opensearchJarVersion = "1.0.0"/'</span> build.sbt <span class="se">\
+</span>    <span class="o">&amp;&amp;</span> bash ./scripts/download-dict.sh mecab-ko-dic-2.0.1-20150920 <span class="se">\
+</span>    <span class="o">&amp;&amp;</span> sbt <span class="nt">-J-Xmx2G</span> <span class="s2">"runMain org.bitbucket.eunjeon.seunjeon.DictBuilder"</span> <span class="se">\
+</span>    <span class="o">&amp;&amp;</span> sbt <span class="s2">"project opensearch"</span> <span class="s2">"opensearchZip"</span>
+
+<span class="k">FROM</span><span class="w"> </span><span class="s">opensearchproject/opensearch:1.2.4</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="s">runtime</span>
+<span class="k">WORKDIR</span><span class="s"> /usr/share/opensearch</span>
+<span class="k">COPY</span><span class="s"> --from=build /app/seunjeon-opensearch/opensearch/target/opensearch-analysis-seunjeon-assembly-1.2.4.zip .</span>
+<span class="k">RUN </span>/usr/share/opensearch/bin/opensearch-plugin <span class="nb">install</span> <span class="nt">--batch</span> file://<span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>/opensearch-analysis-seunjeon-assembly-1.2.4.zip
+</code></pre></div></div>
+
+<p>도커 이미지에서도 sbt 빌드 환경을 구성하는 건 꽤나 까다로운 일이었습니다.
+프로젝트 README 에서 어느 정도 빌드 가이드를 제공하고 있었지만, sbt-pgp 플러그인이 누락되어 추가로 구성하거나 버전 태깅 같은 부분에 대해 약간의 수정이 필요했습니다.</p>
+
+<p>빌드 후 오픈서치를 실행해 보면 은전한닢 형태소 분석기가 설치된 것을 확인할 수 있습니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET /_cat/plugins?v
+
+name             component                     version
+opensearch-node  analysis-seunjeon             1.2.4
+opensearch-node  opensearch-alerting           1.2.4.0
+opensearch-node  opensearch-anomaly-detection  1.2.4.0
+...
+</code></pre></div></div>
+
+<hr />
+
+<p>References</p>
+
+<ul>
+  <li><a href="https://www.elastic.co/guide/en/elasticsearch/plugins/current/plugin-management.html">Plugin management | Elastic</a></li>
+  <li><a href="https://bitbucket.org/eunjeon/seunjeon">eunjeon / seunjeon — Bitbucket</a></li>
+  <li><a href="https://github.com/likejazz/seunjeon-elasticsearch-7">GitHub - likejazz/seunjeon-elasticsearch-7</a></li>
+  <li><a href="https://docs.likejazz.com/seunjeon-elasticsearch-7/">엘라스틱서치 7을 위한 은전한닢 형태소 분석기 · The Missing Papers</a></li>
+  <li><a href="https://bitbucket.org/soosinha/seunjeon-opensearch">soosinha / seunjeon-opensearch — Bitbucket</a></li>
+  <li><a href="https://groups.google.com/g/eunjeon/c/5P4ekbXb5O8">seunjeon package build 진행 시 오류</a></li>
+</ul>
+
+
+      <hr>
+
+      <div id="disqus_thread"></div>
+      <script>
+          (function() {
+          var d = document, s = d.createElement('script');
+          s.src = 'https://miintto-github-io.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+          })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+      <hr>
+
+    </div>
+  </div>
+</div>
+
+
+  <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="footer-content container">
+    <p class="copyright text-muted">Copyright &copy; miintto 2024</p>
+  </div>
+</footer>
+
+
+  <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
+<script src="/assets/scripts.js"></script>
+
+
+  <script src="/assets/vendor/miintto/js/toc.js"></script>
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXXXX-X"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-XXXXXXXXX-X');
+</script>
+
+
+
+</body>
+
+</html>

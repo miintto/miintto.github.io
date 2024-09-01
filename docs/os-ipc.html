@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+
+<html>
+
+
+
+
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>운영체제에서 프로세스간 통신 - miintto.log</title>
+
+  <meta name="description" content="운영체제에서 각 프로세스는 고유한 메모리가 할당되어 서로 독립적으로 실행됩니다. 하지만 여러 프로세스가 동시에 실행되는 멀티프로세스 환경에서는 다른 프로세스와 데이터를 주고받아야 하는 상황이 발생할 수 있습니다. 이를 위해">
+
+  <meta name="google-site-verification" content="wGN_mZVjgAC8sdItYCBTkSMwLrgNSWPY6sicU3MuSQw" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital@1&display=swap">
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://miintto.github.io/docs/os-ipc">
+  <link rel="alternate" type="application/rss+xml" title="운영체제에서 프로세스간 통신 - miintto.log" href="/feed.xml">
+
+  <link rel="apple-touch-icon" href="/img/favicon-128.png">
+  <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+
+  <meta prefix="og: http://ogp.me/ns#" property="og:site_name" content="miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:type" content="blog"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:title" content="운영체제에서 프로세스간 통신 - miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:description" content="운영체제에서 각 프로세스는 고유한 메모리가 할당되어 서로 독립적으로 실행됩니다. 하지만 여러 프로세스가 동시에 실행되는 멀티프로세스 환경에서는 다른 프로세스와 데이터를 주고받아야 하는 상황이 발생할 수 있습니다. 이를 위해"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:locale" content="ko_KR"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:url" content="https://miintto.github.io/docs/os-ipc"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:image" content="/img/thumbnails/os.png">
+
+</head>
+
+
+<body>
+
+  <!-- Navigation -->
+
+<nav class="navbar" style="background-color: white;">
+
+  <div class="navbar-content container">
+    <a class="navbar-brand" href="/">miintto.log</a>
+    <button class="navbar-button" id="toggleButton" type="button" data-toggle="collapse" aria-controls="navbarResponsive" aria-expanded="false">
+      MENU
+      <i class="fa fa-bars"></i>
+    </button>
+    <div class="navbar-nav" id="navbarResponsive" aria-hidden="true">
+      <div class="nav-item">
+        <a class="nav-link" href="/about">ABOUT</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/posts">POSTS</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/archive">ARCHIVES</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+  <div class="article">
+  <div class="article-wrapper">
+    <div class="article-header">
+      <div class="article-info">
+        <h1>운영체제에서 프로세스간 통신</h1>
+        <div class="post-tags">
+          <p>ipc</p><p>process</p>
+        </div>
+        <div class="article-meta">
+          2024.04.10 &middot; <span class="reading-time" title="Estimated read time">
+  
+   4 mins  read </span>
+
+        </div>
+      </div>
+      <div class="article-banner"">
+        <img src="/img/thumbnails/os.png">
+      </div>
+    </div>
+
+    <div class="article-content">
+      <aside>
+  <div class="section-toc">
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h1"><a href="#1-inter-process-communication">1. Inter Process Communication</a></li>
+<li class="toc-entry toc-h1"><a href="#2-file">2. File</a></li>
+<li class="toc-entry toc-h1"><a href="#3-signal">3. Signal</a></li>
+<li class="toc-entry toc-h1"><a href="#4-socket">4. Socket</a></li>
+<li class="toc-entry toc-h1"><a href="#5-message-queue">5. Message Queue</a></li>
+<li class="toc-entry toc-h1"><a href="#6-shared-memory">6. Shared Memory</a></li>
+</ul>
+  </div>
+</aside>
+
+
+      <h1 id="1-inter-process-communication">1. Inter Process Communication</h1>
+
+<p>운영체제에서 각 프로세스는 고유한 메모리가 할당되어 서로 독립적으로 실행됩니다.
+하지만 여러 프로세스가 동시에 실행되는 멀티프로세스 환경에서는 다른 프로세스와 데이터를 주고받아야 하는 상황이 발생할 수 있습니다.
+이를 위해 운영체제에는 프로세스 간의 데이터 전송, 동기화 등을 담당하는 <strong>IPC</strong>(Inter Process Communication)라는 메커니즘이 존재합니다.</p>
+
+<p>IPC는 소프트웨어의 성능, 모듈화, 시스템 상황 등 여러 요구사항과 맞물려 다양한 형태로 구현되었습니다.</p>
+
+<hr />
+
+<h1 id="2-file">2. File</h1>
+
+<p><strong>파일</strong>(File)을 이용한 IPC 메커니즘은 파일 시스템을 사용하여 여러 프로세스가 공유 파일에 데이터를 쓰고 읽는 방식으로 동작합니다.</p>
+
+<p><img src="/img/posts/os-ipc-file.png" style="max-width:420px" /></p>
+
+<p>언뜻 보면 간단해 보이지만 여러 제약사항 때문에 현재는 잘 사용하지 않고 있습니다.</p>
+
+<p>우선 여러 프로세스가 동시에 하나의 파일에 접근하는 경우 동기화 이슈가 발생할 수 있는데, 이를 위해 mutex, semaphore, file locking 등과 같은 추가적인 메커니즘이 필요합니다.
+또한 파일로 데이터를 주고받기 때문에 파일을 열고 닫고 데이터를 읽고 쓰는 과정에서 오버헤드가 발생할 수 있어서 다른 IPC 방식보다 속도가 느릴 수 있습니다.
+보안 이슈도 발생할 수 있는데 파일 시스템에 데이터를 저장하기 때문에 공유 파일에 대한 접근 권한만 있으면 누구나 데이터를 확인할 수 있다는 문제가 있습니다.</p>
+
+<p>이러한 제약사항 때문에 간단한 통신이나 데이터의 규모가 작은 경우에는 파일을 이용한 통신이 적합할 수 있지만, 대부분의 상황에서는 다른 IPC 메커니즘을 사용하는 게 더 효율적입니다.</p>
+
+<hr />
+
+<h1 id="3-signal">3. Signal</h1>
+
+<p><strong>시그널</strong>(Signal)은 특정 이벤트를 프로세스로 전달하는 소프트웨어 신호입니다.
+예를 들면 인터럽트 시그널(Ctrl+C)과 같은 사용자의 명령이나 하드웨어 인터럽트 신호를 특정 프로세스에 전달하여 해당하는 명령을 수행하도록 합니다.</p>
+
+<p><img src="/img/posts/os-ipc-signal.png" style="max-width:420px" /></p>
+
+<p>이벤트를 받은 프로세스가 수행할 작업은 시그널 핸들러라는 함수 내부에 정의할 수 있습니다.
+그리고 signal() 혹은 sigaction() 와  같은 시스템 호출 함수를 통해 특정 시그널 수신 시에 실행될 시그널 핸들러를 설정할 수 있습니다.</p>
+
+<p>본래 시그널이 IPC 때문에 만들어진 기능은 아니지만 프로세스간의 통신 메커니즘으로 사용할 수도 있습니다.
+특히 <code class="language-plaintext highlighter-rouge">SIGUSR1</code>과 <code class="language-plaintext highlighter-rouge">SIGUSR2</code>와 같은 사용자 정의 시그널을 활용할 수 있는데, 프로세스가 해당 시그널에 대한 시그널 핸들러를 등록하여 사용자가 정의한 상황이 발생할 때마다 다른 프로세스에 이벤트를 전달할 수 있습니다.</p>
+
+<p>이러한 시그널은 비동기적으로 전달되기 때문에 송수신 간의 동기화가 필요하지 않습니다.
+따라서 간단한 구현이 가능하면서도 신속하게 메시지를 전달할 수 있습니다.
+다만 시그널의 기본적인 목적이 특정한 이벤트를 전달이기 때문에 큰 데이터를 전달하 는데에는 적합하지 않습니다.
+또한 추가적인 시그널 핸들러를 등록하고 관리해야 하는 번거로움이 생길 수 있습니다.</p>
+
+<hr />
+
+<h1 id="4-socket">4. Socket</h1>
+
+<p>본래 네트워크 인터페이스는 프로세스뿐 아니라 다른 컴퓨터에도 데이터를 전송하도록 고안된 메커니즘입니다.
+이러한 <strong>소켓</strong>(Socket) 통신을 로컬 프로세스간에 사용하도록 하여 IPC를 구현할 수 있습니다.</p>
+
+<p>소켓을 사용하면 프로세스 간의 양방향 통신이 가능합니다.
+또한 대용량의 데이터도 전달할 수 있습니다.
+이때 신뢰성 있는 연결 지향 통신(TCP/IP)이나 비연결성의 빠른 통신(UDP) 중에서 요구사항에 적합한 프로토콜을 선택할 수도 있습니다.
+또한 SSL/TLS 같은 보안 프로토콜을 사용한다면 안전한 통신을 보장할 수 있습니다.</p>
+
+<p>자세한 소켓의 동작에 대해서는 <a href="/docs/unix-socket">해당 포스트</a>에 설명해 두었습니다.</p>
+
+<hr />
+
+<h1 id="5-message-queue">5. Message Queue</h1>
+
+<p><strong>메시지 큐</strong>(Message Queue)를 사용하여 프로세스끼리 통신할 수도 있습니다.
+메시지를 보내는 프로세스가 큐에 메시지를 입력하면 다른 프로세스가 큐에서 메시지를 읽어가는 방식으로 작동합니다.</p>
+
+<p><img src="/img/posts/os-ipc-message-queue.png" style="max-width:420px" /></p>
+
+<p>메시지 큐를 사용하면 직접 연결되지 않은 여러 프로세스끼리 비동기적으로 통신이 가능합니다.
+또한 운영체제에서 기본적으로 제공하는 기능이라 안정성과 신뢰성이 보장됩니다.</p>
+
+<hr />
+
+<h1 id="6-shared-memory">6. Shared Memory</h1>
+
+<p><strong>공유 메모리</strong>(Shared Memory) 방식은 여러 프로세스가 동일한 물리적인 메모리 공간에 접근하여 통신하는 방법입니다.
+한 프로세스가 다른 프로세스도 접근 가능한 영역을 생성하고 이를 다른 프로세스에 공유하는 방식으로 작동합니다.
+이렇게 하면 다른 프로세스는 공유 메모리에 직접 데이터를 읽고 쓸 수 있습니다.</p>
+
+<p><img src="/img/posts/os-ipc-shared-memory.png" style="max-width:420px" /></p>
+
+<p>여러 프로세스가 동일한 메모리 공간에 직접 접근하기 때문에 앞서 설명드린 IPC 기법과 비교했을 때 훨씬 빠르게 통신할 수 있습니다.
+하지만 메모리 공간을 직접 공유하는 방식이라서 같은 호스트 내부의 프로세스끼리만 통신이 가능하여 확장성이 떨어질 수 있습니다.
+또한 다수의 프로세스가 접근하는 경우 데이터의 동기화 이슈가 발생할 수 있습니다.</p>
+
+<p>일반적으로 여러 프로세스가 동일한 라이브러리를 사용하는 경우 해당 라이브러리의 코드와 데이터는 메모리에 한 번만 불러오게 됩니다.
+그리고 프로세스가 라이브러리의 특정 메모리 페이지를 수정하게 된다면 해당 수정 내용은 프로세스 개별적으로만 반영되어야 합니다.
+여기서 수정이 필요한 페이지는 <a href="/docs/os-cow">Copy-on-Write</a> 메커니즘을 사용하여 처리되는데, 페이지에 수정 요청이 들어온 경우에 새로운 페이지를 할당하여 변경된 내용을 입력하게 됩니다.
+이런 방법으로 여러 프로세스가 동일한 라이브러리를 공유하면서도 필요한 경우에만 페이지가 복제되어 독립성을 유지할 수 있습니다.</p>
+
+<hr />
+
+<p>References</p>
+
+<ul>
+  <li><a href="https://en.wikipedia.org/wiki/Inter-process_communication">Inter-process communication - Wikipedia</a></li>
+  <li><a href="https://en.wikipedia.org/wiki/Shared_memory">Shared memory - Wikipedia</a></li>
+  <li><a href="https://devraphy.tistory.com/175">22. 프로세스 - IPC 기법(signal, socket)</a></li>
+  <li><a href="https://dokhakdubini.tistory.com/490">IPC와 Shared Memory</a></li>
+  <li><a href="https://hyunie-y.tistory.com/32">운영체제 6: 프로세스 간 커뮤니케이션 - 가상 메모리와 IPC에 대해</a></li>
+</ul>
+
+
+      <hr>
+
+      <div id="disqus_thread"></div>
+      <script>
+          (function() {
+          var d = document, s = d.createElement('script');
+          s.src = 'https://miintto-github-io.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+          })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+      <hr>
+
+    </div>
+  </div>
+</div>
+
+
+  <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="footer-content container">
+    <p class="copyright text-muted">Copyright &copy; miintto 2024</p>
+  </div>
+</footer>
+
+
+  <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
+<script src="/assets/scripts.js"></script>
+
+
+  <script src="/assets/vendor/miintto/js/toc.js"></script>
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXXXX-X"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-XXXXXXXXX-X');
+</script>
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+
+<html>
+
+
+
+
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>[쿠버네티스] Architecture - miintto.log</title>
+
+  <meta name="description" content="예전에는 서비스를 거대한 하나의 프로젝트로 운영하였지만, 최근 들어서는 도메인별로 쪼개어 각각 별도로 배포 및 운영이 가능하도록 나누는 MSA가 트렌드로 자리잡기 시작했습니다. 이 방법을 도입하면서 각 도메인마다 특성을 고려하여 필요한 경우 자원을 늘리거나 줄이는 방식으로 유연하게...">
+
+  <meta name="google-site-verification" content="wGN_mZVjgAC8sdItYCBTkSMwLrgNSWPY6sicU3MuSQw" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital@1&display=swap">
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://miintto.github.io/docs/k8s-architecture">
+  <link rel="alternate" type="application/rss+xml" title="[쿠버네티스] Architecture - miintto.log" href="/feed.xml">
+
+  <link rel="apple-touch-icon" href="/img/favicon-128.png">
+  <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+
+  <meta prefix="og: http://ogp.me/ns#" property="og:site_name" content="miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:type" content="blog"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:title" content="[쿠버네티스] Architecture - miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:description" content="예전에는 서비스를 거대한 하나의 프로젝트로 운영하였지만, 최근 들어서는 도메인별로 쪼개어 각각 별도로 배포 및 운영이 가능하도록 나누는 MSA가 트렌드로 자리잡기 시작했습니다. 이 방법을 도입하면서 각 도메인마다 특성을 고려하여 필요한 경우 자원을 늘리거나 줄이는 방식으로 유연하게..."/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:locale" content="ko_KR"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:url" content="https://miintto.github.io/docs/k8s-architecture"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:image" content="/img/thumbnails/k8s.png">
+
+</head>
+
+
+<body>
+
+  <!-- Navigation -->
+
+<nav class="navbar" style="background-color: white;">
+
+  <div class="navbar-content container">
+    <a class="navbar-brand" href="/">miintto.log</a>
+    <button class="navbar-button" id="toggleButton" type="button" data-toggle="collapse" aria-controls="navbarResponsive" aria-expanded="false">
+      MENU
+      <i class="fa fa-bars"></i>
+    </button>
+    <div class="navbar-nav" id="navbarResponsive" aria-hidden="true">
+      <div class="nav-item">
+        <a class="nav-link" href="/about">ABOUT</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/posts">POSTS</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/archive">ARCHIVES</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+  <div class="article">
+  <div class="article-wrapper">
+    <div class="article-header">
+      <div class="article-info">
+        <h1>[쿠버네티스] Architecture</h1>
+        <div class="post-tags">
+          <p>k8s</p><p>msa</p><p>cluster</p>
+        </div>
+        <div class="article-meta">
+          2022.05.08 &middot; <span class="reading-time" title="Estimated read time">
+  
+   12 mins  read </span>
+
+        </div>
+      </div>
+      <div class="article-banner"">
+        <img src="/img/thumbnails/k8s.png">
+      </div>
+    </div>
+
+    <div class="article-content">
+      <aside>
+  <div class="section-toc">
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h1"><a href="#1-cluster">1. Cluster</a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#11-control-plane">1.1 Control Plane</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#111-kube-controller-manager">1.1.1 kube-controller-manager</a></li>
+<li class="toc-entry toc-h3"><a href="#112-etcd">1.1.2 etcd</a></li>
+<li class="toc-entry toc-h3"><a href="#113-kube-scheduler">1.1.3 kube-scheduler</a></li>
+<li class="toc-entry toc-h3"><a href="#114-kube-apiserver">1.1.4 kube-apiserver</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#12-worker-node">1.2 Worker Node</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#121-kubelet">1.2.1 kubelet</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-entry toc-h1"><a href="#2-쿠버네티스-오브젝트">2. 쿠버네티스 오브젝트</a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#21-pod">2.1 Pod</a></li>
+<li class="toc-entry toc-h2"><a href="#22-deployment">2.2 Deployment</a></li>
+<li class="toc-entry toc-h2"><a href="#23-service">2.3 Service</a></li>
+<li class="toc-entry toc-h2"><a href="#24-namespace">2.4 Namespace</a></li>
+</ul>
+</li>
+</ul>
+  </div>
+</aside>
+
+
+      <p>예전에는 서비스를 거대한 하나의 프로젝트로 운영하였지만, 최근 들어서는 도메인별로 쪼개어 각각 별도로 배포 및 운영이 가능하도록 나누는 <strong>MSA</strong>가 트렌드로 자리잡기 시작했습니다.
+이 방법을 도입하면서 각 도메인마다 특성을 고려하여 필요한 경우 자원을 늘리거나 줄이는 방식으로 유연하게 운영이 가능합니다.</p>
+
+<p>하지만 그에 따라 하나의 서비스를 운영하기 위해 관리해야하는 물리적인 서버가 늘어나게 되었는데, 분산된 많은 프로젝트들을 각각 다른 공간에 배포하는 과정이 다소 번거로워졌습니다.
+따라서 적절한 컨테이너를 적절한 공간에 배포하는 스케줄링에 대한 필요성이 늘어나게 되었고, 이런 과정에서 <strong>쿠버네티스</strong>가 등장하게 되었습니다.</p>
+
+<p>저번 포스트에서 간단하게 쿠버네티스 클러스터 환경을 구축하였다면, 이번에는 쿠버네티스의 전체적인 구조를 살펴보고 어떤식으로 활용할 수 있는지 살펴봅시다.</p>
+
+<hr />
+
+<p><img src="/img/posts/k8s-archi-cluster.png" style="max-width:840px" /></p>
+
+<h1 id="1-cluster">1. Cluster</h1>
+
+<h2 id="11-control-plane">1.1 Control Plane</h2>
+
+<p>클러스터의 마스터 역할을 합니다.
+클러스터 전체를 관리하며 여러 컨테이너의 life cycle 등을 체크합니다.</p>
+
+<p>실제 서버에 어떤 프로세스가 동작하고 있는지 확인해봅시다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> ps <span class="nt">-ef</span> | <span class="nb">grep </span>kube
+root     29265 29032  1  5월05 ?      00:21:04 kube-controller-manager ...
+root     29310 28983  1  5월05 ?      00:22:42 etcd ...
+root     29394 29057  0  5월05 ?      00:04:36 kube-scheduler ...
+root     29430 29017  5  5월05 ?      01:20:15 kube-apiserver ...
+root     29506     1  2  5월05 ?      00:33:54 /usr/bin/kubelet ...
+root     29738 29647  0  5월05 ?      00:00:15 /usr/local/bin/kube-proxy ...
+</code></pre></div></div>
+
+<h3 id="111-kube-controller-manager">1.1.1 kube-controller-manager</h3>
+
+<ul>
+  <li>노드 컨트롤러: 노드 통제</li>
+  <li>레플리케이션 컨트롤러: 시스템의 모든 레플리케이션 컨트롤러 오브젝트에 대해 알맞은 수의 Pod 유지</li>
+  <li>엔드포인트 컨트롤러: 엔드포인트 오브젝트를 채움으로 서비스와 pod 연결</li>
+  <li>서비스 어카운트 &amp; 토큰 컨트롤러: 새로운 네임스페이스에 대한 기본 계정과 API 접근 토큰 생성</li>
+</ul>
+
+<h3 id="112-etcd">1.1.2 etcd</h3>
+
+<p>저장소 역할을 합니다.</p>
+
+<h3 id="113-kube-scheduler">1.1.3 kube-scheduler</h3>
+
+<p>컨테이너를 실행할 공간 선별 및 실행을 담당합니다.</p>
+
+<h3 id="114-kube-apiserver">1.1.4 kube-apiserver</h3>
+
+<p>API를 이용하여 쿠버네티스 내의 Pod, Namespace 등을 관리합니다.</p>
+
+<h2 id="12-worker-node">1.2 Worker Node</h2>
+
+<p><strong>Worker node</strong>는 컨테이너가 실제로 실행되는 공간입니다. Control plane에 의하여 관리됩니다.</p>
+
+<h3 id="121-kubelet">1.2.1 kubelet</h3>
+
+<p>클러스터의 각 노드에서 실행되는 에이전트입니다. 컨테이너가 동작하도록 관리합니다.</p>
+
+<hr />
+
+<h1 id="2-쿠버네티스-오브젝트">2. 쿠버네티스 오브젝트</h1>
+
+<p>쿠버네티스에서는 리소스를 오브젝트라는 형식으로 관리합니다.
+사용 가능한 오브젝트는 다음과 같은 유형이 있습니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> kubectl api-resources
+NAME                SHORTNAMES   APIVERSION   NAMESPACED   KIND
+bindings                         v1           <span class="nb">true         </span>Binding
+componentstatuses   cs           v1           <span class="nb">false        </span>ComponentStatus
+configmaps          cm           v1           <span class="nb">true         </span>ConfigMap
+endpoints           ep           v1           <span class="nb">true         </span>Endpoints
+events              ev           v1           <span class="nb">true         </span>Event
+...
+</code></pre></div></div>
+
+<p>위 유형을 모두 숙지할 필요는 없으며 자주 사용되는 것 부터 하나씩 살펴봅시다.</p>
+
+<h2 id="21-pod">2.1 Pod</h2>
+
+<p><strong>Pod</strong>는 하나 이상의 컨테이너 그룹으로 이루어져 있는데, k8s를 구성하는 최소 단위입니다.
+일반적으로 하나의 Pod는 완전한 애플리케이션이어야 하기 때문에 여러 컨테이너로 구성된 경우가 많습니다.</p>
+
+<p>다음과 같이 YML 파일을 작성하여 실행할 수 있습니다.</p>
+
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># nginx-pod.yml</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>   <span class="c1"># 버전</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Pod</span>        <span class="c1"># 리소스 종류</span>
+<span class="na">metadata</span><span class="pi">:</span>        <span class="c1"># 리소스 부가 정보 (라벨, 주석, 이름...)</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">test-nginx-pod</span>
+<span class="na">spec</span><span class="pi">:</span>            <span class="c1"># 리소스를 생성하기 위한 정보 (컨테이너, )</span>
+  <span class="na">containers</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">test-nginx-container</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">nginx:latest</span>
+    <span class="na">ports</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">containerPort</span><span class="pi">:</span> <span class="m">80</span>
+      <span class="na">protocol</span><span class="pi">:</span> <span class="s">TCP</span>
+</code></pre></div></div>
+
+<p>간단한 nginx 애플리케이션을 구동시키는 Pod를 생성합니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> kubectl apply <span class="nt">-f</span> nginx-pod.yml
+<span class="nv">$&gt;</span> kubectl get pods
+NAME             READY   STATUS    RESTARTS   AGE
+test-nginx-pod   1/1     Running   0          8s
+</code></pre></div></div>
+
+<p>Pod 정보를 조회해보면 네임스페이스, 컨테이터 런타임, IP 등 정보를 조회할 수 있습니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> kubectl describe pods test-nginx-pod
+Name:         test-nginx-pod
+Namespace:    default
+Priority:     0
+Node:         ip-172-xx-xx-211.ap-northeast...
+Start Time:   Sun, 08 May 2022 17:20:31 +0900
+Labels:       &lt;none&gt;
+Annotations:  cni.projectcalico.org/containerID: 3b4afe9085e946439a8fce75569774facb503cdf8b207a55a1b3bcd810ed3e81
+              cni.projectcalico.org/podIP: 172.16.176.139/32
+              cni.projectcalico.org/podIPs: 172.16.176.139/32
+Status:       Running
+IP:           172.16.176.139
+IPs:
+  IP:  172.16.176.139
+Containers:
+  test-nginx-container:
+    Container ID:   containerd://0eeea64153d3e31ebc938a030272d15a5ac4f9bc9d52685cedfeee2a8671f6dd
+    Image:          nginx:latest
+    Image ID:       docker.io/library/nginx@sha256:859ab6768a6f26a79bc42b231664111317d095a4f04e4b6fe79ce37b3d199097
+    Port:           80/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Sun, 08 May 2022 17:20:33 +0900
+    Ready:          True
+    Restart Count:  0
+    Environment:    &lt;none&gt;
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-qhcc9 <span class="o">(</span>ro<span class="o">)</span>
+...
+</code></pre></div></div>
+
+<p>도커 컨테이너와 비슷하게 Pod 생성시 컨테이너 IP가 할당되어 클러스터 내부에서 접근할 수 있습니다.
+해당 IP로 호출해보면 nginx 애플리케이션에 접근할 수 있습니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> curl 172.16.176.139
+&lt;<span class="o">!</span>DOCTYPE html&gt;
+&lt;html&gt;
+&lt;<span class="nb">head</span><span class="o">&gt;</span>
+&lt;title&gt;Welcome to nginx!&lt;/title&gt;
+&lt;style&gt;
+...
+</code></pre></div></div>
+<p>다만 해당 IP는 클러스터 내부에서 할당한 IP 이기 때문에 쿠버네티스 외부에서는 접근할 수 없습니다.</p>
+
+<p>실행중인 Pod를 삭제하려면 아래와 같이 입력합니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> kubectl delete <span class="nt">-f</span> nginx-pod.yml
+</code></pre></div></div>
+
+<h2 id="22-deployment">2.2 Deployment</h2>
+
+<p><strong>Deployment</strong>는 Pod 들을 묶어서 관리하는 오브젝트 입니다.
+Deployment를 생성하면 대응되는 ReplicaSet도 함께 생성됩니다.
+일정한 Pod의 개수를 유지시키는 ReplicaSet의 기능 외에도 배포시 revision을 남겨 롤백이 용이하게 하고, 롤링 업데이트 기능을 지원하여 무중단 배포를 가능하게 하는 등 애플리케이션을 배포 및 관리하는 역할을 합니다.</p>
+
+<p>아래 방식대로 YML 파일을 작성합니다.
+<code class="language-plaintext highlighter-rouge">template</code> 하위는 Pod를 생성할 때 작성했던 모양과 거의 흡사합니다.
+기존 Pod 형식에 라벨만 추가하여 하나로 묶어주었습니다.</p>
+
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># nginx-deployment.yml</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">apps/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Deployment</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">test-nginx-deployment</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">replicas</span><span class="pi">:</span> <span class="m">2</span>
+  <span class="na">selector</span><span class="pi">:</span>      <span class="c1"># ReplicaSet 정의</span>
+    <span class="na">matchLabels</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">test-nginx</span>
+  <span class="na">template</span><span class="pi">:</span>      <span class="c1"># Pod 정의</span>
+    <span class="na">metadata</span><span class="pi">:</span>
+      <span class="na">name</span><span class="pi">:</span> <span class="s">test-nginx-pod</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">app</span><span class="pi">:</span>
+          <span class="s">test-nginx</span>
+    <span class="na">spec</span><span class="pi">:</span>
+      <span class="na">containers</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">test-nginx-container</span>
+        <span class="na">image</span><span class="pi">:</span> <span class="s">nginx:latest</span>
+        <span class="na">ports</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">containerPort</span><span class="pi">:</span> <span class="m">80</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> kubectl apply <span class="nt">-f</span> nginx-deployment.yml
+<span class="nv">$&gt;</span> kubectl get pods
+NAME                                     READY   STATUS    RESTARTS   AGE
+test-nginx-deployment-755d478cc5-dbh6p   1/1     Running   0          11s
+test-nginx-deployment-755d478cc5-pbfwn   1/1     Running   0          12s
+</code></pre></div></div>
+
+<p>이때 Pod의 개수를 2개에서 3개로 늘려봅시다.
+먼저 YML 파일에서 replica 개수를 조절합니다.</p>
+
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># nginx-deployment.yml</span>
+<span class="nn">...</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">replicas</span><span class="pi">:</span> <span class="m">3</span>
+  <span class="s">...</span>
+</code></pre></div></div>
+
+<p>변경한 내용을 쿠버네티스에 적용합니다.
+전체 Pod를 지우고 생성한 것이 아니라 필요한 Pod만 생성되었습니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> kubectl apply <span class="nt">-f</span> nginx-deployment.yml
+deployment.apps/test-nginx-deployment configured
+<span class="nv">$&gt;</span> kubectl get pods
+NAME                                     READY   STATUS    RESTARTS   AGE
+test-nginx-deployment-755d478cc5-dbh6p   1/1     Running   0          2m30s
+test-nginx-deployment-755d478cc5-fmnn6   1/1     Running   0          8s
+test-nginx-deployment-755d478cc5-pbfwn   1/1     Running   0          2m31s
+</code></pre></div></div>
+
+<p>이번에는 nginx의 이미지를 변경해봅시다.
+다시 YML 파일에서 이미지 버전을 1.11로 바꿉니다.</p>
+
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># nginx-deployment.yml</span>
+      <span class="s">...</span>
+      <span class="s">containers</span><span class="err">:</span>
+        <span class="na">image</span><span class="pi">:</span> <span class="s">nginx:1.11</span>
+        <span class="s">...</span>
+</code></pre></div></div>
+
+<p>다시 적용해보면 이번에는 모든 Pod가 새로 생성된 것을 확인할 수 있습니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> kubectl apply <span class="nt">-f</span> nginx-deployment.yml
+deployment.apps/test-nginx-deployment configured
+<span class="nv">$&gt;</span> kubectl get pods
+NAME                                     READY   STATUS    RESTARTS   AGE
+test-nginx-deployment-67bc75486f-4n42q   1/1     Running   0          27s
+test-nginx-deployment-67bc75486f-7bqf9   1/1     Running   0          44s
+test-nginx-deployment-67bc75486f-snr4j   1/1     Running   0          31s
+</code></pre></div></div>
+
+<p>ReplicaSet을 확인해보면 예전 버전이 지워지지 않고 남아있는 것을 확인할 수 있습니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> kubectl get replicaset
+NAME                               DESIRED   CURRENT   READY   AGE
+test-nginx-deployment-67bc75486f   3         3         3       1m7s
+test-nginx-deployment-755d478cc5   0         0         0       4m21s
+</code></pre></div></div>
+
+<p>Deployment에서는 Pod 들이 새로 업데이트 되어도 이전 정보들을 revision으로 보관하고 있어서 롤백에 용이하게 합니다.
+보관된 revision 정보는 다음과 같이 조회할 수 있습니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> kubectl rollout <span class="nb">history </span>deployment test-nginx-deployment
+deployment.apps/test-nginx-deployment
+REVISION  CHANGE-CAUSE
+1         kubectl apply <span class="nt">--filename</span><span class="o">=</span>nginx-deployment.yml <span class="nt">--record</span><span class="o">=</span><span class="nb">true
+</span>2         &lt;none&gt;
+</code></pre></div></div>
+
+<p>만일 다시 이전 버전으로 돌리고 싶다면 다음과 같이 실행하면 됩니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> kubectl rollout undo deployment test-nginx-deployment <span class="nt">--to-revision</span><span class="o">=</span>1
+deployment.apps/test-nginx-deployment rolled back
+</code></pre></div></div>
+
+<p>다시 이전 버전으로 되돌아간 것을 확인할 수 있습니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> kubectl get replicaset
+NAME                               DESIRED   CURRENT   READY   AGE
+test-nginx-deployment-67bc75486f   0         0         0       7m24s
+test-nginx-deployment-755d478cc5   3         3         3       10m
+<span class="nv">$&gt;</span> kubectl get pods
+NAME                                     READY   STATUS    RESTARTS   AGE
+test-nginx-deployment-755d478cc5-8kt7r   1/1     Running   0          25s
+test-nginx-deployment-755d478cc5-gfw85   1/1     Running   0          32s
+test-nginx-deployment-755d478cc5-vfthk   1/1     Running   0          29s
+</code></pre></div></div>
+
+<h2 id="23-service">2.3 Service</h2>
+
+<p>Deployment에서 <code class="language-plaintext highlighter-rouge">containerPort</code>를 정의하긴 했지만 해당 포트는 클러스터 내부에서만 사용 가능하고 외부에서는 접근할 수 없습니다.
+또한 Pod를 다시 생성한 경우 컨테이너의 IP도 바뀔수 있습니다.
+이때, <strong>Service</strong>는 가변하는 Pod IP를 고정하는 도메인을 설정하여 쿠버네티스 외부에서 Pod로 접근이 가능하도록 합니다.
+또한 여러개의 Pod로 네트워트를 분산시키는 로드밸런서 역할도 합니다.</p>
+
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># nginx-service.yml</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">test-nginx-service</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">ports</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">web-port</span>
+    <span class="na">port</span><span class="pi">:</span> <span class="m">8080</span>
+    <span class="na">targetPort</span><span class="pi">:</span> <span class="m">80</span>  <span class="c1"># Pod의 containerPort와 일치해야 합니다.</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">test-nginx</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">ClusterIP</span>  <span class="c1"># 형식 (ClusterIP, NodePort, LoadBalancer, ..)</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">spec.selector</code>에서 적용할 Pod를 명시합니다.
+위의 YML파일에 따르면 <code class="language-plaintext highlighter-rouge">app=test-nginx</code> 를 라벨로 가진 Pod들에 접근할 수 있는 Service를 생성합니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">spec.type</code>에서는 어떤 형식의 Service를 생성할지 정의합니다.
+아무것도 정의하지 않으면 기본적으로 <em>ClusterIP</em> 로 설정됩니다.</p>
+
+<ul>
+  <li>ClusterIP: 클러스터 내부에서만 접근 가능한 IP를 할당합니다.</li>
+  <li>NodePort: 클러스터에 접근 가능한 IP와 더불어 port가 할당됩니다.</li>
+  <li>LoadBalancer:</li>
+</ul>
+
+<p>우선 위에서 작성한대로 ClusterIP 타입의 Service를 생성합니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> kubectl apply <span class="nt">-f</span> nginx-service.yml
+service/test-nginx-service configured
+<span class="nv">$&gt;</span> kubectl get service
+NAME                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT<span class="o">(</span>S<span class="o">)</span>    AGE
+kubernetes           ClusterIP   10.96.0.1       &lt;none&gt;        443/TCP    23m
+test-nginx-service   ClusterIP   10.100.152.18   &lt;none&gt;        8080/TCP    6s
+</code></pre></div></div>
+
+<p>새로운 IP가 할당되었습니다. 해당 IP와 port로 요청하면 nginx 애플리케이션에 접근할 수 있습니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> curl 10.100.152.18:8080
+&lt;<span class="o">!</span>DOCTYPE html&gt;
+&lt;html&gt;
+&lt;<span class="nb">head</span><span class="o">&gt;</span>
+&lt;title&gt;Welcome to nginx!&lt;/title&gt;
+...
+</code></pre></div></div>
+
+<p>이번에는 type을 NodePort 로 변경해보겠습니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> kubectl get service
+NAME                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT<span class="o">(</span>S<span class="o">)</span>          AGE
+kubernetes           ClusterIP   10.96.0.1       &lt;none&gt;        443/TCP          26m
+test-nginx-service   NodePort    10.100.152.18   &lt;none&gt;        8080:30471/TCP   2m25s
+</code></pre></div></div>
+
+<p>ClusterIP 와 거의 유사하지만 30471 라는 새로운 포트가 할당되었습니다.
+이 상태에서는 쿠버네티스 클러스터의 30471 포트로 접근하는 모든 네트워크는 해당 nginx 애플리케이션으로 연결됩니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> curl 127.0.0.1:30471
+&lt;<span class="o">!</span>DOCTYPE html&gt;
+&lt;html&gt;
+&lt;<span class="nb">head</span><span class="o">&gt;</span>
+&lt;title&gt;Welcome to nginx!&lt;/title&gt;
+</code></pre></div></div>
+
+<p>만일 노드에 30471 포트를 개방해두었다면 쿠버네티스 외부에서도 동일하게 접근이 가능합니다.
+다만 이 경우에는 노드의 public IP를 이용해서 접근해야 합니다.</p>
+
+<h2 id="24-namespace">2.4 Namespace</h2>
+
+<p><strong>Namespace</strong>는 컨테이너 등의 리소스들을 논리적으로 구분하는 그룹입니다.
+Pod, Deployment 등 리소스 생성시 Namespace를 명시할 수 있습니다.</p>
+
+<p>다음과 같이 현재 구성되어있는 Namespace를 확인할 수 있습니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> kubectl get namespaces
+NAME              STATUS   AGE
+default           Active   29m
+kube-node-lease   Active   29m
+kube-public       Active   29m
+kube-system       Active   29m
+</code></pre></div></div>
+
+<p>아무 조건이 없으면 기본적으로 ‘default’ Namespace 에서 생성됩니다.
+앞에서 생성한 nginx Pod들은 따로 설정을 하지 않았으므로 모두 default Namespace 에서 조회할 수 있습니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> kubectl get pods <span class="nt">--namespace</span> default
+NAME                                     READY   STATUS    RESTARTS   AGE
+test-nginx-deployment-755d478cc5-8kt7r   1/1     Running   0          19m
+test-nginx-deployment-755d478cc5-gfw85   1/1     Running   0          19m
+test-nginx-deployment-755d478cc5-vfthk   1/1     Running   0          19m
+</code></pre></div></div>
+
+<hr />
+
+<p>References</p>
+
+<ul>
+  <li>용찬호, 시작하세요! 도커/쿠버네티스, 위키북스, 2020-01-03</li>
+  <li><a href="https://kubernetes.io/ko/docs/home/">쿠버네티스 문서</a></li>
+</ul>
+
+
+      <hr>
+
+      <div id="disqus_thread"></div>
+      <script>
+          (function() {
+          var d = document, s = d.createElement('script');
+          s.src = 'https://miintto-github-io.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+          })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+      <hr>
+
+    </div>
+  </div>
+</div>
+
+
+  <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="footer-content container">
+    <p class="copyright text-muted">Copyright &copy; miintto 2024</p>
+  </div>
+</footer>
+
+
+  <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
+<script src="/assets/scripts.js"></script>
+
+
+  <script src="/assets/vendor/miintto/js/toc.js"></script>
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXXXX-X"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-XXXXXXXXX-X');
+</script>
+
+
+
+</body>
+
+</html>

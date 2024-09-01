@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+
+<html>
+
+
+
+
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>Spring Security - miintto.log</title>
+
+  <meta name="description" content="구조적으로 탄탄한 어플리케이션을 설계한다면 반드시 인증과 인가 기능을 고려하게 될 겁니다. 여기서 ‘인증’이란 들어오는 요청에 대해 신원을 확인하는 작업을 말하는 것이고, ‘인가’란 식별된 요청이 자원에 접근할 수 있는 권한을 가지고 있는지 검증하는 과정을 의미합니다. 이러한 기능...">
+
+  <meta name="google-site-verification" content="wGN_mZVjgAC8sdItYCBTkSMwLrgNSWPY6sicU3MuSQw" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital@1&display=swap">
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://miintto.github.io/docs/spring-security">
+  <link rel="alternate" type="application/rss+xml" title="Spring Security - miintto.log" href="/feed.xml">
+
+  <link rel="apple-touch-icon" href="/img/favicon-128.png">
+  <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+
+  <meta prefix="og: http://ogp.me/ns#" property="og:site_name" content="miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:type" content="blog"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:title" content="Spring Security - miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:description" content="구조적으로 탄탄한 어플리케이션을 설계한다면 반드시 인증과 인가 기능을 고려하게 될 겁니다. 여기서 ‘인증’이란 들어오는 요청에 대해 신원을 확인하는 작업을 말하는 것이고, ‘인가’란 식별된 요청이 자원에 접근할 수 있는 권한을 가지고 있는지 검증하는 과정을 의미합니다. 이러한 기능..."/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:locale" content="ko_KR"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:url" content="https://miintto.github.io/docs/spring-security"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:image" content="/img/thumbnails/spring-security.png">
+
+</head>
+
+
+<body>
+
+  <!-- Navigation -->
+
+<nav class="navbar" style="background-color: white;">
+
+  <div class="navbar-content container">
+    <a class="navbar-brand" href="/">miintto.log</a>
+    <button class="navbar-button" id="toggleButton" type="button" data-toggle="collapse" aria-controls="navbarResponsive" aria-expanded="false">
+      MENU
+      <i class="fa fa-bars"></i>
+    </button>
+    <div class="navbar-nav" id="navbarResponsive" aria-hidden="true">
+      <div class="nav-item">
+        <a class="nav-link" href="/about">ABOUT</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/posts">POSTS</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/archive">ARCHIVES</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+  <div class="article">
+  <div class="article-wrapper">
+    <div class="article-header">
+      <div class="article-info">
+        <h1>Spring Security</h1>
+        <div class="post-tags">
+          <p>spring</p><p>security</p><p>filter chain proxy</p><p>jwt</p>
+        </div>
+        <div class="article-meta">
+          2023.07.20 &middot; <span class="reading-time" title="Estimated read time">
+  
+   17 mins  read </span>
+
+        </div>
+      </div>
+      <div class="article-banner"">
+        <img src="/img/thumbnails/spring-security.png">
+      </div>
+    </div>
+
+    <div class="article-content">
+      <aside>
+  <div class="section-toc">
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h1"><a href="#1-architecture">1. Architecture</a></li>
+<li class="toc-entry toc-h1"><a href="#2-quick-start">2. Quick Start</a></li>
+<li class="toc-entry toc-h1"><a href="#3-authentication-with-jwt">3. Authentication with JWT</a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#31-jwt-filter">3.1 JWT Filter</a></li>
+<li class="toc-entry toc-h2"><a href="#32-exception-handling">3.2 Exception Handling</a></li>
+</ul>
+</li>
+</ul>
+  </div>
+</aside>
+
+
+      <p>구조적으로 탄탄한 어플리케이션을 설계한다면 반드시 인증과 인가 기능을 고려하게 될 겁니다.
+여기서 <strong>‘인증’</strong>이란 들어오는 요청에 대해 신원을 확인하는 작업을 말하는 것이고, <strong>‘인가’</strong>란 식별된 요청이 자원에 접근할 수 있는 권한을 가지고 있는지 검증하는 과정을 의미합니다.
+이러한 기능을 어플리케이션 내부에 구현하여 리소스에 불특정 다수가 마음대로 접근할 수 없도록 보호할 수 있습니다.</p>
+
+<p><strong>Spring Security</strong>를 이용하면 스프링 환경에서 기본적인 보안 기능을 적용할 수 있습니다.
+이미 내장된 기능들이 많아 적절히 조합하여 사용하기만 하면 됩니다.</p>
+
+<blockquote>
+  <p>이하 내용은 Spring Security 5.7.8 기준으로 작성하였습니다.</p>
+</blockquote>
+
+<hr />
+
+<h1 id="1-architecture">1. Architecture</h1>
+
+<p>Spring Security는 <strong>필터</strong>(Filter) 기반으로 작동합니다.
+기본적으로 스프링에서는 요청이 들어오고 나갈 때마다 경우 여러 필터들을 거치게 되는데, 해당 필터 사이에 인증을 담당하는 필터 한 층을 추가하여 보안 관련 작업을 진행하게 됩니다.</p>
+
+<p>해당 필터는 <code class="language-plaintext highlighter-rouge">FilterChainProxy</code> 클래스 타입으로 겉으로는 하나의 필터처럼 보이지만 내부에는 여러 필터들과 연결되어 있습니다.
+따라서 해당 <code class="language-plaintext highlighter-rouge">FilterChainProxy</code> 실행시 연결된 인증 필터들이 순차적으로 실행되면서 로그아웃, 동시 세션, 권한 등을 검증하게 됩니다.</p>
+
+<p><img src="/img/posts/spring-security-flow.png" style="max-width:600px" /></p>
+
+<p>해당 <code class="language-plaintext highlighter-rouge">FilterChainProxy</code>는 <strong>springSecurityFilterChain</strong> 라는 이름으로 Bean에 등록되어 어플리케이션 실행시 필터 사이에 추가됩니다. 해당 필터가 생성될 때 다음의 과정을 거칩니다.</p>
+
+<ol>
+  <li><code class="language-plaintext highlighter-rouge">WebSecurityConfigurerAdapter</code>와 같은 config 클래스에서 인증 및 인가에 대한 구성을 정의합니다.</li>
+  <li><code class="language-plaintext highlighter-rouge">HttpSecurity</code> 내부에서 해당 정책을 바탕으로 알맞은 필터를 선별 및 정렬하여 <code class="language-plaintext highlighter-rouge">SecurityFilterChain</code> 객체를 생성합니다.</li>
+  <li><code class="language-plaintext highlighter-rouge">WebSecurity</code>는 각 설정으로부터  <code class="language-plaintext highlighter-rouge">SecurityFilterChain</code>을 가져온 후 리스트에 담아 <code class="language-plaintext highlighter-rouge">FilterChainProxy</code>를 생성합니다.</li>
+</ol>
+
+<p>Security config 클래스 작성시 기존에는 <code class="language-plaintext highlighter-rouge">WebSecurityConfigurerAdapter</code>를 상속받았지만 Spring Security 5.4 이후 버전에서는 deprecated 되었습니다. 현재는 <code class="language-plaintext highlighter-rouge">SecurityFilterChain</code>를 <code class="language-plaintext highlighter-rouge">Bean</code>으로 등록하여 사용하는 방식을 권장하고 있습니다.</p>
+
+<hr />
+
+<h1 id="2-quick-start">2. Quick Start</h1>
+
+<p>Spring Security를 사용하기 위해 아래 의존성을 추가합니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">dependencies</span> <span class="p">{</span>
+    <span class="o">..</span><span class="p">.</span>
+    <span class="nf">implementation</span><span class="p">(</span><span class="s">"org.springframework.boot:spring-boot-starter-security"</span><span class="p">)</span>  <span class="c1">// 추가</span>
+</code></pre></div></div>
+
+<p>의존성 추가 후 아무 API나 호출해보면 401 에러를 반환합니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> curl <span class="nt">-I</span> localhost:8080/user/1
+HTTP/1.1 403 
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1<span class="p">;</span> <span class="nv">mode</span><span class="o">=</span>block
+</code></pre></div></div>
+
+<p>그 현재 이유는 인증 및 인가에 관해 아무 설정도 해주지 않았기 때문입니다.
+Spring Security가 적용되는 순간부터 모든 요청은 인증이 되어야지만 자원에 접근이 가능해집니다.</p>
+
+<p>이를 해결하기 위해 config 클래스를 만들어서 어플리케이션에 적용할 보안 구성을 정의해 주어야 합니다.
+우선 임시로 모든 요청에 대해 권한 없이 접근이 가능하도록 설정하겠습니다.
+아래와 같이 별도 <code class="language-plaintext highlighter-rouge">@Configuration</code> 클래스를 생성한 후 <code class="language-plaintext highlighter-rouge">Bean</code>으로 등록한 메소드 내부에 인증/인가 기능들을 정의합니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Configuration</span>
+<span class="kd">class</span> <span class="nc">SecurityConfig</span> <span class="p">{</span>
+
+    <span class="nd">@Bean</span>
+    <span class="k">fun</span> <span class="nf">filterChain</span><span class="p">(</span><span class="n">http</span><span class="p">:</span> <span class="nc">HttpSecurity</span><span class="p">):</span> <span class="nc">SecurityFilterChain</span> <span class="p">{</span>
+        <span class="n">http</span><span class="p">.</span><span class="nf">authorizeHttpRequests</span> <span class="p">{</span> <span class="n">request</span> <span class="p">-&gt;</span> <span class="n">request</span><span class="p">.</span><span class="nf">anyRequest</span><span class="p">().</span><span class="nf">permitAll</span><span class="p">()</span> <span class="p">}</span>
+        <span class="k">return</span> <span class="n">http</span><span class="p">.</span><span class="nf">build</span><span class="p">()</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>이제 해당 <code class="language-plaintext highlighter-rouge">Bean</code>은 config 클래스로 인식되어 filter chain을 생성합니다.
+하지만 모든 요청에 대해 <code class="language-plaintext highlighter-rouge">.permitAll()</code>이 적용되어 있어서 인증 없이 모든 필터를 통과하더라도 큰 이슈 없이 리소스에 접근할 수 있습니다.</p>
+
+<p>다시 어플리케이션을 재시작한 후에 API를 호출하면 다시 정상적으로 동작하는 것을 확인할 수 있습니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> curl localhost:8080/user/1
+<span class="o">{</span><span class="s2">"code"</span>:<span class="s2">"S001"</span>,<span class="s2">"message"</span>:<span class="s2">"성공"</span>,<span class="s2">"data"</span>:<span class="o">{</span><span class="s2">"id"</span>:1,<span class="s2">"userName"</span>:<span class="s2">"miintto"</span>,...
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="3-authentication-with-jwt">3. Authentication with JWT</h1>
+
+<p>이번에는 실제 인증 기능을 구현해 보겠습니다.
+인증 방식은 흔히 사용하는 JWT를 선택했습니다.
+JWT에 대한 자세한 설명은 여기서 다루지 않겠습니다.</p>
+
+<h2 id="31-jwt-filter">3.1 JWT Filter</h2>
+
+<p>JWT를 사용하기 위해 아래 의존성을 추가합니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">dependencies</span> <span class="p">{</span>
+    <span class="o">..</span><span class="p">.</span>
+    <span class="nf">implementation</span><span class="p">(</span><span class="s">"io.jsonwebtoken:jjwt-api"</span><span class="p">)</span>
+    <span class="nf">implementation</span><span class="p">(</span><span class="s">"io.jsonwebtoken:jjwt-impl"</span><span class="p">)</span>
+    <span class="nf">implementation</span><span class="p">(</span><span class="s">"io.jsonwebtoken:jjwt-jackson"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>토큰은 회원가입 및 로그인시 발급되도록 하고, 별도 access 및 refresh 구분 없이 심플하게 access 토큰만 사용하였습니다. 만료 시간은 발급 후 1시간으로 설정하였습니다. 아래 토큰 발급 및 검증을 담당하는 클래스를 작성하였습니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Component</span>
+<span class="kd">class</span> <span class="nc">JwtTokenProvider</span> <span class="p">{</span>
+
+    <span class="nd">@Value</span><span class="p">(</span><span class="s">"\${jwt.secret}"</span><span class="p">)</span>
+    <span class="k">private</span> <span class="k">lateinit</span> <span class="kd">var</span> <span class="py">jwtSecret</span><span class="p">:</span> <span class="nc">String</span>
+
+    <span class="k">private</span> <span class="kd">val</span> <span class="py">accessExpirationInterval</span> <span class="p">=</span> <span class="mi">60</span> <span class="p">*</span> <span class="mi">60</span> <span class="p">*</span> <span class="mi">1000L</span>  <span class="c1">// 만료시간은 1시간</span>
+
+    <span class="k">private</span> <span class="kd">val</span> <span class="py">secretKey</span><span class="p">:</span> <span class="nc">SecretKey</span>
+        <span class="k">get</span><span class="p">()</span> <span class="p">=</span> <span class="nc">Keys</span><span class="p">.</span><span class="nf">hmacShaKeyFor</span><span class="p">(</span><span class="n">jwtSecret</span><span class="p">.</span><span class="nf">toByteArray</span><span class="p">())</span>
+
+    <span class="k">private</span> <span class="kd">val</span> <span class="py">jwtParser</span><span class="p">:</span> <span class="nc">JwtParser</span>
+        <span class="k">get</span><span class="p">()</span> <span class="p">=</span> <span class="nc">Jwts</span><span class="p">.</span><span class="nf">parserBuilder</span><span class="p">().</span><span class="nf">setSigningKey</span><span class="p">(</span><span class="n">secretKey</span><span class="p">).</span><span class="nf">build</span><span class="p">()</span>
+
+    <span class="k">fun</span> <span class="nf">generateToken</span><span class="p">(</span><span class="n">user</span><span class="p">:</span> <span class="nc">AuthUser</span><span class="p">):</span> <span class="nc">String</span> <span class="p">{</span>
+        <span class="kd">val</span> <span class="py">claims</span> <span class="p">=</span> <span class="nc">Jwts</span><span class="p">.</span><span class="nf">claims</span><span class="p">().</span><span class="nf">setSubject</span><span class="p">(</span><span class="n">user</span><span class="p">.</span><span class="n">id</span><span class="p">.</span><span class="nf">toString</span><span class="p">())</span>
+        <span class="n">claims</span><span class="p">[</span><span class="s">"userName"</span><span class="p">]</span> <span class="p">=</span> <span class="n">user</span><span class="p">.</span><span class="n">userName</span>
+        <span class="n">claims</span><span class="p">[</span><span class="s">"permission"</span><span class="p">]</span> <span class="p">=</span> <span class="n">user</span><span class="p">.</span><span class="n">userPermission</span>
+        <span class="k">return</span> <span class="nc">Jwts</span><span class="p">.</span><span class="nf">builder</span><span class="p">()</span>
+            <span class="p">.</span><span class="nf">setHeaderParam</span><span class="p">(</span><span class="s">"typ"</span><span class="p">,</span> <span class="s">"JWT"</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">setClaims</span><span class="p">(</span><span class="n">claims</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">setIssuedAt</span><span class="p">(</span><span class="nc">Date</span><span class="p">())</span>
+            <span class="p">.</span><span class="nf">setExpiration</span><span class="p">(</span><span class="nc">Date</span><span class="p">(</span><span class="nc">Date</span><span class="p">().</span><span class="n">time</span> <span class="p">+</span> <span class="n">accessExpirationInterval</span><span class="p">))</span>
+            <span class="p">.</span><span class="nf">signWith</span><span class="p">(</span><span class="n">secretKey</span><span class="p">,</span> <span class="nc">SignatureAlgorithm</span><span class="p">.</span><span class="nc">HS256</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">compact</span><span class="p">()</span>
+    <span class="p">}</span>
+
+    <span class="k">fun</span> <span class="nf">validateToken</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="nc">String</span><span class="p">):</span> <span class="nc">Boolean</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">try</span> <span class="p">{</span>
+            <span class="n">jwtParser</span><span class="p">.</span><span class="nf">parse</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+            <span class="k">true</span>
+        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="nc">Exception</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">false</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">fun</span> <span class="nf">getAuthentication</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="nc">String</span><span class="p">):</span> <span class="nc">Authentication</span> <span class="p">{</span>
+        <span class="kd">val</span> <span class="py">claims</span> <span class="p">=</span> <span class="n">jwtParser</span><span class="p">.</span><span class="nf">parseClaimsJws</span><span class="p">(</span><span class="n">token</span><span class="p">).</span><span class="n">body</span>
+        <span class="kd">val</span> <span class="py">userDetails</span> <span class="p">=</span> <span class="nc">User</span><span class="p">.</span><span class="nf">builder</span><span class="p">()</span>
+            <span class="p">.</span><span class="nf">username</span><span class="p">(</span><span class="n">claims</span><span class="p">.</span><span class="n">subject</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">password</span><span class="p">(</span><span class="s">""</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">roles</span><span class="p">(</span><span class="n">claims</span><span class="p">[</span><span class="s">"permission"</span><span class="p">].</span><span class="nf">toString</span><span class="p">())</span>
+            <span class="p">.</span><span class="nf">build</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nc">UsernamePasswordAuthenticationToken</span><span class="p">(</span><span class="n">userDetails</span><span class="p">,</span> <span class="s">""</span><span class="p">,</span> <span class="n">userDetails</span><span class="p">.</span><span class="n">authorities</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># application-local.yml</span>
+<span class="na">jwt</span><span class="pi">:</span>
+  <span class="na">secret</span><span class="pi">:</span> <span class="s">c1ed7355-e0ac-40b1-92d0-0cb5d36d0094</span>
+</code></pre></div></div>
+
+<p>토큰 내부에는 사용자 pk, 이름(userName), 권한 정보(permission)를 넣었으며 암호화 알고리즘은 HS256을 사용하였습니다.
+해당 알고리즘을 사용하기 위해 별도 키가 필요한데, 키의 길이가 최소 256 비트(String 으로 32자) 이상 되도록 강제하고 있으니 최대한 길게 사용하는 것을 권장드립니다.
+해당 키는 설정 파일에서 관리하도록 하였습니다.</p>
+
+<p>일반적인 레퍼런스들을 찾아보면 토큰 디코딩 후 <code class="language-plaintext highlighter-rouge">UserDetailService</code>를 사용하여 DB로부터 사용자의 정보를 가져오는 예제를 많이 볼 수 있습니다.
+어떻게 보면 그런 방식이 좀 더 엄밀해 보이긴 하지만 DB 접근 없이 토큰만으로 인증 및 권한 확인이 가능하다는 JWT의 장점이 무색해지는것 같아 DB 접근 없이 토큰 body만 이용하여 인가 작업을 하도록 구현하였습니다.</p>
+
+<p>이제 실제 <code class="language-plaintext highlighter-rouge">FilterChainProxy</code>에서 작동할 커스텀 필터를 작성했습니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Component</span>
+<span class="kd">class</span> <span class="nc">JwtAuthenticationFilter</span> <span class="p">:</span> <span class="nc">OncePerRequestFilter</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="nd">@Autowired</span>
+    <span class="k">private</span> <span class="k">lateinit</span> <span class="kd">var</span> <span class="py">jwtTokenProvider</span><span class="p">:</span> <span class="nc">JwtTokenProvider</span>
+
+    <span class="k">private</span> <span class="k">fun</span> <span class="nf">resolveToken</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="nc">HttpServletRequest</span><span class="p">):</span> <span class="nc">String</span><span class="p">?</span> <span class="p">{</span>
+        <span class="kd">val</span> <span class="py">token</span> <span class="p">=</span> <span class="n">request</span><span class="p">.</span><span class="nf">getHeader</span><span class="p">(</span><span class="s">"Authorization"</span><span class="p">)</span> <span class="o">?:</span> <span class="k">return</span> <span class="k">null</span>
+        <span class="kd">val</span> <span class="py">authArray</span> <span class="p">=</span> <span class="n">token</span><span class="p">.</span><span class="nf">split</span><span class="p">(</span><span class="s">" "</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">authArray</span><span class="p">.</span><span class="n">size</span> <span class="p">!=</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="k">null</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">authArray</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nf">lowercase</span><span class="p">()</span> <span class="p">!=</span> <span class="s">"bearer"</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="k">null</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">authArray</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="p">}</span>
+
+    <span class="k">private</span> <span class="k">fun</span> <span class="nf">setAuthorization</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="nc">String</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nc">SecurityContextHolder</span><span class="p">.</span><span class="nf">getContext</span><span class="p">().</span><span class="n">authentication</span> <span class="p">=</span> <span class="n">jwtTokenProvider</span><span class="p">.</span><span class="nf">getAuthentication</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">doFilterInternal</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="nc">HttpServletRequest</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="nc">HttpServletResponse</span><span class="p">,</span> <span class="n">filterChain</span><span class="p">:</span> <span class="nc">FilterChain</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">val</span> <span class="py">token</span> <span class="p">=</span> <span class="nf">resolveToken</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">token</span> <span class="p">!=</span> <span class="k">null</span> <span class="p">&amp;&amp;</span> <span class="n">jwtTokenProvider</span><span class="p">.</span><span class="nf">validateToken</span><span class="p">(</span><span class="n">token</span><span class="p">))</span> <span class="p">{</span>
+            <span class="nf">setAuthorization</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="n">filterChain</span><span class="p">.</span><span class="nf">doFilter</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>요청 헤더에 <code class="language-plaintext highlighter-rouge">Authorizarion: Bearer eyJ0eXAi..</code> 형식으로 입력하여 인증되도록 하였습니다.
+토큰이 유효한 경우에는 토큰을 파싱한 body에서 인증 정보를 가져와 인증을 완료해주고 아닌 경우에는 별도 작업 없이 그냥 넘어갑니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Configuration</span>
+<span class="kd">class</span> <span class="nc">SecurityConfig</span> <span class="p">{</span>
+
+    <span class="nd">@Autowired</span>
+    <span class="k">private</span> <span class="k">lateinit</span> <span class="kd">var</span> <span class="py">jwtAuthenticationFilter</span><span class="p">:</span> <span class="nc">JwtAuthenticationFilter</span>
+
+    <span class="nd">@Bean</span>
+    <span class="k">fun</span> <span class="nf">filterChain</span><span class="p">(</span><span class="n">http</span><span class="p">:</span> <span class="nc">HttpSecurity</span><span class="p">):</span> <span class="nc">SecurityFilterChain</span> <span class="p">{</span>
+        <span class="n">http</span>
+            <span class="p">.</span><span class="nf">authorizeHttpRequests</span> <span class="p">{</span> <span class="n">request</span> <span class="p">-&gt;</span>
+                <span class="n">request</span><span class="p">.</span><span class="nf">antMatchers</span><span class="p">(</span><span class="s">"/auth/**"</span><span class="p">).</span><span class="nf">permitAll</span><span class="p">()</span>  <span class="c1">// '/auth' 하위 uri에서는 인증 없이 허용</span>
+                    <span class="p">.</span><span class="nf">anyRequest</span><span class="p">().</span><span class="nf">authenticated</span><span class="p">()</span>  <span class="c1">// 나머지는 반드시 인증 필요</span>
+            <span class="p">}</span>
+            <span class="p">.</span><span class="nf">csrf</span><span class="p">().</span><span class="nf">disable</span><span class="p">()</span>  <span class="c1">// csrf 비활성화</span>
+            <span class="p">.</span><span class="nf">formLogin</span><span class="p">().</span><span class="nf">disable</span><span class="p">()</span> <span class="c1">// form login 비활성화</span>
+            <span class="p">.</span><span class="nf">httpBasic</span><span class="p">().</span><span class="nf">disable</span><span class="p">()</span>  <span class="c1">// 기본 인증 비활성화</span>
+            <span class="p">.</span><span class="nf">sessionManagement</span> <span class="p">{</span> <span class="n">it</span><span class="p">.</span><span class="nf">sessionCreationPolicy</span><span class="p">(</span><span class="nc">SessionCreationPolicy</span><span class="p">.</span><span class="nc">STATELESS</span><span class="p">)</span> <span class="p">}</span>  <span class="c1">// 세션 인증 비활성화</span>
+            <span class="p">.</span><span class="nf">addFilterBefore</span><span class="p">(</span><span class="n">jwtAuthenticationFilter</span><span class="p">,</span> <span class="nc">UsernamePasswordAuthenticationFilter</span><span class="o">::</span><span class="k">class</span><span class="p">.</span><span class="n">java</span><span class="p">)</span>  <span class="c1">// 커스텀 필터 등록</span>
+        <span class="k">return</span> <span class="n">http</span><span class="p">.</span><span class="nf">build</span><span class="p">()</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>먼저 작성했던 Config 클래스를 새 보안 정책에 맞게 다시 작성하였습니다.
+현 프로젝트에서는 JWT를 이용한 인증만 진행할 예정이므로 기본적으로 내장되어있는 CSRF, Form 로그인, 세션 인증 등의 기능은 비활성화 합니다.
+‘/auth’ 하위의 URI는 인증 관련 작업시 사용할 예정이라 누구나 접근 가능하도록 하였고, 그 외 나머지 URI에 대해서는 모두 인증된 클라이언트만 접근할 수 있도록 하였습니다.</p>
+
+<p>앞에서 생성한 JWT 인증 필터를 등록하였습니다.
+<code class="language-plaintext highlighter-rouge">addFilterBefore()</code> 메소드를 이용하여 등록하면 특정 필터 바로 앞에 커스텀한 필터를 등록할 수 있습니다.</p>
+
+<p>최초 사용할 토큰을 발급받기 위해 임시로 토큰을 생성하는 API를 작성하였습니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@RestController</span>
+<span class="nd">@RequestMapping</span><span class="p">(</span><span class="s">"/auth"</span><span class="p">)</span>
+<span class="kd">class</span> <span class="nc">AuthController</span> <span class="p">{</span>
+    <span class="nd">@Autowired</span>
+    <span class="k">private</span> <span class="k">lateinit</span> <span class="kd">var</span> <span class="py">authUserRepository</span><span class="p">:</span> <span class="nc">AuthUserRepository</span>
+
+    <span class="nd">@Autowired</span>
+    <span class="k">private</span> <span class="k">lateinit</span> <span class="kd">var</span> <span class="py">jwtTokenProvider</span><span class="p">:</span> <span class="nc">JwtTokenProvider</span>
+
+
+    <span class="nd">@PostMapping</span><span class="p">(</span><span class="s">"/token"</span><span class="p">)</span>
+    <span class="k">fun</span> <span class="nf">login</span><span class="p">():</span> <span class="nc">ApiResponse</span> <span class="p">{</span>
+        <span class="kd">val</span> <span class="py">user</span> <span class="p">=</span> <span class="n">authUserRepository</span><span class="p">.</span><span class="nf">findByIdOrNull</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">?:</span> <span class="k">throw</span> <span class="nc">Exception</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nc">ApiResponse</span><span class="p">(</span><span class="nc">Http2xx</span><span class="p">.</span><span class="nc">SUCCESS</span><span class="p">,</span> <span class="n">jwtTokenProvider</span><span class="p">.</span><span class="nf">generateToken</span><span class="p">(</span><span class="n">user</span><span class="p">))</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>POST /auth/token
+Status 200
+Response
+<span class="o">{</span>
+    <span class="s2">"code"</span>: <span class="s2">"S001"</span>,
+    <span class="s2">"message"</span>: <span class="s2">"성공"</span>,
+    <span class="s2">"data"</span>: <span class="s2">"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJz...."</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h2 id="32-exception-handling">3.2 Exception Handling</h2>
+
+<p>이제 인증 관련 에러는 401 에러를 반환하도록 처리하려고 합니다.
+<a href="/docs/spring-exception#3-handle-exception">이전에</a> 작성했던 <code class="language-plaintext highlighter-rouge">RestControllerAdvice</code>에 예외 처리 메소드를 하나 추가합니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">enum</span> <span class="kd">class</span> <span class="nc">Http</span><span class="p">(</span><span class="kd">val</span> <span class="py">code</span><span class="p">:</span> <span class="nc">String</span><span class="p">,</span> <span class="kd">val</span> <span class="py">message</span><span class="p">:</span> <span class="nc">String</span><span class="p">,</span> <span class="kd">val</span> <span class="py">status</span><span class="p">:</span> <span class="nc">HttpStatus</span><span class="p">)</span> <span class="p">{</span>
+    <span class="o">..</span><span class="p">.</span>
+    <span class="nc">UNAUTHENTICATED</span><span class="p">(</span><span class="s">"F002"</span><span class="p">,</span> <span class="s">"잘못된 인증 정보입니다."</span><span class="p">,</span> <span class="nc">HttpStatus</span><span class="p">.</span><span class="nc">UNAUTHORIZED</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@RestControllerAdvice</span>
+<span class="kd">class</span> <span class="nc">ApiExceptionHandler</span> <span class="p">{</span>
+    <span class="o">..</span><span class="p">.</span>
+    <span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">value</span> <span class="p">=</span> <span class="p">[</span><span class="nc">AuthenticationException</span><span class="o">::</span><span class="k">class</span><span class="p">])</span>
+    <span class="k">fun</span> <span class="nf">handleAuthError</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="nc">AuthenticationException</span><span class="p">):</span> <span class="nc">ApiResponse</span> <span class="p">{</span>
+        <span class="n">logger</span><span class="p">.</span><span class="nf">error</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nc">ApiResponse</span><span class="p">(</span><span class="nc">Http</span><span class="p">.</span><span class="nc">UNAUTHENTICATED</span><span class="p">)</span>
+    <span class="p">}</span>
+</code></pre></div></div>
+
+<p>그리고 인증 에러를 발생시키기 위해 일부러 토큰 없이 호출해보면…</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> curl localhost:8080/user/1
+<span class="nv">$&gt;</span> curl <span class="nt">-I</span> localhost:8080/user/1
+HTTP/1.1 403 
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1<span class="p">;</span> <span class="nv">mode</span><span class="o">=</span>block
+Cache-Control: no-cache, no-store, max-age<span class="o">=</span>0, must-revalidate
+...
+</code></pre></div></div>
+
+<p>원하는 대로 데이터가 나오지도 않을뿐더러 status 403을 반환하는 것을 확인할 수 있습니다.</p>
+
+<p>해당 에러가 인증 에러로 처리되지 않는 이유는 <code class="language-plaintext highlighter-rouge">HandlerExceptionFilter</code>에 도달하기 전에 에러가 발생하기 때문입니다. 이를 해결하기 위해 <code class="language-plaintext highlighter-rouge">AuthenticationEntryPoint</code> 라는 클래스를 활용할 수 있습니다.</p>
+
+<p><img src="/img/posts/spring-security-authentication-entry-point.png" style="max-width:640px" /></p>
+
+<p><code class="language-plaintext highlighter-rouge">AuthenticationEntryPoint</code>는 인증 필터 중 <code class="language-plaintext highlighter-rouge">ExceptionTranslationFilter</code> 내부에서 실행됩니다.
+해당 필터는 인증 및 인가 부분에서 발생한 에러를 처리하는데, 어플리케이션의 전역적인 예외 처리를 담당하는 <code class="language-plaintext highlighter-rouge">HandlerExceptionResolver</code>와 연결해 주면 인증 예외 발생시에도 응답 포맷을 커스텀 할 수 있습니다.</p>
+
+<p>위 내용을 구현해 보면 아래와 같이 작성할 수 있습니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Component</span>
+<span class="kd">class</span> <span class="nc">JwtAuthenticationEntryPoint</span> <span class="p">:</span> <span class="nc">AuthenticationEntryPoint</span> <span class="p">{</span>
+
+    <span class="nd">@Autowired</span>
+    <span class="nd">@Qualifier</span><span class="p">(</span><span class="s">"handlerExceptionResolver"</span><span class="p">)</span>
+    <span class="k">private</span> <span class="k">lateinit</span> <span class="kd">var</span> <span class="py">resolver</span><span class="p">:</span> <span class="nc">HandlerExceptionResolver</span>
+
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">commence</span><span class="p">(</span>
+        <span class="n">request</span><span class="p">:</span> <span class="nc">HttpServletRequest</span><span class="p">,</span>
+        <span class="n">response</span><span class="p">:</span> <span class="nc">HttpServletResponse</span><span class="p">,</span>
+        <span class="n">authException</span><span class="p">:</span> <span class="nc">AuthenticationException</span>
+    <span class="p">)</span> <span class="p">{</span>
+        <span class="n">resolver</span><span class="p">.</span><span class="nf">resolveException</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="k">null</span><span class="p">,</span> <span class="n">authException</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Configuration</span>
+<span class="kd">class</span> <span class="nc">SecurityConfig</span> <span class="p">{</span>
+
+    <span class="nd">@Autowired</span>
+    <span class="k">private</span> <span class="k">lateinit</span> <span class="kd">var</span> <span class="py">jwtAuthenticationEntryPoint</span><span class="p">:</span> <span class="nc">JwtAuthenticationEntryPoint</span>
+
+    <span class="nd">@Bean</span>
+    <span class="k">fun</span> <span class="nf">filterChain</span><span class="p">(</span><span class="n">http</span><span class="p">:</span> <span class="nc">HttpSecurity</span><span class="p">):</span> <span class="nc">SecurityFilterChain</span> <span class="p">{</span>
+        <span class="n">http</span>
+            <span class="p">.</span><span class="nf">authorizeHttpRequests</span> <span class="p">{</span> <span class="n">request</span> <span class="p">-&gt;</span>
+                <span class="n">request</span><span class="p">.</span><span class="nf">antMatchers</span><span class="p">(</span><span class="s">"/auth/**"</span><span class="p">).</span><span class="nf">permitAll</span><span class="p">()</span>
+                    <span class="p">.</span><span class="nf">anyRequest</span><span class="p">().</span><span class="nf">authenticated</span><span class="p">()</span>
+            <span class="p">}</span>
+            <span class="p">.</span><span class="nf">csrf</span><span class="p">().</span><span class="nf">disable</span><span class="p">()</span>
+            <span class="p">.</span><span class="nf">formLogin</span><span class="p">().</span><span class="nf">disable</span><span class="p">()</span>
+            <span class="p">.</span><span class="nf">httpBasic</span><span class="p">().</span><span class="nf">disable</span><span class="p">()</span>
+            <span class="p">.</span><span class="nf">sessionManagement</span> <span class="p">{</span> <span class="n">it</span><span class="p">.</span><span class="nf">sessionCreationPolicy</span><span class="p">(</span><span class="nc">SessionCreationPolicy</span><span class="p">.</span><span class="nc">STATELESS</span><span class="p">)</span> <span class="p">}</span>
+            <span class="p">.</span><span class="nf">addFilterBefore</span><span class="p">(</span><span class="n">jwtAuthenticationFilter</span><span class="p">,</span> <span class="nc">UsernamePasswordAuthenticationFilter</span><span class="o">::</span><span class="k">class</span><span class="p">.</span><span class="n">java</span><span class="p">)</span>
+            <span class="c1">// 생성한 클래스 등록</span>
+            <span class="p">.</span><span class="nf">exceptionHandling</span> <span class="p">{</span> <span class="n">it</span><span class="p">.</span><span class="nf">authenticationEntryPoint</span><span class="p">(</span><span class="n">jwtAuthenticationEntryPoint</span><span class="p">)</span> <span class="p">}</span>
+        <span class="k">return</span> <span class="n">http</span><span class="p">.</span><span class="nf">build</span><span class="p">()</span>
+    <span class="p">}</span>
+</code></pre></div></div>
+
+<p>다시 동일하게 토큰 없이 요청해보면 설정해 준 응답 형태와 401 에러가 반환되는 것을 확인할 수 있습니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> curl localhost:8080/user/1
+<span class="o">{</span><span class="s2">"code"</span>:<span class="s2">"F002"</span>,<span class="s2">"message"</span>:<span class="s2">"잘못된 인증 정보입니다."</span>,<span class="s2">"data"</span>:null<span class="o">}</span>
+
+<span class="nv">$&gt;</span> curl <span class="nt">-I</span> localhost:8080/user/1
+HTTP/1.1 401 
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1<span class="p">;</span> <span class="nv">mode</span><span class="o">=</span>block
+Cache-Control: no-cache, no-store, max-age<span class="o">=</span>0, must-revalidate
+...
+</code></pre></div></div>
+
+<hr />
+
+<p>References</p>
+
+<ul>
+  <li><a href="https://spring.io/guides/topicals/spring-security-architecture/">Getting Started | Spring Security Architecture</a></li>
+  <li><a href="https://gngsn.tistory.com/160">Spring Security, 제대로 이해하기 - FilterChain</a></li>
+  <li><a href="https://dotheright.tistory.com/355">Spring Security(2) - 전체 구조와 필터 별 역할 정리</a></li>
+  <li><a href="https://codingdiary99.tistory.com/entry/Spring-boot-Kotlin-Spring-security-JWT-로그인-구현하기">[Spring boot / Kotlin] Spring security + JWT 로그인 구현하기</a></li>
+  <li><a href="https://velog.io/@tlatldms/서버개발캠프-Spring-security-refreshing-JWT-DB접근없이-인증과-파싱하기">[서버개발캠프] Spring Security + Refresh JWT DB접근없이 인증과 파싱하기</a></li>
+  <li><a href="https://www.baeldung.com/spring-security-exceptionhandler">Handle Spring Security Exceptions With @ExceptionHandler | Baeldung</a></li>
+  <li><a href="https://colabear754.tistory.com/172">[Spring Security] Spring Security 예외를 @ControllerAdvice와 @ExceptionHandler를 사용하여 전역으로 처리해보자</a></li>
+</ul>
+
+<hr />
+
+
+      <hr>
+
+      <div id="disqus_thread"></div>
+      <script>
+          (function() {
+          var d = document, s = d.createElement('script');
+          s.src = 'https://miintto-github-io.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+          })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+      <hr>
+
+    </div>
+  </div>
+</div>
+
+
+  <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="footer-content container">
+    <p class="copyright text-muted">Copyright &copy; miintto 2024</p>
+  </div>
+</footer>
+
+
+  <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
+<script src="/assets/scripts.js"></script>
+
+
+  <script src="/assets/vendor/miintto/js/toc.js"></script>
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXXXX-X"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-XXXXXXXXX-X');
+</script>
+
+
+
+</body>
+
+</html>

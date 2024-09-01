@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+
+<html>
+
+
+
+
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>[파이썬] 코루틴 - miintto.log</title>
+
+  <meta name="description" content="앞서 제너레이터의 작동 방식을 생각해보면, 호출자가 제너레이터를 호출하면 제너레이터는 yield로 선언한 값을 호출자에게 전달하고 다음 호출을 기다리며 대기하게 됩니다. 이를 반대로 생각해보면 호출자에서 제너레이터 내부로 값을 전달하여 나머지 실행을 이어갈 수도 있지 않을까? 그러...">
+
+  <meta name="google-site-verification" content="wGN_mZVjgAC8sdItYCBTkSMwLrgNSWPY6sicU3MuSQw" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital@1&display=swap">
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://miintto.github.io/docs/python-coroutine">
+  <link rel="alternate" type="application/rss+xml" title="[파이썬] 코루틴 - miintto.log" href="/feed.xml">
+
+  <link rel="apple-touch-icon" href="/img/favicon-128.png">
+  <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+
+  <meta prefix="og: http://ogp.me/ns#" property="og:site_name" content="miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:type" content="blog"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:title" content="[파이썬] 코루틴 - miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:description" content="앞서 제너레이터의 작동 방식을 생각해보면, 호출자가 제너레이터를 호출하면 제너레이터는 yield로 선언한 값을 호출자에게 전달하고 다음 호출을 기다리며 대기하게 됩니다. 이를 반대로 생각해보면 호출자에서 제너레이터 내부로 값을 전달하여 나머지 실행을 이어갈 수도 있지 않을까? 그러..."/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:locale" content="ko_KR"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:url" content="https://miintto.github.io/docs/python-coroutine"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:image" content="/img/thumbnails/python.png">
+
+</head>
+
+
+<body>
+
+  <!-- Navigation -->
+
+<nav class="navbar" style="background-color: white;">
+
+  <div class="navbar-content container">
+    <a class="navbar-brand" href="/">miintto.log</a>
+    <button class="navbar-button" id="toggleButton" type="button" data-toggle="collapse" aria-controls="navbarResponsive" aria-expanded="false">
+      MENU
+      <i class="fa fa-bars"></i>
+    </button>
+    <div class="navbar-nav" id="navbarResponsive" aria-hidden="true">
+      <div class="nav-item">
+        <a class="nav-link" href="/about">ABOUT</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/posts">POSTS</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/archive">ARCHIVES</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+  <div class="article">
+  <div class="article-wrapper">
+    <div class="article-header">
+      <div class="article-info">
+        <h1>[파이썬] 코루틴</h1>
+        <div class="post-tags">
+          <p>python</p><p>coroutine</p><p>generator</p>
+        </div>
+        <div class="article-meta">
+          2022.03.09 &middot; <span class="reading-time" title="Estimated read time">
+  
+   13 mins  read </span>
+
+        </div>
+      </div>
+      <div class="article-banner"">
+        <img src="/img/thumbnails/python.png">
+      </div>
+    </div>
+
+    <div class="article-content">
+      <aside>
+  <div class="section-toc">
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h1"><a href="#1-코루틴이란">1. 코루틴이란?</a></li>
+<li class="toc-entry toc-h1"><a href="#2-코루틴-종료">2. 코루틴 종료</a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#21-close">2.1 close</a></li>
+<li class="toc-entry toc-h2"><a href="#22-예외-발생">2.2 예외 발생</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h1"><a href="#3-코루틴에서-예외-처리---throw">3. 코루틴에서 예외 처리 - throw</a></li>
+<li class="toc-entry toc-h1"><a href="#4-코루틴에서-return-사용법">4. 코루틴에서 return 사용법</a></li>
+<li class="toc-entry toc-h1"><a href="#5-yield-from">5. yield from</a></li>
+</ul>
+  </div>
+</aside>
+
+
+      <p>앞서 <a href="/docs/python-generator"><strong>제너레이터</strong></a>의 작동 방식을 생각해보면, 호출자가 제너레이터를 호출하면 제너레이터는 <code class="language-plaintext highlighter-rouge">yield</code>로 선언한 값을 호출자에게 전달하고 다음 호출을 기다리며 대기하게 됩니다.
+이를 반대로 생각해보면 호출자에서 제너레이터 내부로 값을 전달하여 나머지 실행을 이어갈 수도 있지 않을까? 그러한 생각에서 나온 게 바로 <strong>코루틴</strong>(coroutine)입니다.</p>
+
+<hr />
+
+<h1 id="1-코루틴이란">1. 코루틴이란?</h1>
+
+<p>코루틴이란 제너레이터의 일종입니다.
+다만 제너레이터와는 달리 호출자가 실행을 컨트롤할 수 있고 코루틴 내부에 데이터를 전송할 수도 있습니다.
+호출자는 <code class="language-plaintext highlighter-rouge">send()</code> 메소드를 이용하여 제너레이터 내부로 값을 전달할 수 있습니다.</p>
+
+<p>코루틴은 기본적으로 다음 4가지 상태를 가집니다.</p>
+
+<ul>
+  <li><strong><em>GEN_CREATED</em></strong> : 코루틴 객체가 생성되어 실행을 대기하는 상태</li>
+  <li><strong><em>GEN_RUNNING</em></strong> : 파이썬 인터프리터에 의해 실행되고 있는 상태</li>
+  <li><strong><em>GEN_SUSPENDED</em></strong> : <code class="language-plaintext highlighter-rouge">yield</code> 문에서 다음 호출을 대기하는 상태</li>
+  <li><strong><em>GEN_CLOSED</em></strong> : 실행이 완료되고 종료된 상태</li>
+</ul>
+
+<p>바로 생성한 코루틴 객체는 아직 기동할(priming) 수 있는 상태가 아닙니다.
+한 번 <code class="language-plaintext highlighter-rouge">next()</code>를 호출하여 기동할 수 있는 상태로 활성화시켜 주어야 호출자로부터 값을 받을 수 있는 상태가 됩니다.</p>
+
+<p>다음 코드를 보면서 기본적인 작동 방식을 알아봅시다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">coroutine</span><span class="p">():</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">Start!</span><span class="sh">"</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="k">yield</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">a: </span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">a</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">b: </span><span class="si">{</span><span class="n">b</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">c: </span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+
+
+<span class="n">co</span> <span class="o">=</span> <span class="nf">coroutine</span><span class="p">()</span>
+<span class="n">co</span>
+<span class="c1"># &lt;generator object coroutine at 0x7febe8082190&gt;
+</span>
+<span class="nf">next</span><span class="p">(</span><span class="n">co</span><span class="p">)</span>
+<span class="c1"># Start!
+</span>
+<span class="n">co</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="c1"># a: 10
+# 10
+</span>
+<span class="n">co</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+<span class="c1"># b: 6
+# 16
+</span>
+<span class="n">co</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span>
+<span class="c1"># c: 11
+# Traceback (most recent call last):
+#   File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+# StopIteration
+</span></code></pre></div></div>
+
+<p><img src="/img/posts/python-coroutine-process.png" style="max-width:540px" /></p>
+
+<p>기존 제너레이터는 <code class="language-plaintext highlighter-rouge">yield</code>를 이용하여 호출자로 전송할 값을 선언하였는데, 코루틴이 호출자로부터 받아온 값을 변수로 할당하는 과정에서도 <code class="language-plaintext highlighter-rouge">yield</code> 가 사용됩니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">next()</code> 함수로 코루틴이 활성화되면 처음 <code class="language-plaintext highlighter-rouge">yield</code> 까지 실행되고 호출자로부터 값을 받을 수 있는 상태가 됩니다.
+<code class="language-plaintext highlighter-rouge">send()</code> 메소드를 이용하여 코루틴 내부로 값을 보내면 코루틴은 해당 값을 변수에 할당하고 다음 <code class="language-plaintext highlighter-rouge">yield</code>까지 실행 후, 다시 다음 호출이 될 때까지 대기합니다.
+실행이 종료되면 제너레이터와 마찬가지로 <em>StopIteration</em> 에러를 발생시킵니다.</p>
+
+<blockquote>
+  <p>처음 코루틴을 기동시키는 방법으로 <code class="language-plaintext highlighter-rouge">next(co)</code> 대신 <code class="language-plaintext highlighter-rouge">co.send(None)</code> 을 실행하여도 무방합니다.</p>
+</blockquote>
+
+<hr />
+
+<h1 id="2-코루틴-종료">2. 코루틴 종료</h1>
+
+<h2 id="21-close">2.1 <code class="language-plaintext highlighter-rouge">close</code></h2>
+
+<p>경우에 따라 코루틴 내부에 무한 루프를 사용하여 계속 실행되도록 작성할 수도 있습니다.
+이러한 코루틴 내부에 계속 값을 전송하면 종료되지 않고 동작하는데, <code class="language-plaintext highlighter-rouge">close()</code> 메소드를 이용하면 코루틴을 임의로 종료시킬 수 있습니다.</p>
+
+<p>아래에서 정수들을 입력받아 평균을 계산하는 코루틴을 작성하였습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">averager</span><span class="p">():</span>
+    <span class="n">total</span><span class="p">,</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="n">average</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">average</span>
+        <span class="n">total</span> <span class="o">+=</span> <span class="n">n</span>
+        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">average</span> <span class="o">=</span> <span class="n">total</span> <span class="o">/</span> <span class="n">count</span>
+
+
+<span class="n">co</span> <span class="o">=</span> <span class="nf">averager</span><span class="p">()</span>
+<span class="nf">next</span><span class="p">(</span><span class="n">co</span><span class="p">)</span>
+
+<span class="n">co</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="c1"># 10.0
+</span>
+<span class="n">co</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
+
+<span class="n">co</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># Traceback (most recent call last):
+#   File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+# StopIteration
+</span></code></pre></div></div>
+
+<p>해당 코루틴은 종료 조건 없이 정수를 입력받으면 계속 동작하게 되어있습니다.
+하지만 코루틴에 <code class="language-plaintext highlighter-rouge">close()</code> 메소드를 실행하면 해당 코루틴은 종료되어 <em>GEN_CLOSED</em> 상태가 됩니다.
+코루틴이 종료되었기 때문에 내부에 값을 전송해도 StopIteration 예외가 발생합니다.</p>
+
+<h2 id="22-예외-발생">2.2 예외 발생</h2>
+
+<p>코루틴을 종료시키기 위해 내부에 강제로 예외를 발생시키는 방법도 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">co</span> <span class="o">=</span> <span class="nf">averager</span><span class="p">()</span>
+<span class="nf">next</span><span class="p">(</span><span class="n">co</span><span class="p">)</span>
+
+<span class="n">co</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="c1"># 10.0
+</span>
+<span class="n">co</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>
+<span class="c1"># 13.5
+</span>
+<span class="n">co</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+<span class="c1"># 11.0
+</span>
+<span class="n">co</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="sh">"</span><span class="s">CLOSE</span><span class="sh">"</span><span class="p">)</span>
+<span class="c1"># Traceback (most recent call last):
+#   File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+#   File "&lt;stdin&gt;", line 7, in averager
+# TypeError: unsupported operand type(s) for +=: 'int' and 'str'
+</span>
+<span class="n">co</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># Traceback (most recent call last):
+#   File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+# StopIteration
+</span></code></pre></div></div>
+
+<p>정수형만 입력받는 코루틴 내부에 문자열을 집어넣어 강제로 에러를 발생시켰습니다.
+마찬가지로 해당 코루틴은 StopIteration 에러를 발생시키며 종료되었습니다.</p>
+
+<blockquote>
+  <p>위의 예제에서는 강제로 에러를 발생시키기 위해 <em>“CLOSE”</em> 라는 스트링을 사용하였지만 일반적으로 <code class="language-plaintext highlighter-rouge">None</code>, <code class="language-plaintext highlighter-rouge">Ellipsis</code>와 같은 파이썬 내장 상수를 전송하여 코루틴 종료라는 행위를 명확히 표기하기도 합니다.</p>
+</blockquote>
+
+<hr />
+
+<h1 id="3-코루틴에서-예외-처리---throw">3. 코루틴에서 예외 처리 - <code class="language-plaintext highlighter-rouge">throw</code></h1>
+
+<p><code class="language-plaintext highlighter-rouge">throw()</code> 메소드를 사용하면 코루틴 내부로 에러를 전달할 수 있습니다.
+이를 잘 이용하면 코루틴 내부에서 예외 처리를 함으로써 특정 예외에 대해서는 코루틴이 중단되지 않고 작동되도록 프로그래밍할 수 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">averager</span><span class="p">():</span>
+    <span class="n">total</span><span class="p">,</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="n">average</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">average</span>
+            <span class="n">total</span> <span class="o">+=</span> <span class="n">n</span>
+            <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">average</span> <span class="o">=</span> <span class="n">total</span> <span class="o">/</span> <span class="n">count</span>
+        <span class="k">except</span> <span class="nb">ZeroDivisionError</span><span class="p">:</span>
+            <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">Cannot get average!</span><span class="sh">"</span><span class="p">)</span>
+
+
+<span class="n">co</span> <span class="o">=</span> <span class="nf">averager</span><span class="p">()</span>
+<span class="nf">next</span><span class="p">(</span><span class="n">co</span><span class="p">)</span>
+
+<span class="n">co</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c1"># 3.0
+</span>
+<span class="n">co</span><span class="p">.</span><span class="nf">throw</span><span class="p">(</span><span class="nb">ZeroDivisionError</span><span class="p">)</span>
+<span class="c1"># Cannot get average!
+# 3.0
+</span>
+<span class="n">co</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span>
+<span class="c1"># 6.0
+</span>
+<span class="n">co</span><span class="p">.</span><span class="nf">throw</span><span class="p">(</span><span class="nb">KeyError</span><span class="p">)</span>
+<span class="c1"># Traceback (most recent call last):
+#   File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+#   File "&lt;stdin&gt;", line 7, in averager
+# KeyError
+</span>
+<span class="n">co</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="c1"># Traceback (most recent call last):
+#   File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+# StopIteration
+</span></code></pre></div></div>
+
+<p>코루틴 내부에서 처리한 ZeroDivisionError 를 던지면 계속 문제없이 작동합니다.
+하지만 KeyError 를 던지게 되면 코루틴은 예외를 처리하지 못하고 중단됩니다.</p>
+
+<hr />
+
+<h1 id="4-코루틴에서-return-사용법">4. 코루틴에서 <code class="language-plaintext highlighter-rouge">return</code> 사용법</h1>
+
+<p>코루틴이 종료된 경우 <code class="language-plaintext highlighter-rouge">return</code>을 이용하여 값을 반환하도록 할 수도 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">averager</span><span class="p">():</span>
+    <span class="n">total</span><span class="p">,</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="n">average</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">average</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">total</span> <span class="o">+=</span> <span class="n">n</span>
+        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">average</span> <span class="o">=</span> <span class="n">total</span> <span class="o">/</span> <span class="n">count</span>
+    <span class="k">return</span> <span class="n">average</span>  <span class="c1"># 계산한 결과 값 반환
+</span></code></pre></div></div>
+
+<p>제너레이터와 마찬가지로 코루틴이 종료되는 경우 <code class="language-plaintext highlighter-rouge">return</code> 값이 StopIteration 의 인자로 할당됩니다.
+이를 응용하여 코루틴 종료 후 반환하는 값을 변수에 할당하려면 아래와 같은 방법을 사용할 수 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">co</span> <span class="o">=</span> <span class="nf">averager</span><span class="p">()</span>
+<span class="nf">next</span><span class="p">(</span><span class="n">co</span><span class="p">)</span>
+
+<span class="n">co</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="c1"># 10.0
+</span>
+<span class="n">co</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+<span class="c1"># 15.0
+</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">co</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>  <span class="c1"># 종료
+</span><span class="k">except</span> <span class="nb">StopIteration</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">e</span><span class="p">.</span><span class="n">value</span>
+
+<span class="nf">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="c1"># 15.0
+</span></code></pre></div></div>
+
+<p>하지만 이 경우 <code class="language-plaintext highlighter-rouge">yield from</code> 구문을 이용하면 내부적으로 StopIteration를 처리하기 때문에 추가적으로 exception 처리 없이도 결과값을 가져올 수 있습니다.</p>
+
+<hr />
+
+<h1 id="5-yield-from">5. <code class="language-plaintext highlighter-rouge">yield from</code></h1>
+
+<p>앞서 제너레이터 부분에서 <code class="language-plaintext highlighter-rouge">yield from</code>은 상위 제너레이터와 하위 제너레이터를 연결해주는 역할을 한다고 설명했습니다.
+코루틴을 사용하는 경우도 마찬가지로 상위 코루틴 내부의 <code class="language-plaintext highlighter-rouge">yield from</code>을 이용하여 하위 코루틴을 활성화시키고, 호출자로부터 받은 데이터를 <code class="language-plaintext highlighter-rouge">yield from</code>으로 설정된 통로를 따라 하위 코루틴으로 전송합니다.</p>
+
+<p>PEP 380에서는 <code class="language-plaintext highlighter-rouge">yield from</code>의 작동 방식에 대하여 다음과 같이 설명하고 있습니다.</p>
+
+<ol>
+  <li>하위 제너레이터가 생성하는 값은 호출자에게 바로 전달됩니다.</li>
+  <li><code class="language-plaintext highlighter-rouge">send()</code> 메소드를 통해 상위 제너레이터에게 전달된 데이터는 바로 하위 호출자에게 전달됩니다. 전달하는 값이 <code class="language-plaintext highlighter-rouge">None</code>인 경우 하위 제너레이터의 <code class="language-plaintext highlighter-rouge">__next__()</code> 가 실행됩니다. <code class="language-plaintext highlighter-rouge">None</code>이 아닌 경우에는 하위 제너레이터의 <code class="language-plaintext highlighter-rouge">send()</code> 메소드가 호출됩니다.</li>
+  <li>상위 제너레이터에 <em>GeneratorExit</em> 을 제외한 예외를 던지면 해당 예외는 하위 제너레이터의 <code class="language-plaintext highlighter-rouge">throw()</code>에 전달됩니다.</li>
+  <li>상위 제너레이터에 <em>GeneratorExit</em> 을 던지거나 <code class="language-plaintext highlighter-rouge">close()</code> 를 호출하면 하위 제너레이터의 <code class="language-plaintext highlighter-rouge">close()</code>가 호출됩니다.</li>
+  <li>하위 제너레이터가 종료된 경우 <em>StopIteration</em> 의 첫 번째 argument 가 <code class="language-plaintext highlighter-rouge">yield from</code> 표현식의 값이 됩니다.</li>
+  <li>상위 혹은 하위 제너레이터에서 <code class="language-plaintext highlighter-rouge">return expr</code>을 사용하는 경우 해당 제너레이터를 빠져나와 <em>StopIteration(expr)</em> 예외가 발생합니다.</li>
+</ol>
+
+<p>이제 <code class="language-plaintext highlighter-rouge">yield from</code>의 작동 방식을 고려하여 다음과 같이 코루틴을 작성하였습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">averager</span><span class="p">():</span>
+    <span class="n">total</span><span class="p">,</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="n">average</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">average</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">total</span> <span class="o">+=</span> <span class="n">n</span>
+        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">average</span> <span class="o">=</span> <span class="n">total</span> <span class="o">/</span> <span class="n">count</span>
+    <span class="k">return</span> <span class="n">average</span>
+
+
+<span class="k">def</span> <span class="nf">gather</span><span class="p">(</span><span class="n">l</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">avg</span> <span class="o">=</span> <span class="k">yield</span> <span class="k">from</span> <span class="nf">averager</span><span class="p">()</span>
+        <span class="n">l</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">avg</span><span class="p">)</span>
+
+
+<span class="n">avg_list</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">g</span> <span class="o">=</span> <span class="nf">gather</span><span class="p">(</span><span class="n">avg_list</span><span class="p">)</span>
+<span class="nf">next</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">]:</span>
+    <span class="n">g</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>    <span class="c1"># gather 로 전송된 값은 그대로 하위 제너레이터로 전송됩니다.
+# 10.0
+# 15.0
+</span>
+<span class="n">g</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>   <span class="c1"># 기존 제너레이터는 폐기되고 계산한 결과 값을 반환합니다.
+</span><span class="n">avg_list</span>
+<span class="c1"># [15.0]
+</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">60</span><span class="p">]:</span>
+    <span class="n">g</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="c1"># 40.0
+# 45.0
+# 50.0
+</span>
+<span class="n">g</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>   <span class="c1"># next(g) 를 사용해도 하위 제너레이터를 종료하는 효과를 볼 수 있습니다
+</span><span class="n">avg_list</span>
+<span class="c1"># [15.0, 50.0]
+</span></code></pre></div></div>
+
+<p><img src="/img/posts/python-coroutine-yield-from.png" style="max-width:720px" /></p>
+
+<p>하위 코루틴 <code class="language-plaintext highlighter-rouge">averager</code>은 <code class="language-plaintext highlighter-rouge">None</code>을 입력받는 경우 상위 코루틴에게 계산한 평균값을 반환하며 종료됩니다.
+상위 코루틴 <code class="language-plaintext highlighter-rouge">gather</code>은 호출자로부터 받은 값을 하위 코루틴에 전달하며 하위 코루틴이 종료된 경우 반환된 값을 리스트에 추가합니다.
+<code class="language-plaintext highlighter-rouge">None</code> 값을 입력하는게 아닌 <code class="language-plaintext highlighter-rouge">next</code>를 호출하는것으로도 동일한 효과를 볼 수 있습니다.</p>
+
+<hr />
+
+<p>References</p>
+
+<ul>
+  <li>Luciano Ramalho, Fluent Python: Clear, Concise, and Effective Programming, 강권학, 한빛미디어, 2016-08-12</li>
+  <li><a href="https://docs.python.org/ko/3/library/asyncio-task.html">Coroutines and Tasks - Python 3.10.2 documentation</a></li>
+  <li><a href="https://www.python.org/dev/peps/pep-0380/">PEP 380 – Syntax for Delegating to a Subgenerator</a></li>
+  <li><a href="https://medium.com/humanscape-tech/185ae5089bc2">파이썬 제너레이터와 코루틴</a></li>
+  <li><a href="https://soooprmx.com/yield-%EB%8B%A4%EB%A5%B8-%EC%A0%9C%EB%84%88%EB%A0%88%EC%9D%B4%ED%84%B0%EC%97%90%EA%B2%8C-%EC%9E%91%EC%97%85%EC%9D%84-%EC%9C%84%EC%9E%84%ED%95%98%EA%B8%B0/">파이썬 yield from - 다른 제너레이터에게 위임하기 · Wireframe</a></li>
+</ul>
+
+
+      <hr>
+
+      <div id="disqus_thread"></div>
+      <script>
+          (function() {
+          var d = document, s = d.createElement('script');
+          s.src = 'https://miintto-github-io.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+          })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+      <hr>
+
+    </div>
+  </div>
+</div>
+
+
+  <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="footer-content container">
+    <p class="copyright text-muted">Copyright &copy; miintto 2024</p>
+  </div>
+</footer>
+
+
+  <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
+<script src="/assets/scripts.js"></script>
+
+
+  <script src="/assets/vendor/miintto/js/toc.js"></script>
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXXXX-X"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-XXXXXXXXX-X');
+</script>
+
+
+
+</body>
+
+</html>

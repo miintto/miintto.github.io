@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+
+<html>
+
+
+
+
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>[알고리즘] 타일링 - miintto.log</title>
+
+  <meta name="description" content="제가 지금까지 개발자로 커리어를 쌓아 왔지만 사실 저의 전공은 수학이었습니다. 학부생 시절 수강했던 강의 중 인상깊었던 과목 중 하나로 조합론 수업을 꼽을 수 있는데요. 현재까지도 개발자로 일하며 알고리즘 관련해서는 해당 수업의 영향을 크게 받고 있다고 생각합니다.">
+
+  <meta name="google-site-verification" content="wGN_mZVjgAC8sdItYCBTkSMwLrgNSWPY6sicU3MuSQw" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital@1&display=swap">
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://miintto.github.io/docs/tiling">
+  <link rel="alternate" type="application/rss+xml" title="[알고리즘] 타일링 - miintto.log" href="/feed.xml">
+
+  <link rel="apple-touch-icon" href="/img/favicon-128.png">
+  <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+
+  <meta prefix="og: http://ogp.me/ns#" property="og:site_name" content="miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:type" content="blog"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:title" content="[알고리즘] 타일링 - miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:description" content="제가 지금까지 개발자로 커리어를 쌓아 왔지만 사실 저의 전공은 수학이었습니다. 학부생 시절 수강했던 강의 중 인상깊었던 과목 중 하나로 조합론 수업을 꼽을 수 있는데요. 현재까지도 개발자로 일하며 알고리즘 관련해서는 해당 수업의 영향을 크게 받고 있다고 생각합니다."/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:locale" content="ko_KR"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:url" content="https://miintto.github.io/docs/tiling"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:image" content="/img/thumbnails/algorithm-tiling.png">
+
+</head>
+
+
+<body>
+
+  <!-- Navigation -->
+
+<nav class="navbar" style="background-color: white;">
+
+  <div class="navbar-content container">
+    <a class="navbar-brand" href="/">miintto.log</a>
+    <button class="navbar-button" id="toggleButton" type="button" data-toggle="collapse" aria-controls="navbarResponsive" aria-expanded="false">
+      MENU
+      <i class="fa fa-bars"></i>
+    </button>
+    <div class="navbar-nav" id="navbarResponsive" aria-hidden="true">
+      <div class="nav-item">
+        <a class="nav-link" href="/about">ABOUT</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/posts">POSTS</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/archive">ARCHIVES</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+  <div class="article">
+  <div class="article-wrapper">
+    <div class="article-header">
+      <div class="article-info">
+        <h1>[알고리즘] 타일링</h1>
+        <div class="post-tags">
+          <p>tiling</p><p>combinatorics</p>
+        </div>
+        <div class="article-meta">
+          2024.03.06 &middot; <span class="reading-time" title="Estimated read time">
+  
+   5 mins  read </span>
+
+        </div>
+      </div>
+      <div class="article-banner"">
+        <img src="/img/thumbnails/algorithm-tiling.png">
+      </div>
+    </div>
+
+    <div class="article-content">
+      <aside>
+  <div class="section-toc">
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h1"><a href="#1-tiling">1. Tiling</a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#11-fibonacci-number">1.1 Fibonacci Number</a></li>
+<li class="toc-entry toc-h2"><a href="#12-identites">1.2 Identites</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h1"><a href="#2-dynamic-programing">2. Dynamic Programing</a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#21-2--n-타일링---프로그래머스">2.1 [2 × n 타일링] - 프로그래머스</a></li>
+<li class="toc-entry toc-h2"><a href="#22-타일링---백준-1793">2.2 [타일링] - 백준 1793</a></li>
+</ul>
+</li>
+</ul>
+  </div>
+</aside>
+
+
+      <p>제가 지금까지 개발자로 커리어를 쌓아 왔지만 사실 저의 전공은 수학이었습니다.
+학부생 시절 수강했던 강의 중 인상깊었던 과목 중 하나로 조합론 수업을 꼽을 수 있는데요.
+현재까지도 개발자로 일하며 알고리즘 관련해서는 해당 수업의 영향을 크게 받고 있다고 생각합니다.</p>
+
+<hr />
+
+<h1 id="1-tiling">1. Tiling</h1>
+
+<p>수학에서 <strong>타일링</strong>(tiling)이란 다차원의 표면을 작은 조각들로 덮는 방법을 말합니다. 
+여기서는 길이 n의 직사각형 막대를 일정한 크기의 직사각형 타일로 채우는 경우만을 다루려고 합니다.</p>
+
+<h2 id="11-fibonacci-number">1.1 Fibonacci Number</h2>
+
+<p>먼저 길이가 n인 막대를 1x1, 1x2 크기를 가진 타일로 채우는 상황을 생각해봅시다.
+예를 들어 n=4인 경우 아래 5가지 경우의 수가 있습니다.</p>
+
+<p><img src="/img/posts/algorithm-tiling-example.png" style="max-width:540px" /></p>
+
+<p>이때, 모든 경우의 수는 반드시 첫번째 타일의 길이가 1 혹은 2로 시작하는 두 가지 경우로 나누어집니다.
+먼저 첫번째 타일의 길이가 1인 경우는 3가지인데 이는 뒤의 길이 3의 막대를 채우는 경우의 수와 동일합니다.
+마찬가지로 첫번째 타일의 길이가 2인 경우는 나머지 길이 2의 막대를 채우는 경우의 수 2와 동일합니다.</p>
+
+<p><img src="/img/posts/algorithm-tiling-divide.png" style="max-width:540px" /></p>
+
+<p>이처럼 길이 n-1, n-2의 타일을 채우는 경우의 수를 알 수 있으면 해당 두 값을 더하는것 만으로 길이가 n인 타일의 경우의 수를 구할 수 있습니다.
+길이가 n인 막대를 채우는 경우의 수를 f<sub>n</sub> 이라고 할 때 아래와 같은 공식이 성립합니다.</p>
+
+<blockquote>
+  <p>f<sub>n</sub> = f<sub>n-1</sub> + f<sub>n-2</sub></p>
+</blockquote>
+
+<p>아마 위와 같은 등식을 보고 <strong>피보나치 수열</strong>을 떠올릴 수 있을겁니다.
+f<sub>0</sub> = 1, f<sub>-1</sub> = 0이라고 하면 f<sub>n</sub>은 완전히 피보나치 수열을 따르게 됩니다.
+피보나치 수열의 일반항을 F<sub>n</sub>라고 할 때 아래 등식이 성립합니다.</p>
+
+<blockquote>
+  <p>f<sub>n</sub> = F<sub>n+1</sub></p>
+</blockquote>
+
+<table>
+  <thead>
+    <tr>
+      <th>n=1</th>
+      <th>n=2</th>
+      <th>n=3</th>
+      <th>n=4</th>
+      <th>n=5</th>
+      <th>n=6</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>11<br />2</td>
+      <td>111<br />12<br />21</td>
+      <td>1111<br />112<br />121<br />211<br />22</td>
+      <td>11111<br />1112<br />1121<br />1211<br />2111<br />122<br />212<br />221</td>
+      <td>111111<br />11112<br />11121<br />11211<br />12111<br />21111<br />1122<br />1212<br />1221<br />2112<br />2121<br />2211<br />222</td>
+    </tr>
+    <tr>
+      <td>f<sub>1</sub> = 1</td>
+      <td>f<sub>2</sub> = 2</td>
+      <td>f<sub>3</sub> = 3</td>
+      <td>f<sub>4</sub> = 5</td>
+      <td>f<sub>5</sub> = 8</td>
+      <td>f<sub>6</sub> =13</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="12-identites">1.2 Identites</h2>
+
+<p>위에서 정의한 f<sub>n</sub>을 바탕으로 아래 등식을 증명할 수 있습니다.</p>
+
+<blockquote>
+  <p>f<sub>m+n</sub> = f<sub>m</sub>f<sub>n</sub> + f<sub>m-1</sub>f<sub>n-1</sub> (for m, n ≥ 0)</p>
+</blockquote>
+
+<p>흔히 수학에서 증명이라 함은 수식적으로 풀어서 해결하였지만, 조합론에서는 양 변의 타일링을 가정하여 서로 완전히 대응되는지를 확인합니다.</p>
+
+<p>먼저 좌변은 m+n 타일링으로 가정합니다.
+우변의 경우는 m+n 타일링을 두가지 케이스로 나누어 생각할 수 있는데, m번째 위치에서 나눌 수 있는지 아니면 나누어지지 않는지 입니다.
+만일 m번째 위치에서 나눌 수 있다면 각 길이가 m, n인 두 개의 막대로 나눌 수 있고 이때의 경우의 수는 f<sub>m</sub>f<sub>n</sub>입니다.
+길이가 2인 타일이 m, m+1에 위치하여 m번째에서 나눌 수 없다면 길이가 m-1, n-1인 두 개의 막대로 나눌 수 있습니다. 이때의 경우의 수는 f<sub>m-1</sub>f<sub>n-1</sub>입니다.</p>
+
+<p><img src="/img/posts/algorithm-tiling-identities-mn.png" style="max-width:480px" /></p>
+
+<p>이때 발생한 두 가지 경우의 수 f<sub>m</sub>f<sub>n</sub>와 f<sub>m-1</sub>f<sub>n-1</sub>를 더하면 완벽하게 m+n 타일링에 대응됩니다.</p>
+
+<hr />
+
+<h1 id="2-dynamic-programing">2. Dynamic Programing</h1>
+
+<p>위에서 사용한 내용은 주로 알고리즘에서 Dynamic Programing의 형태로 나타납니다.
+프로그래머스나 백준, leetcode 등에서도 해당 타일링을 응용한 문제를 어렵지 않게 발견할 수 있습니다.</p>
+
+<h2 id="21-2--n-타일링---프로그래머스">2.1 [2 × n 타일링] - 프로그래머스</h2>
+
+<p><a href="https://school.programmers.co.kr/learn/courses/30/lessons/12900">바로가기</a></p>
+
+<p><img src="/img/posts/algorithm-tiling-programers-tiling.png" style="max-width:660px; box-shadow: 3px 5px 10px #CCC" /></p>
+
+<p>타일을 채우는 방식이 세로로 하나씩 채우거나 가로 방향으로 두 개를 채우는 방법밖에 없는데, 사실상 위에서 알아본 1xn크기의 막대를 채우는 타일링과 완벽히 일치합니다.</p>
+
+<p><img src="/img/posts/algorithm-tiling-example-2n.png" style="max-width:540px" /></p>
+
+<p>이런 방식을 구현해보면 파이썬을 사용한 경우 아래와 같이 작성할 수 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">solution</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">,</span> <span class="p">(</span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">)</span> <span class="o">%</span> <span class="mi">1000000007</span>
+    <span class="k">return</span> <span class="n">b</span>
+</code></pre></div></div>
+
+<h2 id="22-타일링---백준-1793">2.2 [타일링] - 백준 1793</h2>
+
+<p><a href="https://www.acmicpc.net/problem/1793">바로가기</a></p>
+
+<p><img src="/img/posts/algorithm-tiling-baekjoon-1793.png" style="max-width:660px; box-shadow: 3px 5px 10px #CCC" /></p>
+
+<p>해당 경우는 아래와 같은 세 가지 경우로 나누어 생각해 볼 수 있습니다.</p>
+
+<p><img src="/img/posts/algorithm-tiling-example-2n-2.png" style="max-width:540px" /></p>
+
+<p>첫번째 타일은 반드시 다음 세가지 중 하나입니다.</p>
+
+<ul>
+  <li>2x1 타일을 세로로 두거나,</li>
+  <li>2x1 타일 두 개를 가로롤 채우거나</li>
+  <li>2x2 타일을 채우거나</li>
+</ul>
+
+<p>이때 길이가 n인 직사각형을 채우는 경우의 수를 f<sub>n</sub>이라고 할 때 나머지 직사각형을 채우는 경우의 수는 각각 f<sub>n-1</sub>, f<sub>n-2</sub>, f<sub>n-2</sub> 입니다.
+따라서 아래와 같은 공식이 성립합니다.</p>
+
+<blockquote>
+  <p>f<sub>n</sub> = 2f<sub>n-1</sub> + f<sub>n-2</sub></p>
+</blockquote>
+
+<p>해당 내용을 바탕으로 결과를 작성해보면 아래와 같습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">solution</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+    <span class="k">return</span> <span class="n">b</span>
+</code></pre></div></div>
+
+<hr />
+
+<p>References</p>
+<ul>
+  <li>Arthur T. Benjamin and Jennifer J. Quinn, Proofs that Really Count: the Art of Combinatorial Proof, Mathematical Association of America, 2003-07</li>
+</ul>
+
+
+      <hr>
+
+      <div id="disqus_thread"></div>
+      <script>
+          (function() {
+          var d = document, s = d.createElement('script');
+          s.src = 'https://miintto-github-io.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+          })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+      <hr>
+
+    </div>
+  </div>
+</div>
+
+
+  <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="footer-content container">
+    <p class="copyright text-muted">Copyright &copy; miintto 2024</p>
+  </div>
+</footer>
+
+
+  <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
+<script src="/assets/scripts.js"></script>
+
+
+  <script src="/assets/vendor/miintto/js/toc.js"></script>
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXXXX-X"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-XXXXXXXXX-X');
+</script>
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+
+<html>
+
+
+
+
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>[Lucene] Architecture - miintto.log</title>
+
+  <meta name="description" content="루씬(lucene)은 Java로 작성된 검색 엔진 라이브러리입니다. 검색 엔진을 구성하기 위한 기본적인 모듈을 포함하고 있으며 Elasticsearch, Solr 등 현재 여러 서비스에 사용되고 있는 오픈소스 검색 엔진이 루씬을 사용하여 개발되었습니다.">
+
+  <meta name="google-site-verification" content="wGN_mZVjgAC8sdItYCBTkSMwLrgNSWPY6sicU3MuSQw" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital@1&display=swap">
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://miintto.github.io/docs/lucene">
+  <link rel="alternate" type="application/rss+xml" title="[Lucene] Architecture - miintto.log" href="/feed.xml">
+
+  <link rel="apple-touch-icon" href="/img/favicon-128.png">
+  <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+
+  <meta prefix="og: http://ogp.me/ns#" property="og:site_name" content="miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:type" content="blog"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:title" content="[Lucene] Architecture - miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:description" content="루씬(lucene)은 Java로 작성된 검색 엔진 라이브러리입니다. 검색 엔진을 구성하기 위한 기본적인 모듈을 포함하고 있으며 Elasticsearch, Solr 등 현재 여러 서비스에 사용되고 있는 오픈소스 검색 엔진이 루씬을 사용하여 개발되었습니다."/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:locale" content="ko_KR"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:url" content="https://miintto.github.io/docs/lucene"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:image" content="/img/thumbnails/lucene.png">
+
+</head>
+
+
+<body>
+
+  <!-- Navigation -->
+
+<nav class="navbar" style="background-color: white;">
+
+  <div class="navbar-content container">
+    <a class="navbar-brand" href="/">miintto.log</a>
+    <button class="navbar-button" id="toggleButton" type="button" data-toggle="collapse" aria-controls="navbarResponsive" aria-expanded="false">
+      MENU
+      <i class="fa fa-bars"></i>
+    </button>
+    <div class="navbar-nav" id="navbarResponsive" aria-hidden="true">
+      <div class="nav-item">
+        <a class="nav-link" href="/about">ABOUT</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/posts">POSTS</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/archive">ARCHIVES</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+  <div class="article">
+  <div class="article-wrapper">
+    <div class="article-header">
+      <div class="article-info">
+        <h1>[Lucene] Architecture</h1>
+        <div class="post-tags">
+          <p>lucene</p><p>elasticsearch</p><p>analyzer</p>
+        </div>
+        <div class="article-meta">
+          2022.03.02 &middot; <span class="reading-time" title="Estimated read time">
+  
+   2 mins  read </span>
+
+        </div>
+      </div>
+      <div class="article-banner"">
+        <img src="/img/thumbnails/lucene.png">
+      </div>
+    </div>
+
+    <div class="article-content">
+      <aside>
+  <div class="section-toc">
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h1"><a href="#1-inverted-index-structure">1. Inverted Index Structure</a></li>
+<li class="toc-entry toc-h1"><a href="#2-analyzer">2. Analyzer</a></li>
+</ul>
+  </div>
+</aside>
+
+
+      <p>루씬(lucene)은 Java로 작성된 검색 엔진 라이브러리입니다.
+검색 엔진을 구성하기 위한 기본적인 모듈을 포함하고 있으며 Elasticsearch, Solr 등 현재 여러 서비스에 사용되고 있는 오픈소스 검색 엔진이 루씬을 사용하여 개발되었습니다.</p>
+
+<hr />
+
+<p>기본적으로 공식 문서에서는 핵심 용어에 대하여 다음과 같이 정의하고 있습니다.</p>
+
+<ul>
+  <li><strong>Index</strong>(인덱스)는 여러 documents로 구성되어 있고,</li>
+  <li><strong>Document</strong>(문서)는 fields의 집합이고,</li>
+  <li><strong>Field</strong>(필드)는 terms의 집합이고,</li>
+  <li><strong>Term</strong>(용어)는 byte의 집합이다. (같은 byte로 이루어져 있어도 field가 다르면 서로 다른 term으로 간주함)</li>
+</ul>
+
+<p>인덱스는 실제로 데이터를 저장하고 색인 및 검색을 수행합니다.</p>
+
+<hr />
+
+<h1 id="1-inverted-index-structure">1. Inverted Index Structure</h1>
+
+<p>인덱스에 다음과 같은 형태의 데이터를 입력하였다고 가정합니다.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Text</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>doc1</td>
+      <td>우, 이번 주 금요일</td>
+    </tr>
+    <tr>
+      <td>doc2</td>
+      <td>금요일에 시간 어때요?</td>
+    </tr>
+    <tr>
+      <td>doc3</td>
+      <td>주말까지 기다리긴 힘들어. 시간아 달려라</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>단순히 이런 형태로만 계속 저장한다면 데이터가 많아질수록 검색시 어떤 단어가 어디에 위치해 있는지 찾는데 시간이 점점 오래 걸릴것입니다.
+따라서 인덱스는 데이터들을 저장할 때 추가적인 작업을 진행하는데, 문자열을 term 단위로 쪼개어 아래와 같은 역인덱스 구조(inverted index structure)에 term과 그 통계 정보를 저장합니다.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Term</th>
+      <th>Frequency</th>
+      <th>Documents</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>이번</td>
+      <td>1</td>
+      <td>doc1</td>
+    </tr>
+    <tr>
+      <td>주</td>
+      <td>1</td>
+      <td>doc1</td>
+    </tr>
+    <tr>
+      <td>금요일</td>
+      <td>2</td>
+      <td>doc1, doc2</td>
+    </tr>
+    <tr>
+      <td>시간</td>
+      <td>2</td>
+      <td>doc2, doc3</td>
+    </tr>
+    <tr>
+      <td>주말</td>
+      <td>1</td>
+      <td>doc3</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>역인덱스 구조는 term을 key값으로 잡고 해당 term에 대한 통계 정보를 저장하고 있습니다.
+이런 데이터 구조 덕분에 루씬은 term 기준으로 문서를 빠르게 검색할 수 있습니다.
+두꺼운 책의 맨 뒤 “찾아보기” 와 비슷한 원리라고 생각하면 좋습니다.</p>
+
+<hr />
+
+<h1 id="2-analyzer">2. Analyzer</h1>
+
+<p><strong>Analyzer</strong>는 문자열을 검색 가능한 토큰으로 분해하는 형태소 분석을 수행합니다.
+형태소 분석 과정에서 색인 및 검색 프로세스에서 사용되는 <code class="language-plaintext highlighter-rouge">TokenStream</code>을 생성합니다.
+하나의 tokenizer와 여러 filter로 이루어져 있는데, CharFilter → Tokenizer → TokenFilter 순으로 작업을 진행합니다.</p>
+
+<ul>
+  <li><strong>CharFilter</strong> : Tokenize 과정을 진행하기 전에 불필요한 문자들을 제거합니다.
+대부분의 Analyzer는 Tokenizer를 처음 순서로 구성하지만, 필요에 따라 그 이전에 CharFilter를 두어 사전에 텍스트를 필터링하는 경우도 있습니다.</li>
+  <li><strong>Tokenizer</strong> : 입력받은 문자열을 토큰으로 분해합니다.</li>
+  <li><strong>TokenFilter</strong> : Tokenizer가 분해한 토큰을 추가적으로 조정하는 작업을 하는데 Analyzer의 필수 요소는 아닙니다.
+필요한 경우 문자 제거, 어간 추출, 동의어 처리, 대소문자 처리 등을 수행합니다.</li>
+</ul>
+
+<hr />
+
+<p>References</p>
+
+<ul>
+  <li><a href="https://lucene.apache.org/core/9_0_0/index.html">Apache Lucene™ 9.0.0 Documentation</a></li>
+  <li><a href="https://fastcampus.co.kr/data_red_jhw">The RED : 검색엔진 구축을 위한 Elasticsearch 마스터 클래스 by 정호욱</a></li>
+</ul>
+
+
+      <hr>
+
+      <div id="disqus_thread"></div>
+      <script>
+          (function() {
+          var d = document, s = d.createElement('script');
+          s.src = 'https://miintto-github-io.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+          })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+      <hr>
+
+    </div>
+  </div>
+</div>
+
+
+  <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="footer-content container">
+    <p class="copyright text-muted">Copyright &copy; miintto 2024</p>
+  </div>
+</footer>
+
+
+  <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
+<script src="/assets/scripts.js"></script>
+
+
+  <script src="/assets/vendor/miintto/js/toc.js"></script>
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXXXX-X"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-XXXXXXXXX-X');
+</script>
+
+
+
+</body>
+
+</html>

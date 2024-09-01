@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html>
+
+
+
+
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>Async 환경에서 SQLAlchemy 세션 관리 - miintto.log</title>
+
+  <meta name="description" content="이전에 SQLAlchemy의 세션 관리 포스트에서 SQLAlchemy 라이브러리 내부에서 세션의 작동 방식을 알아보았습니다. 하지만 해당 내용은 sync 환경에서만 유효하며, asyncio 기반으로 실행되는 경우에는 여러 side effect가 발생할 수 있습니다. SQLAlche...">
+
+  <meta name="google-site-verification" content="wGN_mZVjgAC8sdItYCBTkSMwLrgNSWPY6sicU3MuSQw" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital@1&display=swap">
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://miintto.github.io/docs/python-sqlalchemy-asyncsession">
+  <link rel="alternate" type="application/rss+xml" title="Async 환경에서 SQLAlchemy 세션 관리 - miintto.log" href="/feed.xml">
+
+  <link rel="apple-touch-icon" href="/img/favicon-128.png">
+  <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+
+  <meta prefix="og: http://ogp.me/ns#" property="og:site_name" content="miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:type" content="blog"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:title" content="Async 환경에서 SQLAlchemy 세션 관리 - miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:description" content="이전에 SQLAlchemy의 세션 관리 포스트에서 SQLAlchemy 라이브러리 내부에서 세션의 작동 방식을 알아보았습니다. 하지만 해당 내용은 sync 환경에서만 유효하며, asyncio 기반으로 실행되는 경우에는 여러 side effect가 발생할 수 있습니다. SQLAlche..."/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:locale" content="ko_KR"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:url" content="https://miintto.github.io/docs/python-sqlalchemy-asyncsession"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:image" content="/img/thumbnails/sqlalchemy.png">
+
+</head>
+
+
+<body>
+
+  <!-- Navigation -->
+
+<nav class="navbar" style="background-color: white;">
+
+  <div class="navbar-content container">
+    <a class="navbar-brand" href="/">miintto.log</a>
+    <button class="navbar-button" id="toggleButton" type="button" data-toggle="collapse" aria-controls="navbarResponsive" aria-expanded="false">
+      MENU
+      <i class="fa fa-bars"></i>
+    </button>
+    <div class="navbar-nav" id="navbarResponsive" aria-hidden="true">
+      <div class="nav-item">
+        <a class="nav-link" href="/about">ABOUT</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/posts">POSTS</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/archive">ARCHIVES</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+  <div class="article">
+  <div class="article-wrapper">
+    <div class="article-header">
+      <div class="article-info">
+        <h1>Async 환경에서 SQLAlchemy 세션 관리</h1>
+        <div class="post-tags">
+          <p>python</p><p>sqlalchemy</p><p>session</p><p>asyncio</p>
+        </div>
+        <div class="article-meta">
+          2023.03.01 &middot; <span class="reading-time" title="Estimated read time">
+  
+   5 mins  read </span>
+
+        </div>
+      </div>
+      <div class="article-banner"">
+        <img src="/img/thumbnails/sqlalchemy.png">
+      </div>
+    </div>
+
+    <div class="article-content">
+      <aside>
+  <div class="section-toc">
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h1"><a href="#1-asyncsession">1. AsyncSession</a></li>
+<li class="toc-entry toc-h1"><a href="#2-async_scoped_session">2. async_scoped_session</a></li>
+</ul>
+  </div>
+</aside>
+
+
+      <p>이전에 <a href="/docs/python-sqlalchemy-session">SQLAlchemy의 세션 관리</a> 포스트에서 SQLAlchemy 라이브러리 내부에서 세션의 작동 방식을 알아보았습니다.
+하지만 해당 내용은 sync 환경에서만 유효하며, asyncio 기반으로 실행되는 경우에는 여러 side effect가 발생할 수 있습니다.
+SQLAlchemy 버전이 1.4로 올라가면서 asyncio와 호환될 수 있도록 업데이트되었는데, 해당 내용을 기반으로 asynchronous 환경에서 SQLAlchemy 세션을 사용하는 방법을 정리해 보았습니다.</p>
+
+<blockquote>
+  <p><em>아래 내용은 현 시점 (2023-03) 기준 최신 버전인 SQLAlchemy 2.0.4 기반으로 작셩하였습니다.</em></p>
+</blockquote>
+
+<hr />
+
+<h1 id="1-asyncsession">1. <code class="language-plaintext highlighter-rouge">AsyncSession</code></h1>
+
+<p>세션 구현체로 <code class="language-plaintext highlighter-rouge">sqlalchemy.ext.asyncio.AsyncSession</code> 를 사용할 수 있습니다.
+또한 엔진 연결 시에는 <code class="language-plaintext highlighter-rouge">create_async_engine</code> 메소드를 이용하여 생성해야 합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">sqlalchemy</span> <span class="kn">import</span> <span class="n">insert</span>
+<span class="kn">from</span> <span class="n">sqlalchemy.ext.asyncio</span> <span class="kn">import</span> <span class="n">AsyncSession</span><span class="p">,</span> <span class="n">create_async_engine</span>
+
+<span class="n">engine</span> <span class="o">=</span> <span class="nf">create_async_engine</span><span class="p">(</span><span class="sh">"</span><span class="s">postgresql+asyncpg://user:password@localhost:5432/test_db</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="k">async</span> <span class="k">with</span> <span class="nc">AsyncSession</span><span class="p">(</span><span class="n">engine</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+    <span class="k">await</span> <span class="n">session</span><span class="p">.</span><span class="nf">execute</span><span class="p">(</span>
+        <span class="nf">insert</span><span class="p">(</span><span class="n">User</span><span class="p">).</span><span class="nf">values</span><span class="p">(</span><span class="n">user_name</span><span class="o">=</span><span class="sh">"</span><span class="s">myname</span><span class="sh">"</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="sh">"</span><span class="s">miintto.log@gmail.com</span><span class="sh">"</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">await</span> <span class="n">session</span><span class="p">.</span><span class="nf">commit</span><span class="p">()</span>
+<span class="k">await</span> <span class="n">engine</span><span class="p">.</span><span class="nf">dispose</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">create_async_engine</code>에서 사용하는 인자들은 대부분 <code class="language-plaintext highlighter-rouge">create_engine</code>과 동일하지만, 엔진 연결 시에는 async가 지원되는 DBAPI 드라이버를 사용해야만 합니다.
+사용 가능한 드라이버로는 <code class="language-plaintext highlighter-rouge">asyncpg</code> (PostgreSQL), <code class="language-plaintext highlighter-rouge">aiomysql</code> (MySQL), <code class="language-plaintext highlighter-rouge">aioodbc</code> (MSSQL) 등이 있습니다.</p>
+
+<p>비동기 세션 구현체인 <code class="language-plaintext highlighter-rouge">AsyncSession</code> 또한 기존 <code class="language-plaintext highlighter-rouge">Session</code>의 기능을 대부분 지원하지만 2.0 문법 스타일로 작성해야 합니다.
+데이터 조회의 경우 <code class="language-plaintext highlighter-rouge">Query</code>를 사용한 방식 대신 <code class="language-plaintext highlighter-rouge">Session.execute()</code> 메소드 내부에서 <code class="language-plaintext highlighter-rouge">select()</code>로 가져오는 방식으로 작성해야 합니다.
+그 외에 <code class="language-plaintext highlighter-rouge">add()</code>, <code class="language-plaintext highlighter-rouge">commit()</code>, <code class="language-plaintext highlighter-rouge">close()</code> 등의 메소드들은 그대로 사용할 수 있습니다.
+2.0 스타일에 대한 자세한 내용은 <a href="https://docs.sqlalchemy.org/en/14/glossary.html#term-2.0-style">Glossary - 2.0-style</a>를 참고하시면 됩니다.</p>
+
+<p>또한 context manager 기능도 지원해서 <code class="language-plaintext highlighter-rouge">async with</code> 구문이 끝나는 시점에 자동으로 <code class="language-plaintext highlighter-rouge">AsyncSession.close()</code>가 실행되도록 프로그래밍할 수도 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">AsyncSession</span><span class="p">(</span><span class="n">ReversibleProxy</span><span class="p">):</span>
+    <span class="bp">...</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">__aenter__</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">self</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">__aexit__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+        <span class="n">task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="p">.</span><span class="nf">get_event_loop</span><span class="p">().</span><span class="nf">create_task</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="nf">close</span><span class="p">())</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="p">.</span><span class="nf">shield</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="2-async_scoped_session">2. <code class="language-plaintext highlighter-rouge">async_scoped_session</code></h1>
+
+<p>궁극적으로 어플리케이션에 SQLAlchemy를 적용하려고 한다면 <code class="language-plaintext highlighter-rouge">scoped_session</code> 도입을 고려할 텐데,
+이를 그대로 async 환경에 적용한다면 여러가지 이슈가 발생할 수 있습니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">scoped_session</code>는 기본적으로 스레드별로 세션을 관리하도록 되어있지만, asyncio의 이벤트 루프는 단일 스레드 기반으로 작동합니다.
+이때 만일 여러 request가 같은 프로세스에 할당된다면 중첩된 request들이 동일한 세션 객체를 할당받아 작업을 할 수 있습니다.
+이런 상황은 매우 위험한데 의도치 않게 세션 내에 ORM 객체들이 서로 공유되거나 이미 롤백 된 세션을 다른 request에서 가져가서 다시 사용하는 등 개발자가 의도한 대로 동작하지 않을 수 있습니다.
+따러서 이러한 async 환경에서의 이슈를 해결하기 위해 SQLAlchemy에서는 <code class="language-plaintext highlighter-rouge">async_scoped_session</code> 클래스를 지원하고 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">async_scoped_session</span><span class="p">(</span><span class="n">ScopedSessionMixin</span><span class="p">):</span>
+    <span class="sh">"""</span><span class="s">Provides scoped management of :class:`.AsyncSession` objects.</span><span class="sh">"""</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">session_factory</span><span class="p">,</span> <span class="n">scopefunc</span><span class="p">):</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">session_factory</span> <span class="o">=</span> <span class="n">session_factory</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">registry</span> <span class="o">=</span> <span class="nc">ScopedRegistry</span><span class="p">(</span><span class="n">session_factory</span><span class="p">,</span> <span class="n">scopefunc</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">async_scoped_session</code> 에서는 thread-local storage를 회피하기 위해 <code class="language-plaintext highlighter-rouge">scopefunc</code>를 강제하고 있습니다.
+따라서 registry는 반드시 <code class="language-plaintext highlighter-rouge">ScopedRegistry</code>만 사용가능합니다.
+<code class="language-plaintext highlighter-rouge">scopefunc</code>를 적절하게 설정해주면 동일한 스레드에서도 클라이언트마다 알맞은 세션을 추적할 수 있습니다.
+아래 대략적인 사용 예시를 작성했습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">asyncio</span>
+<span class="kn">from</span> <span class="n">sqlalchemy.ext.asyncio</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">async_scoped_session</span><span class="p">,</span>
+    <span class="n">async_sessionmaker</span><span class="p">,</span>
+    <span class="n">create_async_engine</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">engine</span> <span class="o">=</span> <span class="nf">create_async_engine</span><span class="p">(</span><span class="sh">"</span><span class="s">postgresql+asyncpg://user:password@localhost:5432/test_db</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">session_factory</span> <span class="o">=</span> <span class="nf">async_sessionmaker</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="n">engine</span><span class="p">)</span>
+<span class="n">Session</span> <span class="o">=</span> <span class="nf">async_scoped_session</span><span class="p">(</span><span class="n">session_factory</span><span class="p">,</span> <span class="n">scopefunc</span><span class="o">=</span><span class="n">asyncio</span><span class="p">.</span><span class="n">current_task</span><span class="p">)</span>
+
+<span class="k">async</span> <span class="k">with</span> <span class="nc">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+    <span class="c1"># To Something
+</span>    <span class="k">await</span> <span class="n">session</span><span class="p">.</span><span class="nf">commit</span><span class="p">()</span>
+<span class="k">await</span> <span class="n">Session</span><span class="p">.</span><span class="nf">remove</span><span class="p">()</span>
+<span class="k">await</span> <span class="n">engine</span><span class="p">.</span><span class="nf">dispose</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>위에서는 예시로 <code class="language-plaintext highlighter-rouge">scopefunc</code> 값으로 <code class="language-plaintext highlighter-rouge">asyncio.current_task</code> 메소드를 넣어 주었는데, 이러한 방식으로 동일한 스레드에서도 할당된 Task마다 세션을 구분할 수 있습니다.
+다만 이런 식으로 세션을 관리하면 세션을 종료하여도 registry 내부 dictionary에 세션 객체가 남아서 계속 메모리를 차지하기 때문에 작업이 끝날 때마다 <code class="language-plaintext highlighter-rouge">async_scoped_session.remove()</code> 메소드를 호출하여 메모리에서 정리해야 합니다.</p>
+
+<p>마지막에 실행되는 <code class="language-plaintext highlighter-rouge">AsyncEngine.dispose()</code> 메소드 실행도 필요한 작업인데, 해당 메소드는 현재 사용 중인 커넥션 풀들을 다시 반환하는 역할을 합니다.
+일반적인 blocking IO와는 대조적으로 awaitable 구문을 한 번 빠져나와 버리면 다시 <code class="language-plaintext highlighter-rouge">await</code> 메소드를 호출할 수 없기 때문에 커넥션들이 올바르게 처리되지 않을 수 있습니다.
+이런 식으로 엔진이 정상적으로 종료되지 않는다면 <em>RuntimeError: Event loop is closed</em> 와 같은 경고가 발생할 수도 있습니다.</p>
+
+<hr />
+
+<p>References</p>
+
+<ul>
+  <li><a href="https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html">Asynchronous I/O (asyncio) — SQLAlchemy 2.0 Documentation</a></li>
+</ul>
+
+
+      <hr>
+
+      <div id="disqus_thread"></div>
+      <script>
+          (function() {
+          var d = document, s = d.createElement('script');
+          s.src = 'https://miintto-github-io.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+          })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+      <hr>
+
+    </div>
+  </div>
+</div>
+
+
+  <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="footer-content container">
+    <p class="copyright text-muted">Copyright &copy; miintto 2024</p>
+  </div>
+</footer>
+
+
+  <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
+<script src="/assets/scripts.js"></script>
+
+
+  <script src="/assets/vendor/miintto/js/toc.js"></script>
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXXXX-X"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-XXXXXXXXX-X');
+</script>
+
+
+
+</body>
+
+</html>

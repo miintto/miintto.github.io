@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+
+<html>
+
+
+
+
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>[엘라스틱서치] 클러스터 구성 - miintto.log</title>
+
+  <meta name="description" content="엘라스틱서치 클러스터를 구성하여 실행시켜 봅시다. 기본적으로 엘라스틱서치가 Java 기반이라 실행 환경을 직접 구성하기 번거로워 도커 이미지를 활용하였습니다. 엘리스틱서치 버전은 2022년 2월에 새로 릴리즈된 8.0 을 기준으로 작성하였습니다.">
+
+  <meta name="google-site-verification" content="wGN_mZVjgAC8sdItYCBTkSMwLrgNSWPY6sicU3MuSQw" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital@1&display=swap">
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://miintto.github.io/docs/es-cluster">
+  <link rel="alternate" type="application/rss+xml" title="[엘라스틱서치] 클러스터 구성 - miintto.log" href="/feed.xml">
+
+  <link rel="apple-touch-icon" href="/img/favicon-128.png">
+  <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+
+  <meta prefix="og: http://ogp.me/ns#" property="og:site_name" content="miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:type" content="blog"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:title" content="[엘라스틱서치] 클러스터 구성 - miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:description" content="엘라스틱서치 클러스터를 구성하여 실행시켜 봅시다. 기본적으로 엘라스틱서치가 Java 기반이라 실행 환경을 직접 구성하기 번거로워 도커 이미지를 활용하였습니다. 엘리스틱서치 버전은 2022년 2월에 새로 릴리즈된 8.0 을 기준으로 작성하였습니다."/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:locale" content="ko_KR"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:url" content="https://miintto.github.io/docs/es-cluster"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:image" content="/img/thumbnails/elasticsearch.png">
+
+</head>
+
+
+<body>
+
+  <!-- Navigation -->
+
+<nav class="navbar" style="background-color: white;">
+
+  <div class="navbar-content container">
+    <a class="navbar-brand" href="/">miintto.log</a>
+    <button class="navbar-button" id="toggleButton" type="button" data-toggle="collapse" aria-controls="navbarResponsive" aria-expanded="false">
+      MENU
+      <i class="fa fa-bars"></i>
+    </button>
+    <div class="navbar-nav" id="navbarResponsive" aria-hidden="true">
+      <div class="nav-item">
+        <a class="nav-link" href="/about">ABOUT</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/posts">POSTS</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/archive">ARCHIVES</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+  <div class="article">
+  <div class="article-wrapper">
+    <div class="article-header">
+      <div class="article-info">
+        <h1>[엘라스틱서치] 클러스터 구성</h1>
+        <div class="post-tags">
+          <p>elasticsearch</p><p>kibana</p><p>aws</p><p>cluster</p>
+        </div>
+        <div class="article-meta">
+          2022.03.20 &middot; <span class="reading-time" title="Estimated read time">
+  
+   12 mins  read </span>
+
+        </div>
+      </div>
+      <div class="article-banner"">
+        <img src="/img/thumbnails/elasticsearch.png">
+      </div>
+    </div>
+
+    <div class="article-content">
+      <aside>
+  <div class="section-toc">
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h1"><a href="#1-단일-노드-구성">1. 단일 노드 구성</a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#11-config-files">1.1 Config Files</a></li>
+<li class="toc-entry toc-h2"><a href="#12-run">1.2 Run</a></li>
+<li class="toc-entry toc-h2"><a href="#13-check">1.3 Check</a></li>
+<li class="toc-entry toc-h2"><a href="#14-kibana">1.4 Kibana</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h1"><a href="#2-클러스터-구성">2. 클러스터 구성</a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#21-환경-설정">2.1 환경 설정</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#211-discovery">2.1.1 Discovery</a></li>
+<li class="toc-entry toc-h3"><a href="#212-network">2.1.2 Network</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#22-실행">2.2 실행</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h1"><a href="#3-회고-및-보완점">3 회고 및 보완점</a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#31-network">3.1 Network</a></li>
+<li class="toc-entry toc-h2"><a href="#32-메모리-맵">3.2 메모리 맵</a></li>
+<li class="toc-entry toc-h2"><a href="#33-security">3.3 Security</a></li>
+<li class="toc-entry toc-h2"><a href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+  </div>
+</aside>
+
+
+      <p>엘라스틱서치 클러스터를 구성하여 실행시켜 봅시다. 
+기본적으로 엘라스틱서치가 Java 기반이라 실행 환경을 직접 구성하기 번거로워 도커 이미지를 활용하였습니다.
+엘리스틱서치 버전은 2022년 2월에 새로 릴리즈된 8.0 을 기준으로 작성하였습니다.</p>
+
+<hr />
+
+<h1 id="1-단일-노드-구성">1. 단일 노드 구성</h1>
+
+<p>먼저 단일 노드 구성하여 실행해봅시다. 단일 노드로 실행하면 노드 하나가 마스터와 데이터의 역할을 동시에 가져갑니다.</p>
+
+<h2 id="11-config-files">1.1 Config Files</h2>
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># elasticsearch.yml</span>
+<span class="na">cluster.name</span><span class="pi">:</span> <span class="s2">"</span><span class="s">es-cluster"</span>
+<span class="na">discovery.type</span><span class="pi">:</span> <span class="s2">"</span><span class="s">single-node"</span>
+<span class="na">network.host</span><span class="pi">:</span> <span class="s">0.0.0.0</span>
+
+<span class="na">xpack.security.enabled</span><span class="pi">:</span> <span class="kc">true</span>
+</code></pre></div></div>
+<p>Config 파일은 위와 같이 구성하였습니다.
+<code class="language-plaintext highlighter-rouge">discover.type</code> 값을 single-node 로 설정한 경우에는 단일 노드로만 운영이 가능합니다.</p>
+
+<h2 id="12-run">1.2 Run</h2>
+
+<p>키바나까지 실행할 것을 염두하여 elastic stack 끼리 공유할 네트워크를 생성합니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> docker network create elastic
+</code></pre></div></div>
+
+<p>생성한 네트워크를 이용하여 엘라스틱서치 이미지를 실행시킵니다. Java 힙 메모리는 1GB로 설정하였습니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> docker run <span class="nt">-d</span> <span class="nt">--name</span> elasticsearch <span class="se">\</span>
+       <span class="nt">--net</span> elastic <span class="se">\</span>
+       <span class="nt">-p</span> 9200:9200 <span class="nt">-p</span> 9300:9300 <span class="se">\</span>
+       <span class="nt">-e</span> <span class="nv">ES_JAVA_OPTS</span><span class="o">=</span><span class="s2">"-Xms1g -Xmx1g"</span> <span class="se">\</span>
+       <span class="nt">-v</span> <span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml <span class="se">\</span>
+       docker.elastic.co/elasticsearch/elasticsearch:8.0.1
+
+8.0.1: Pulling from elasticsearch/elasticsearch
+4fb807caa40a: Pull <span class="nb">complete
+</span>939e6d6de1cd: Pull <span class="nb">complete
+</span>c6e272a692c1: Pull <span class="nb">complete
+</span>c35cf7d81655: Extracting  127.6MB/573.9MB
+00b951a3ddcb: Download <span class="nb">complete
+</span>c1686887c5ec: Download <span class="nb">complete
+</span>c9c4cd9d9e71: Download <span class="nb">complete
+</span>ff28b3874cac: Download <span class="nb">complete
+</span>d8fe9cb3f525: Download <span class="nb">complete
+</span>8287b1c3b76d: Download <span class="nb">complete</span>
+
+<span class="nv">$&gt;</span> docker ps
+CONTAINER ID   IMAGE                                                 COMMAND                  ...
+e775a4a0c6ef   docker.elastic.co/elasticsearch/elasticsearch:8.0.1   <span class="s2">"/bin/tini -- /usr/l…"</span>   ...
+</code></pre></div></div>
+
+<h2 id="13-check">1.3 Check</h2>
+
+<p>커맨드 라인에서 curl을 이용하여 엘라스틱서치에 직접 요청을 보낼 수 있습니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> curl <span class="nt">-XGET</span> http://localhost:9200?pretty<span class="o">=</span><span class="nb">true</span>
+<span class="o">{</span>
+  <span class="s2">"error"</span> : <span class="o">{</span>
+    <span class="s2">"root_cause"</span> : <span class="o">[</span>
+      <span class="o">{</span>
+        <span class="s2">"type"</span> : <span class="s2">"security_exception"</span>,
+        <span class="s2">"reason"</span> : <span class="s2">"missing authentication credentials for REST request [/?pretty=true]"</span>,
+        <span class="s2">"header"</span> : <span class="o">{</span>
+          <span class="s2">"WWW-Authenticate"</span> : <span class="o">[</span>
+            <span class="s2">"Basic realm=</span><span class="se">\"</span><span class="s2">security</span><span class="se">\"</span><span class="s2"> charset=</span><span class="se">\"</span><span class="s2">UTF-8</span><span class="se">\"</span><span class="s2">"</span>,
+            <span class="s2">"ApiKey"</span>
+          <span class="o">]</span>
+        <span class="o">}</span>
+      <span class="o">}</span>
+    <span class="o">]</span>,
+    <span class="s2">"type"</span> : <span class="s2">"security_exception"</span>,
+    <span class="s2">"reason"</span> : <span class="s2">"missing authentication credentials for REST request [/?pretty=true]"</span>,
+    <span class="s2">"header"</span> : <span class="o">{</span>
+      <span class="s2">"WWW-Authenticate"</span> : <span class="o">[</span>
+        <span class="s2">"Basic realm=</span><span class="se">\"</span><span class="s2">security</span><span class="se">\"</span><span class="s2"> charset=</span><span class="se">\"</span><span class="s2">UTF-8</span><span class="se">\"</span><span class="s2">"</span>,
+        <span class="s2">"ApiKey"</span>
+      <span class="o">]</span>
+    <span class="o">}</span>
+  <span class="o">}</span>,
+  <span class="s2">"status"</span> : 401
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>하지만 에러가 발생합니다. 클라이언트의 패스워드를 설정해주지 않았기 때문입니다.
+엘라스틱서치가 실행되고 있는 컨테이너 내부로 들어가 패스워드 재설정 작업을 해줍니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> docker <span class="nb">exec</span> <span class="nt">-it</span> elasticsearch /usr/share/elasticsearch/bin/elasticsearch-setup-passwords interactive 
+
+...
+Changed password <span class="k">for </span>user <span class="o">[</span>elastic]
+Changed password <span class="k">for </span>user <span class="o">[</span>kibana]
+Changed password <span class="k">for </span>user <span class="o">[</span>logstash_system]
+Changed password <span class="k">for </span>user <span class="o">[</span>beats_system]
+Changed password <span class="k">for </span>user <span class="o">[</span>remote_monitoring_user]
+
+</code></pre></div></div>
+
+<p>비밀번호 변경이 완료되면 다시 엘라스틱서치를 호출합니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> curl <span class="nt">-u</span> elastic:&lt;비밀번호&gt; <span class="nt">-XGET</span> http://localhost:9200?pretty<span class="o">=</span><span class="nb">true</span>
+<span class="o">{</span>
+  <span class="s2">"name"</span> : <span class="s2">"6287fc9a063f"</span>,
+  <span class="s2">"cluster_name"</span> : <span class="s2">"es-cluster"</span>,
+  <span class="s2">"cluster_uuid"</span> : <span class="s2">"KrVtgZ0tSR2Xyt2STj5-7Q"</span>,
+  <span class="s2">"version"</span> : <span class="o">{</span>
+    <span class="s2">"number"</span> : <span class="s2">"8.0.1"</span>,
+    <span class="s2">"build_flavor"</span> : <span class="s2">"default"</span>,
+    <span class="s2">"build_type"</span> : <span class="s2">"docker"</span>,
+    <span class="s2">"build_hash"</span> : <span class="s2">"801d9ccc7c2ee0f2cb121bbe22ab5af77a902372"</span>,
+    <span class="s2">"build_date"</span> : <span class="s2">"2022-02-24T13:55:40.601285296Z"</span>,
+    <span class="s2">"build_snapshot"</span> : <span class="nb">false</span>,
+    <span class="s2">"lucene_version"</span> : <span class="s2">"9.0.0"</span>,
+    <span class="s2">"minimum_wire_compatibility_version"</span> : <span class="s2">"7.17.0"</span>,
+    <span class="s2">"minimum_index_compatibility_version"</span> : <span class="s2">"7.0.0"</span>
+  <span class="o">}</span>,
+  <span class="s2">"tagline"</span> : <span class="s2">"You Know, for Search"</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>정상적으로 응답이 오는 것을 확인할 수 있습니다.</p>
+
+<h2 id="14-kibana">1.4 Kibana</h2>
+
+<p>모니터링 인터페이스 구성을 위해 키바나도 추가하였습니다.</p>
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># kibana.yml</span>
+<span class="na">server.name</span><span class="pi">:</span> <span class="s2">"</span><span class="s">kibana"</span>
+<span class="na">server.host</span><span class="pi">:</span> <span class="s">0.0.0.0</span>
+<span class="na">elasticsearch.hosts</span><span class="pi">:</span> <span class="pi">[</span> <span class="s2">"</span><span class="s">http://elasticsearch:9200"</span> <span class="pi">]</span>
+<span class="na">monitoring.ui.container.elasticsearch.enabled</span><span class="pi">:</span> <span class="kc">true</span>
+
+<span class="na">elasticsearch.username</span><span class="pi">:</span> <span class="s">kibana_system</span>
+<span class="na">elasticsearch.password</span><span class="pi">:</span> <span class="err">****</span>
+</code></pre></div></div>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> docker run <span class="nt">-d</span> <span class="nt">--name</span> kibana <span class="se">\</span>
+       <span class="nt">--net</span> elastic <span class="se">\</span>
+       <span class="nt">-p</span> 5601:5601 <span class="se">\</span>
+       <span class="nt">-v</span> <span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>/kibana.yml:/usr/share/kibana/config/kibana.yml <span class="se">\</span>
+       docker.elastic.co/kibana/kibana:8.0.1
+
+<span class="nv">$&gt;</span> docker ps
+CONTAINER ID   IMAGE                                                 COMMAND                  ...
+d3be996ea7ea   docker.elastic.co/kibana/kibana:8.0.1                 <span class="s2">"/bin/tini -- /usr/l…"</span>   ...
+e775a4a0c6ef   docker.elastic.co/elasticsearch/elasticsearch:8.0.1   <span class="s2">"/bin/tini -- /usr/l…"</span>   ...
+</code></pre></div></div>
+
+<p>엘라스틱서치와 키바나 모두 docker network 를 사용하고 있으므로 <code class="language-plaintext highlighter-rouge">elasticsearch.hosts</code> 설정시 “localhost” 가 아닌 명시된 <em>CONTAINER NAME</em> 으로 설정하여 연결해야 합니다.</p>
+
+<p><img src="/img/posts/es-cluster-kibana.png" style="max-width:720px" /></p>
+
+<p>이미지를 실행한 인스턴스 IP 혹은 도메인의 5601 포트로 진입하면 키바나 화면을 볼 수 있습니다.
+아까 설정해 주었던 비밀번호를 입력하여 로그인합니다.
+username 은 기본적으로 “elastic” 입니다.</p>
+
+<blockquote>
+  <p>추가적으로 깃허브 <a href="https://github.com/deviantony/docker-elk">deviantony/docker-elk</a> 에서는 docker-compose 를 이용한 스크립트를 제공하고 있습니다. 본 포스트에서는 logstash 는 다루지 않으니 해당 부분만 제거하고 실행하면 간편하게 구성이 가능합니다.</p>
+</blockquote>
+
+<hr />
+
+<h1 id="2-클러스터-구성">2. 클러스터 구성</h1>
+<h2 id="21-환경-설정">2.1 환경 설정</h2>
+
+<p>단일 클러스터로 설정한 경우 로컬 환경에서 구동해도 큰 문제가 없습니다.
+하지만 클러스터로 구성하는 경우 여러 인스턴스가 필요하기 때문에 단순히 로컬에서 테스트 하기에는 한계가 있습니다.
+이번 엘라스틱서치 클러스터 구성을 테스트하기 위해 클라우드 서비스를 제공해주는 AWS를 활용하였습니다.</p>
+
+<p>노드 구성은 마스터 노드 1개, 데이터 노드 3개로 총 4개 인스턴스를 가진 클러스터로 구상하였습니다.
+인스턴스는 모두 EC2 t3.medium 인스턴스(<em>vCPU 2 / Memmory: 4GB</em>)를 사용하였고 각 노드마다 2GB의 힙 메모리로 설정하였습니다.</p>
+
+<p><img src="/img/posts/es-cluster-cluster.png" style="max-width:540px" /></p>
+
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">cluster.name</span><span class="pi">:</span> <span class="s2">"</span><span class="s">es-cluster"</span>  <span class="c1"># 동일하게 설정</span>
+<span class="na">node.name</span><span class="pi">:</span> <span class="s">노드 이름</span>
+<span class="na">node.roles</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">master"</span><span class="pi">]</span>  <span class="c1"># 데이터 노드는 ["data"]</span>
+<span class="na">bootstrap.memory_lock</span><span class="pi">:</span> <span class="kc">true</span>
+<span class="na">network.host</span><span class="pi">:</span> <span class="s">_site_</span>
+<span class="na">network.publish_host</span><span class="pi">:</span> <span class="s">각 인스턴스의 IP</span>
+<span class="na">discovery.seed_hosts</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">클러스터링할 노드의 IP</span><span class="pi">,</span> <span class="nv">...</span> <span class="pi">]</span>
+<span class="na">cluster.initial_master_nodes</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">마스터 노드 리스트</span><span class="pi">,</span> <span class="nv">...</span><span class="pi">]</span>
+<span class="na">xpack.license.self_generated.type</span><span class="pi">:</span> <span class="s">trial</span>
+<span class="na">xpack.security.enabled</span><span class="pi">:</span> <span class="kc">false</span>
+</code></pre></div></div>
+
+<p>클러스터 모드로 실행하는 경우 elasticsearch.yml 파일은 보통 노드마다 별개로 관리하는 것을 추천드립니다.</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">cluster.name</code> 은 각 노드마다 모두 동일하게 설정해야 합니다. 만일 클러스터를 구성하려는 노드들끼리 <code class="language-plaintext highlighter-rouge">cluster.name</code> 이 일치하지 않는 경우 클러스터를 구성하지 않고 독자적으로 클러스터를 구성하게 됩니다.</li>
+  <li><code class="language-plaintext highlighter-rouge">node.name</code> 은 각 노드의 고유한 이름인데 “master-1”, “data-1” 와 같이 명시적으로 표기하는게 좋습니다.</li>
+  <li><code class="language-plaintext highlighter-rouge">node.roles</code> 은 해당 노드의 역할을 의미합니다.</li>
+  <li><code class="language-plaintext highlighter-rouge">discovery.seed_hosts</code> 는 클러스터를 구성할 노드의 IP 혹은 도메인들을 리스트 형태로 설정합니다.</li>
+</ul>
+
+<h3 id="211-discovery">2.1.1 Discovery</h3>
+
+<p>각 노드가 다른 노드를 탐색하여 하나의 클러스터를 구성하는 과정을 <strong>discovery</strong> 라고 합니다.
+하나의 노드가 실행되면 보통 다음의 과정을 거치며 클러스터를 구성합니다.</p>
+
+<ol>
+  <li><code class="language-plaintext highlighter-rouge">discovery.seed_hosts</code> 에 있는 노드를 하나씩 탐색하여 <code class="language-plaintext highlighter-rouge">cluster.name</code> 을 확인합니다.</li>
+  <li>탐색한 노드의 <code class="language-plaintext highlighter-rouge">cluster.name</code>이 일치하면 해당 클러스터에 합류합니다.</li>
+  <li><code class="language-plaintext highlighter-rouge">cluster.name</code>이 일치하지 않으면 다시 1. 로 돌아가 다음 노드를 탐색합니다.</li>
+  <li><code class="language-plaintext highlighter-rouge">discovery.seed_hosts</code>에 설정된 노드를 찾지 못하거나 탐색한 모든 노드의 <code class="language-plaintext highlighter-rouge">cluster.name</code>이 일치하지 않으면 독자적으로 클러스터를 구성합니다.</li>
+</ol>
+
+<h3 id="212-network">2.1.2 Network</h3>
+
+<p><code class="language-plaintext highlighter-rouge">network.hosts</code> 는 Elasticsearch가 실행되는 서버의 IP 주소입니다.
+서버의 주소를 static 하게 설정할 수도 있지만 다음과 같이 정의된 특별한 변수값을 설정할 수도 있습니다.</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">_local_</code> : 127.0.0.1과 같은 시스템의 루프백 주소</li>
+  <li><code class="language-plaintext highlighter-rouge">_site_</code> : 시스템의 로컬 IP 주소</li>
+  <li><code class="language-plaintext highlighter-rouge">_global_</code> : 네트워크 외부에서 바라보는 주소</li>
+</ul>
+
+<p>기본적으로 <code class="language-plaintext highlighter-rouge">_local_</code> 로 설정되어 있지만 실제 서버의 IP 주소를 입력하면 개발 모드가 아닌 운영 모드로 전환됩니다.
+IP가 가변하는 환경에서는 <code class="language-plaintext highlighter-rouge">network.host: _site_</code> 로 설정해두면 자동으로 해당 로컬 네트워크로 설정되기 때문에 클러스터 구성시 주로 이렇게 설정합니다.
+Elasticsearch를 도커 컨테이너 내부에서 실행하는 경우 <code class="language-plaintext highlighter-rouge">_site_</code> 는 도커 컨테이너의 IP로 설정됩니다.
+이런 경우에는 추가적으로 <code class="language-plaintext highlighter-rouge">network.publish_host</code> 도 설정해주어 외부에서 접속이 가능하도록 합니다.</p>
+
+<h2 id="22-실행">2.2 실행</h2>
+
+<p>각 인스턴스마다 엘라스틱서치를 실행하여줍니다</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> docker run <span class="nt">-d</span> <span class="se">\</span>
+       <span class="nt">--name</span> elasticsearch <span class="se">\</span>
+       <span class="nt">-p</span> 9200:9200 <span class="nt">-p</span> 9300:9300 <span class="se">\</span>
+       <span class="nt">-e</span> <span class="nv">ES_JAVA_OPTS</span><span class="o">=</span><span class="s2">"-Xms2g -Xmx2g"</span> <span class="se">\</span>
+       <span class="nt">-v</span> <span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml <span class="se">\</span>
+       docker.elastic.co/elasticsearch/elasticsearch:8.0.1
+</code></pre></div></div>
+
+<p>도커 컨테이너가 모두 구동되면 엘라스틱서치를 호출하여 클러스터가 제대로 구성되었는지 체크합니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> curl <span class="nt">-XGET</span> http://localhost:9200/
+<span class="o">{</span>
+  <span class="s2">"name"</span> : <span class="s2">"master-1"</span>,
+  <span class="s2">"cluster_name"</span> : <span class="s2">"es-cluster"</span>,
+  <span class="s2">"cluster_uuid"</span> : <span class="s2">"kwckKcp2SHugiFtr2tpbUw"</span>,
+  <span class="s2">"version"</span> : <span class="o">{</span>
+    <span class="s2">"number"</span> : <span class="s2">"8.0.1"</span>,
+    <span class="s2">"build_flavor"</span> : <span class="s2">"default"</span>,
+    <span class="s2">"build_type"</span> : <span class="s2">"docker"</span>,
+    <span class="s2">"build_hash"</span> : <span class="s2">"801d9ccc7c2ee0f2cb121bbe22ab5af77a902372"</span>,
+    <span class="s2">"build_date"</span> : <span class="s2">"2022-02-24T13:55:40.601285296Z"</span>,
+    <span class="s2">"build_snapshot"</span> : <span class="nb">false</span>,
+    <span class="s2">"lucene_version"</span> : <span class="s2">"9.0.0"</span>,
+    <span class="s2">"minimum_wire_compatibility_version"</span> : <span class="s2">"7.17.0"</span>,
+    <span class="s2">"minimum_index_compatibility_version"</span> : <span class="s2">"7.0.0"</span>
+  <span class="o">}</span>,
+  <span class="s2">"tagline"</span> : <span class="s2">"You Know, for Search"</span>
+<span class="o">}</span>
+
+<span class="nv">$&gt;</span> curl <span class="nt">-XGET</span> http://localhost:9200/_cat/nodes?v<span class="o">=</span><span class="nb">true
+</span>ip            heap.percent ram.percent cpu load_1m load_5m load_15m node.role master name
+3.xxx.xxx.51            11          96   0    0.00    0.01     0.08 d         -      data-2
+15.xxx.xxx.254          12          96   3    0.00    0.02     0.08 d         -      data-3
+52.xxx.xxx.164          33          89  11    0.06    0.02     0.00 m         <span class="k">*</span>      master-1
+3.xxx.xxx.37            13          97   0    0.00    0.00     0.07 d         -      data-1
+</code></pre></div></div>
+
+<p>4대의 서버가 연결되어 클러스터를 구성한 것을 확인할 수 있습니다.
+<em>“master-1”</em> 노드가 마스터 노드의 역할을 하고 있습니다.</p>
+
+<hr />
+
+<h1 id="3-회고-및-보완점">3 회고 및 보완점</h1>
+
+<p>단일 노드로는 쉽게 적용되는 부분들이 클러스터를 구성하는 경우 쉽게 해결되지 않아 애를 먹었습니다.
+이번 포스트에서는 단순히 클러스터만 구성했을 뿐 security, load balancing 등 여러 방면에서 개선점이 필요해 보입니다.</p>
+
+<h2 id="31-network">3.1 Network</h2>
+<p>엘라스틱서치를 컨테이너 안에서 실행하는 경우 네트워크 설정이 조금 복잡한데 <code class="language-plaintext highlighter-rouge">network.host</code> 노드간 통신을 위해 <code class="language-plaintext highlighter-rouge">network.publish_host</code> 를 설정해 주어야 합니다.</p>
+
+<h2 id="32-메모리-맵">3.2 메모리 맵</h2>
+
+<p>다음과 같은 에러가 나타나는 경우가 있습니다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ERROR: [1] bootstrap checks failed
+[1]: max virtual memory areas vm.max_map_count [65530] is too low, increase to at least [262144]
+</code></pre></div></div>
+
+<p>엘라스틱서치는 기본적으로 메모리 맵 262144 이상부터 구동 가능하도록 제한 되어있습니다.
+매모리 맵 수가 65536 으로 되어있는 경우 엘라스틱서치가 실행되지 않고 위의 에러가 발생하는데 max_map_count 값을 수동으로 늘려주어야 합니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$&gt;</span> <span class="nb">cat</span> /proc/sys/vm/max_map_count
+65536
+<span class="nv">$&gt;</span> sysctl <span class="nt">-w</span> vm.max_map_count<span class="o">=</span>262144
+<span class="nv">$&gt;</span> <span class="nb">sudo </span>sysctl <span class="nt">-w</span> vm.max_map_count<span class="o">=</span>262144
+</code></pre></div></div>
+
+<h2 id="33-security">3.3 Security</h2>
+
+<p>X-Pack 의 경우 운영 모드에서는 활성화 시키는것이 정석입니다.
+또한 운영 모드에서는 transport SSL 도 설정해 주어야 하나 과정이 번거로워 생략하였습니다.
+trial 라이선스로 실행하는 경우 운영 모드여도 X-Pack 설정을 회피할 수 있습니다.</p>
+
+<hr />
+
+<h2 id="references">References</h2>
+<ul>
+  <li><a href="https://esbook.kimjmin.net/">Elastic 가이드 북</a></li>
+  <li><a href="http://kimjmin.net/2022/02/2022-02-elastic-8-install/">Elastic 8.0 설치하기</a></li>
+  <li><a href="https://github.com/deviantony/docker-elk">https://github.com/deviantony/docker-elk</a></li>
+  <li><a href="https://www.elastic.co/guide/en/elastic-stack-get-started/current/get-started-stack-docker.html">Running the Elastic Stack (“ELK”) on Docker</a></li>
+  <li><a href="https://fastcampus.co.kr/data_red_jhw">The RED : 검색엔진 구축을 위한 Elasticsearch 마스터 클래스 by 정호욱</a></li>
+</ul>
+
+
+      <hr>
+
+      <div id="disqus_thread"></div>
+      <script>
+          (function() {
+          var d = document, s = d.createElement('script');
+          s.src = 'https://miintto-github-io.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+          })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+      <hr>
+
+    </div>
+  </div>
+</div>
+
+
+  <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="footer-content container">
+    <p class="copyright text-muted">Copyright &copy; miintto 2024</p>
+  </div>
+</footer>
+
+
+  <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
+<script src="/assets/scripts.js"></script>
+
+
+  <script src="/assets/vendor/miintto/js/toc.js"></script>
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXXXX-X"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-XXXXXXXXX-X');
+</script>
+
+
+
+</body>
+
+</html>

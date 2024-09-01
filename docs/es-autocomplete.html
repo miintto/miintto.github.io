@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+
+<html>
+
+
+
+
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>[엘라스틱서치] 자동완성 API - miintto.log</title>
+
+  <meta name="description" content="보통 구글 혹은 네이버 검색창을 보면 키보드로 입력할 때마다 연관된 키워드가 나타나는 것을 확인할 수 있습니다. 굳이 사이트 뿐 아니라 검색 기능을 제공하는 웬만한 모바일 앱에서도 이러한 자동완성 기능을 제공하고 있습니다.">
+
+  <meta name="google-site-verification" content="wGN_mZVjgAC8sdItYCBTkSMwLrgNSWPY6sicU3MuSQw" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital@1&display=swap">
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://miintto.github.io/docs/es-autocomplete">
+  <link rel="alternate" type="application/rss+xml" title="[엘라스틱서치] 자동완성 API - miintto.log" href="/feed.xml">
+
+  <link rel="apple-touch-icon" href="/img/favicon-128.png">
+  <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+
+  <meta prefix="og: http://ogp.me/ns#" property="og:site_name" content="miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:type" content="blog"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:title" content="[엘라스틱서치] 자동완성 API - miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:description" content="보통 구글 혹은 네이버 검색창을 보면 키보드로 입력할 때마다 연관된 키워드가 나타나는 것을 확인할 수 있습니다. 굳이 사이트 뿐 아니라 검색 기능을 제공하는 웬만한 모바일 앱에서도 이러한 자동완성 기능을 제공하고 있습니다."/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:locale" content="ko_KR"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:url" content="https://miintto.github.io/docs/es-autocomplete"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:image" content="/img/thumbnails/elasticsearch.png">
+
+</head>
+
+
+<body>
+
+  <!-- Navigation -->
+
+<nav class="navbar" style="background-color: white;">
+
+  <div class="navbar-content container">
+    <a class="navbar-brand" href="/">miintto.log</a>
+    <button class="navbar-button" id="toggleButton" type="button" data-toggle="collapse" aria-controls="navbarResponsive" aria-expanded="false">
+      MENU
+      <i class="fa fa-bars"></i>
+    </button>
+    <div class="navbar-nav" id="navbarResponsive" aria-hidden="true">
+      <div class="nav-item">
+        <a class="nav-link" href="/about">ABOUT</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/posts">POSTS</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/archive">ARCHIVES</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+  <div class="article">
+  <div class="article-wrapper">
+    <div class="article-header">
+      <div class="article-info">
+        <h1>[엘라스틱서치] 자동완성 API</h1>
+        <div class="post-tags">
+          <p>elasticsearch</p><p>autocomplete</p><p>ngram</p>
+        </div>
+        <div class="article-meta">
+          2024.01.14 &middot; <span class="reading-time" title="Estimated read time">
+  
+   10 mins  read </span>
+
+        </div>
+      </div>
+      <div class="article-banner"">
+        <img src="/img/thumbnails/elasticsearch.png">
+      </div>
+    </div>
+
+    <div class="article-content">
+      <aside>
+  <div class="section-toc">
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h1"><a href="#1-n-gram">1. N-Gram</a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#11-n-gram-tokenizer">1.1 N-Gram Tokenizer</a></li>
+<li class="toc-entry toc-h2"><a href="#12-edge-n-gram-tokenizer">1.2 Edge N-Gram Tokenizer</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h1"><a href="#2-자소-분리">2. 자소 분리</a></li>
+<li class="toc-entry toc-h1"><a href="#3-모델-설계">3. 모델 설계</a></li>
+<li class="toc-entry toc-h1"><a href="#4-autocomplete">4. Autocomplete</a></li>
+<li class="toc-entry toc-h1"><a href="#5-conclusion">5. Conclusion</a></li>
+</ul>
+  </div>
+</aside>
+
+
+      <p>보통 구글 혹은 네이버 검색창을 보면 키보드로 입력할 때마다 연관된 키워드가 나타나는 것을 확인할 수 있습니다.
+굳이 사이트 뿐 아니라 검색 기능을 제공하는 웬만한 모바일 앱에서도 이러한 자동완성 기능을 제공하고 있습니다.</p>
+
+<p><img src="/img/posts/es-autocomplete-example.png" style="max-width:480px" /></p>
+
+<p>자동완성 API는 문자 하나를 입력할 때마다 반영되어야 하므로 빠른 성능이 요구됩니다.
+따라서 일반적인 RDB보다는 검색에 최적화된 엘라스틱서치를 활용할 수 있습니다.</p>
+
+<h1 id="1-n-gram">1. N-Gram</h1>
+
+<p>본래 <strong>N-Gram 언어 모델</strong>이라고 하면 텍스트를 단어 또는 음절 단위로 분리해서 각 단위를 기반으로 문맥을 이해하고 다음 단어를 예측하는 모델을 말합니다.
+일반적으로 띄어쓰기를 기준으로 문장을 분리하는데, 1개 단어씩 끊은 unigram, 2개씩 분리한 bigram 등 여러 단위로 설정하여 모델을 설계할 수 있습니다.
+일례로 <em>‘I like watching movies’</em> 라는 문장은 각 모델에 따라 아래와 같이 구분할 수 있습니다.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Models</th>
+      <th>Terms</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>unigram (N=1)</td>
+      <td><code class="language-plaintext highlighter-rouge">I</code> / <code class="language-plaintext highlighter-rouge">like</code> / <code class="language-plaintext highlighter-rouge">watching</code> / <code class="language-plaintext highlighter-rouge">movies</code></td>
+    </tr>
+    <tr>
+      <td>bigram (N=2)</td>
+      <td><code class="language-plaintext highlighter-rouge">I like</code> / <code class="language-plaintext highlighter-rouge">like watching</code> / <code class="language-plaintext highlighter-rouge">watching movies</code></td>
+    </tr>
+    <tr>
+      <td>trigram (N=3)</td>
+      <td><code class="language-plaintext highlighter-rouge">I like watching</code> / <code class="language-plaintext highlighter-rouge">like watching movies</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="11-n-gram-tokenizer">1.1 N-Gram Tokenizer</h2>
+
+<p>엘라스틱서치의 <strong>N-Gram 토크나이저</strong>도 해당 개념에서 차용했습니다.
+대신 입력받은 단어를 문장을 띄어쓰기가 아닌 특정 길이(N)의 문자열로 쪼갭니다.
+만일 N=2인 경우 ‘house’ 라는 단어는 ‘ho’, ‘ou’, ‘us’, ‘se’ 네 개의 토큰으로 나눌 수 있습니다.</p>
+
+<p><img src="/img/posts/es-autocomplete-ngram.png" style="max-width:420px" /></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET /_analyze
+<span class="o">{</span>
+  <span class="s2">"tokenizer"</span>: <span class="o">{</span>
+    <span class="s2">"type"</span>: <span class="s2">"ngram"</span>,
+    <span class="s2">"min_gram"</span>: 2,
+    <span class="s2">"max_gram"</span>: 2
+  <span class="o">}</span>,
+  <span class="s2">"text"</span>: <span class="s2">"house"</span>
+<span class="o">}</span>
+
+<span class="c"># Response</span>
+<span class="o">{</span>
+  <span class="s2">"tokens"</span> : <span class="o">[</span>
+    <span class="o">{</span>
+      <span class="s2">"token"</span> : <span class="s2">"ho"</span>,
+      <span class="s2">"start_offset"</span> : 0,
+      <span class="s2">"end_offset"</span> : 2,
+      <span class="s2">"type"</span> : <span class="s2">"word"</span>,
+      <span class="s2">"position"</span> : 0
+    <span class="o">}</span>,
+    <span class="o">{</span>
+      <span class="s2">"token"</span> : <span class="s2">"ou"</span>,
+      <span class="s2">"start_offset"</span> : 1,
+      <span class="s2">"end_offset"</span> : 3,
+      <span class="s2">"type"</span> : <span class="s2">"word"</span>,
+      <span class="s2">"position"</span> : 1
+    <span class="o">}</span>,
+    <span class="o">{</span>
+      <span class="s2">"token"</span> : <span class="s2">"us"</span>,
+      <span class="s2">"start_offset"</span> : 2,
+      <span class="s2">"end_offset"</span> : 4,
+      <span class="s2">"type"</span> : <span class="s2">"word"</span>,
+      <span class="s2">"position"</span> : 2
+    <span class="o">}</span>,
+    <span class="o">{</span>
+      <span class="s2">"token"</span> : <span class="s2">"se"</span>,
+      <span class="s2">"start_offset"</span> : 3,
+      <span class="s2">"end_offset"</span> : 5,
+      <span class="s2">"type"</span> : <span class="s2">"word"</span>,
+      <span class="s2">"position"</span> : 3
+    <span class="o">}</span>
+  <span class="o">]</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>쪼개진 토큰은 역인덱스 구조에 저장되어 검색 시에 사용됩니다.
+만약 해당 토크나이저로 문서를 색인하였다면 ‘ho’로 검색해도 ‘house’가 포함된 문서를 가져올 수 있습니다.</p>
+
+<p>N-Gram 토크나이저는 <code class="language-plaintext highlighter-rouge">min_gram</code>, <code class="language-plaintext highlighter-rouge">max_gram</code> 인자를 이용하여 여러 N 값을 조정할 수 있습니다.
+하지만 다양한 N을 설정할수록 저장되는 토큰의 개수가 기하급수적으로 많아지기 때문에 성능을 고려하여 적절한 수치로 조정해야 합니다.</p>
+
+<h2 id="12-edge-n-gram-tokenizer">1.2 Edge N-Gram Tokenizer</h2>
+
+<p>일반적으로 검색할 때는 단어를 앞에서부터 입력하게 됩니다.
+그리고 자동완성 키워드는 주로 입력한 문자열로 시작하는 키워드를 가져오게 됩니다.
+예를 들어 ‘house’라는 단어를 검색하는 경우 ‘h’, ‘ho’ 순으로 입력하며 이때, 노출되는 자동완성 키워드는 ‘h’ 또는 ‘ho’로 시작하는 문자열이 대상이 됩니다.</p>
+
+<p>이 말인즉슨 N-Gram으로 생성한 ‘ou’, ‘us’, ‘se’와 같은 토큰은 그다지 큰 효용성이 없고, 오히려 ‘h’, ‘ho’, ‘hou’와 같이 쪼개는 방법이 더 효율적일 수 있다는 의미이기도 합니다.</p>
+
+<p>이러한 방식으로 토큰을 구분하기 위해 <strong>Edge N-Gram 토크나이저</strong>를 사용할 수 있습니다.
+Edge N-Gram은 N-Gram과 유사하게 입력받은 텍스트를 길이 N의 문자열로 분리하지만, 대신 앞에서부터 연속한 N개의 문자열만 가져옵니다.</p>
+
+<p><img src="/img/posts/es-autocomplete-edge-ngram.png" style="max-width:420px" /></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET /_analyze
+<span class="o">{</span>
+  <span class="s2">"tokenizer"</span>: <span class="o">{</span>
+    <span class="s2">"type"</span>: <span class="s2">"edge_ngram"</span>,
+    <span class="s2">"min_gram"</span>: 1,
+    <span class="s2">"max_gram"</span>: 4
+  <span class="o">}</span>,
+  <span class="s2">"text"</span>: <span class="s2">"house"</span>
+<span class="o">}</span>
+
+<span class="c"># Response</span>
+<span class="o">{</span>
+  <span class="s2">"tokens"</span> : <span class="o">[</span>
+    <span class="o">{</span>
+      <span class="s2">"token"</span> : <span class="s2">"h"</span>,
+      <span class="s2">"start_offset"</span> : 0,
+      <span class="s2">"end_offset"</span> : 1,
+      <span class="s2">"type"</span> : <span class="s2">"word"</span>,
+      <span class="s2">"position"</span> : 0
+    <span class="o">}</span>,
+    <span class="o">{</span>
+      <span class="s2">"token"</span> : <span class="s2">"ho"</span>,
+      <span class="s2">"start_offset"</span> : 0,
+      <span class="s2">"end_offset"</span> : 2,
+      <span class="s2">"type"</span> : <span class="s2">"word"</span>,
+      <span class="s2">"position"</span> : 1
+    <span class="o">}</span>,
+    <span class="o">{</span>
+      <span class="s2">"token"</span> : <span class="s2">"hou"</span>,
+      <span class="s2">"start_offset"</span> : 0,
+      <span class="s2">"end_offset"</span> : 3,
+      <span class="s2">"type"</span> : <span class="s2">"word"</span>,
+      <span class="s2">"position"</span> : 2
+    <span class="o">}</span>,
+    <span class="o">{</span>
+      <span class="s2">"token"</span> : <span class="s2">"hous"</span>,
+      <span class="s2">"start_offset"</span> : 0,
+      <span class="s2">"end_offset"</span> : 4,
+      <span class="s2">"type"</span> : <span class="s2">"word"</span>,
+      <span class="s2">"position"</span> : 3
+    <span class="o">}</span>
+  <span class="o">]</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>해당 토크나이저도 <code class="language-plaintext highlighter-rouge">min_gram</code>, <code class="language-plaintext highlighter-rouge">max_gram</code> 파라미터로 다양한 N 값을 설정할 수 있습니다.</p>
+
+<p>Edge N-Gram을 사용하여 문자열을 처리하면 하나의 N에 대해서 생성되는 토큰의 경우의 수가 N-Gram에 비해 훨씬 줄어듭니다.
+따라서 굳이 문자열의 모든 위치에서 부분 일치를 찾을 필요가 없는 자동완성 모델에서 많이 사용됩니다.</p>
+
+<hr />
+
+<h1 id="2-자소-분리">2. 자소 분리</h1>
+
+<p>보통 한글 단어를 검색하는 경우 자동완성 키워드는 자음, 모음 하나씩 입력할 때마다 반영됩니다.
+또한 ‘국’ 이라는 단어를 입력했을 때 ‘국밥’, ‘구글’ 둘 다 대상이 될 수 있습니다.
+그 원리를 분석해 보면 ‘국’이라는 글자를 ‘ㄱㅜㄱ’으로 분리했을 때 마지막 ㄱ이 초성이 될 수도 있고 종성이 될 수도 있기 때문입니다.</p>
+
+<p>이처럼 자동완성 모델에서 한글 문자의 자음/모음을 분리하는 작업은 꼭 필요합니다.
+해당 기능은 엘라스틱서치에 내장되지 않았지만 외부 플러그인을 사용할 수 있습니다.
+여기서는 <a href="https://github.com/netcrazy/elasticsearch-jaso-analyzer">elasticsearch-jaso-analyzer</a>를 사용하겠습니다.
+설치하는 방법은 해당 페이지에 나와 있으니 생략하겠습니다.</p>
+
+<p>설치가 끝나면 <code class="language-plaintext highlighter-rouge">jaso_tokenizer</code>를 사용할 수 있습니다.
+‘안녕하세요’라는 문자열을 처리해 보면 아래와 같이 자음과 모음이 분리된 토큰을 확인할 수 있습니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET /_analyze
+<span class="o">{</span>
+  <span class="s2">"tokenizer"</span>: <span class="s2">"jaso_tokenizer"</span>,
+  <span class="s2">"text"</span>: <span class="s2">"안녕하세요"</span>
+<span class="o">}</span>
+
+<span class="c"># Response</span>
+<span class="o">{</span>
+  <span class="s2">"tokens"</span> : <span class="o">[</span>
+    <span class="o">{</span>
+      <span class="s2">"token"</span> : <span class="s2">"ㅇㅏㄴㄴㅕㅇㅎㅏㅅㅔㅇㅛ"</span>,
+      <span class="s2">"start_offset"</span> : 0,
+      <span class="s2">"end_offset"</span> : 12,
+      <span class="s2">"type"</span> : <span class="s2">"word"</span>,
+      <span class="s2">"position"</span> : 0
+    <span class="o">}</span>
+  <span class="o">]</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="3-모델-설계">3. 모델 설계</h1>
+
+<p>위 내용을 종합하여 자동완성 모델을 설계하려고 합니다.
+다음과 같은 인덱스를 생성하였습니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PUT /autocomplete-keyword
+<span class="o">{</span>
+  <span class="s2">"settings"</span>: <span class="o">{</span>
+    <span class="s2">"analysis"</span>: <span class="o">{</span>
+      <span class="s2">"filter"</span>: <span class="o">{</span>
+        <span class="s2">"f_ngram_autocmpl"</span>: <span class="o">{</span>
+          <span class="s2">"type"</span>: <span class="s2">"edge_ngram"</span>,
+          <span class="s2">"min_gram"</span>: 1,
+          <span class="s2">"max_gram"</span>: 50
+        <span class="o">}</span>
+      <span class="o">}</span>,
+      <span class="s2">"analyzer"</span>: <span class="o">{</span>
+        <span class="s2">"a_autocmpl_index"</span>: <span class="o">{</span>
+          <span class="s2">"tokenizer"</span>: <span class="s2">"jaso_tokenizer"</span>,
+          <span class="s2">"filter"</span>: <span class="o">[</span><span class="s2">"f_ngram_autocmpl"</span><span class="o">]</span>
+        <span class="o">}</span>,
+        <span class="s2">"a_autocmpl_search"</span>: <span class="o">{</span>
+          <span class="s2">"tokenizer"</span>: <span class="s2">"jaso_tokenizer"</span>
+        <span class="o">}</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+  <span class="o">}</span>,
+  <span class="s2">"mappings"</span>: <span class="o">{</span>
+    <span class="s2">"properties"</span>: <span class="o">{</span>
+      <span class="s2">"word"</span>: <span class="o">{</span>
+        <span class="s2">"type"</span>: <span class="s2">"text"</span>,
+        <span class="s2">"analyzer"</span>: <span class="s2">"a_autocmpl_index"</span>,
+        <span class="s2">"search_analyzer"</span>: <span class="s2">"a_autocmpl_search"</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>자동완성에만 사용된 인덱스이므로 키워드를 저장할 <code class="language-plaintext highlighter-rouge">word</code> 필드 하나만 설정하였습니다.
+해당 필드는 text 타입으로 설정하였고 색인용 &amp; 검색용 두 개의 analyzer를 정의하였습니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">a_autocmpl_index</code> analyzer는 문서 저장 시 색인에 사용하였습니다.
+먼저 토크나이저가 입력받은 문자열의 자음/모음을 분리하며, 토큰 필터에서 Edge N-Gram이 문자열을 구분합니다.
+Edge N-Gram의 최대 N값은 50으로 설정해 두었습니다.</p>
+
+<p><img src="/img/posts/es-autocomplete-index-analyzer.png" style="max-width:600px" /></p>
+
+<p><code class="language-plaintext highlighter-rouge">a_autocmpl_search</code> analyzer는 검색 시에 적용됩니다.
+보통 별다른 설정이 없으면 검색 시에도 색인할 때 설정한 analyzer를 이용하지만, text 필드에 <code class="language-plaintext highlighter-rouge">search_analyzer</code>를 설정하면 검색할 때 해당 analyzer를 사용하게 됩니다.
+검색할때는 별도 N-Gram 설정 없이 자음/모음만 분리하도록 하였습니다.</p>
+
+<p><img src="/img/posts/es-autocomplete-search-analyzer.png" style="max-width:480px" /></p>
+
+<p>검색 쿼리는 아래와 같이 설정하였습니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET /autocomplete-keyword/_search
+<span class="o">{</span>
+  <span class="s2">"size"</span>: 10,
+  <span class="s2">"query"</span>: <span class="o">{</span>
+    <span class="s2">"match"</span>: <span class="o">{</span>
+      <span class="s2">"word"</span>: 입력한키워드
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">word</code> 필드에서 매칭되는 키워드를 가져오도록 하였습니다.
+검색 결과는 score 기준으로 상위 10개만 조회하였습니다.</p>
+
+<hr />
+
+<h1 id="4-autocomplete">4. Autocomplete</h1>
+
+<p>자동완성 프로세스를 정리하면 아래와 같습니다.</p>
+
+<p>생성한 인덱스에는 결과로 반환할 키워드가 미리 입력되어 있어야 합니다.
+해당 키워드는 입력될 때마다 필드에 설정된 <code class="language-plaintext highlighter-rouge">analyzer</code>에 의해서 자/모음이 분해된 여러 토큰으로 나누어지고 역인덱스 구조에 저장됩니다.</p>
+
+<p>그리고 검색 시에 사용자가 입력한 문자는 <code class="language-plaintext highlighter-rouge">search_analyzer</code>가 처리하여 자/모음이 분해된 토큰으로 변환됩니다.
+이때 역인덱스 구조에서 일치하는 토큰을 찾아서 해당 토큰이 포함된 키워드를 가져옵니다.</p>
+
+<p><img src="/img/posts/es-autocomplete-search-process.png" style="max-width:720px" /></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET /autocomplete-keyword/_search
+<span class="o">{</span>
+  <span class="s2">"size"</span>: 10,
+  <span class="s2">"query"</span>: <span class="o">{</span>
+    <span class="s2">"match"</span>: <span class="o">{</span>
+      <span class="s2">"word"</span>: <span class="s2">"국"</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c"># Response</span>
+<span class="o">{</span>
+  <span class="s2">"took"</span> : 17,
+  <span class="s2">"timed_out"</span> : <span class="nb">false</span>,
+  <span class="s2">"_shards"</span> : <span class="o">{</span>
+    <span class="s2">"total"</span> : 1,
+    <span class="s2">"successful"</span> : 1,
+    <span class="s2">"skipped"</span> : 0,
+    <span class="s2">"failed"</span> : 0
+  <span class="o">}</span>,
+  <span class="s2">"hits"</span> : <span class="o">{</span>
+    <span class="s2">"total"</span> : <span class="o">{</span>
+      <span class="s2">"value"</span> : 22,
+      <span class="s2">"relation"</span> : <span class="s2">"eq"</span>
+    <span class="o">}</span>,
+    <span class="s2">"max_score"</span> : 6.436837,
+    <span class="s2">"hits"</span> : <span class="o">[</span>
+      <span class="o">{</span>
+        <span class="s2">"_index"</span> : <span class="s2">"autocomplete-keyword"</span>,
+        <span class="s2">"_type"</span> : <span class="s2">"_doc"</span>,
+        <span class="s2">"_id"</span> : <span class="s2">"3KuJ4owB-auK4eYlxmNH"</span>,
+        <span class="s2">"_score"</span> : 6.436837,
+        <span class="s2">"_source"</span> : <span class="o">{</span>
+          <span class="s2">"word"</span> : <span class="s2">"국밥"</span>
+        <span class="o">}</span>
+      <span class="o">}</span>,
+      <span class="o">{</span>
+        <span class="s2">"_index"</span> : <span class="s2">"autocomplete-keyword"</span>,
+        <span class="s2">"_type"</span> : <span class="s2">"_doc"</span>,
+        <span class="s2">"_id"</span> : <span class="s2">"8KuJ4owB-auK4eYl3GMs"</span>,
+        <span class="s2">"_score"</span> : 6.436837,
+        <span class="s2">"_source"</span> : <span class="o">{</span>
+          <span class="s2">"word"</span> : <span class="s2">"구글"</span>
+        <span class="o">}</span>
+      <span class="o">}</span>,
+      ...
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="5-conclusion">5. Conclusion</h1>
+
+<p>자동완성 기능은 사용자가 문자를 입력할 때마다 빠른 응답이 요구되기 때문에 성능 최적화가 중요합니다.
+따라서 복잡한 작업은 가능하다면 검색보다는 색인 시에 처리하는 것이 좀 더 효율적입니다.
+위 모델에서 N-Gram으로 최대 50개의 토큰을 생성한 것과 같이 데이터 처리가 필요한 부분을 미리 처리해 두면 검색 시점에서는 이미 전처리가 된 데이터를 빠르게 검색할 수 있습니다.</p>
+
+<hr />
+
+<p>References</p>
+
+<ul>
+  <li><a href="https://heytech.tistory.com/343">[NLP] N-gram 언어 모델의 개념, 종류, 한계점</a></li>
+  <li><a href="https://esbook.kimjmin.net/06-text-analysis/6.6-token-filter/6.6.4-ngram-edge-ngram-shingle#ngram">6.6.4 NGram, Edge NGram, Shingle - Elastic 가이드북</a></li>
+  <li><a href="https://github.com/netcrazy/elasticsearch-jaso-analyzer">GitHub - netcrazy/elasticsearch-jaso-analyzer</a></li>
+  <li><a href="https://renuevo.github.io/elastic/autocomplete/elastic-autocomplete-2/">[Elastic] 2. Elastic 자동완성 가이드 (Autocomplete Guide) - Index Search | renuevo blog</a></li>
+</ul>
+
+
+      <hr>
+
+      <div id="disqus_thread"></div>
+      <script>
+          (function() {
+          var d = document, s = d.createElement('script');
+          s.src = 'https://miintto-github-io.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+          })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+      <hr>
+
+    </div>
+  </div>
+</div>
+
+
+  <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="footer-content container">
+    <p class="copyright text-muted">Copyright &copy; miintto 2024</p>
+  </div>
+</footer>
+
+
+  <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
+<script src="/assets/scripts.js"></script>
+
+
+  <script src="/assets/vendor/miintto/js/toc.js"></script>
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXXXX-X"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-XXXXXXXXX-X');
+</script>
+
+
+
+</body>
+
+</html>

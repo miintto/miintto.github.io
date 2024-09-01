@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html>
+
+
+
+
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>[Nginx] 도메인 유입만 허용하는 방법 - miintto.log</title>
+
+  <meta name="description" content="지금 블로그는 GitHub Page를 적극 활용하였지만, 이 포스트를 작성하던 2023년 5월경에는 자체 서버에 도메인을 붙여서 블로그를 운영하고 있었습니다. 티스토리, 벨로그 등 어느 정도 포맷을 잡아주는 플랫폼을 사용하지 않고 만드는 블로그라 꽤 번거로운 작업이 많았으나 여러가...">
+
+  <meta name="google-site-verification" content="wGN_mZVjgAC8sdItYCBTkSMwLrgNSWPY6sicU3MuSQw" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital@1&display=swap">
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://miintto.github.io/docs/nginx-allow-via-domain">
+  <link rel="alternate" type="application/rss+xml" title="[Nginx] 도메인 유입만 허용하는 방법 - miintto.log" href="/feed.xml">
+
+  <link rel="apple-touch-icon" href="/img/favicon-128.png">
+  <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+
+  <meta prefix="og: http://ogp.me/ns#" property="og:site_name" content="miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:type" content="blog"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:title" content="[Nginx] 도메인 유입만 허용하는 방법 - miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:description" content="지금 블로그는 GitHub Page를 적극 활용하였지만, 이 포스트를 작성하던 2023년 5월경에는 자체 서버에 도메인을 붙여서 블로그를 운영하고 있었습니다. 티스토리, 벨로그 등 어느 정도 포맷을 잡아주는 플랫폼을 사용하지 않고 만드는 블로그라 꽤 번거로운 작업이 많았으나 여러가..."/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:locale" content="ko_KR"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:url" content="https://miintto.github.io/docs/nginx-allow-via-domain"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:image" content="/img/thumbnails/nginx-allow-via-domain.png">
+
+</head>
+
+
+<body>
+
+  <!-- Navigation -->
+
+<nav class="navbar" style="background-color: white;">
+
+  <div class="navbar-content container">
+    <a class="navbar-brand" href="/">miintto.log</a>
+    <button class="navbar-button" id="toggleButton" type="button" data-toggle="collapse" aria-controls="navbarResponsive" aria-expanded="false">
+      MENU
+      <i class="fa fa-bars"></i>
+    </button>
+    <div class="navbar-nav" id="navbarResponsive" aria-hidden="true">
+      <div class="nav-item">
+        <a class="nav-link" href="/about">ABOUT</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/posts">POSTS</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/archive">ARCHIVES</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+  <div class="article">
+  <div class="article-wrapper">
+    <div class="article-header">
+      <div class="article-info">
+        <h1>[Nginx] 도메인 유입만 허용하는 방법</h1>
+        <div class="post-tags">
+          <p>network</p><p>nginx</p>
+        </div>
+        <div class="article-meta">
+          2023.05.29 &middot; <span class="reading-time" title="Estimated read time">
+  
+   3 mins  read </span>
+
+        </div>
+      </div>
+      <div class="article-banner"">
+        <img src="/img/thumbnails/nginx-allow-via-domain.png">
+      </div>
+    </div>
+
+    <div class="article-content">
+      <aside>
+  <div class="section-toc">
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h1"><a href="#1-issue">1. Issue</a></li>
+<li class="toc-entry toc-h1"><a href="#2-allow-via-domain-only">2. Allow via Domain Only</a></li>
+</ul>
+  </div>
+</aside>
+
+
+      <p>지금 블로그는 GitHub Page를 적극 활용하였지만, 이 포스트를 작성하던 2023년 5월경에는 자체 서버에 도메인을 붙여서 블로그를 운영하고 있었습니다.
+티스토리, 벨로그 등 어느 정도 포맷을 잡아주는 플랫폼을 사용하지 않고 만드는 블로그라 꽤 번거로운 작업이 많았으나 여러가지 커스텀하고 싶은 부분이 많아 선택한 결정이었습니다.
+어차피 정적 사이트 성격이 강해서 생각보다 어렵지 않게 구축할 수 있었습니다.
+어느 정도 블로그의 구색이 갖추어지고 나니 이제는 구글 검색 노출에 대한 욕심이 슬며시 생겨서 부랴부랴 블로그 html마다 open graph 태그도 박아넣고, 구글 search console에 사이트를 등록하여 페이지 인덱싱도 진행하였습니다.</p>
+
+<p>가이드에 따르면 보통 인덱싱이 되어 구글 검색에 노출되기까지는 일주일 정도의 시간이 소요된다고 합니다.
+아마 구글이 크롤링하는 사이트의 규모가 상당하기에 검색 대상에 반영되기까지 여러 과정이 있는 것 같습니다.
+아무튼 작업을 끝낸 후 어느 정도 텀이 있어서 그런지 기껏 사이트를 등록해두고는 한동안 까맣게 잊고 있었습니다.</p>
+
+<hr />
+
+<h1 id="1-issue">1. Issue</h1>
+
+<p>어느 날 문득 다시 search console에 등록해 두었던 블로그가 생각나 구글 검색창에 제 블로그를 한 번 검색해 보았습니다.
+한 달 가까이 시간이 흐른 뒤라 충분히 인덱싱이되고도 남을 시간이었습니다.
+하지만 블로그 명을 입력한 후 두 눈으로 목격한 결과는 뭔가 2% 부족한 모습이었습니다.</p>
+
+<p><img src="/img/posts/nginx-allow-via-domain-search-result.png" style="max-width:720px" /></p>
+
+<p>문제는 바로 검색 결과가 도메인이 아닌 IP로 연결되어 있다는 것이었습니다.
+기껏 AWS에서 도메인도 구입하고 SSL 인증서도 적용했건만 구글 검색 결과는 언제 변할지 모르는 IP 주소를 고대로 노출하고 있었습니다.
+더욱이 슬픈 건 SSL 인증서가 도메인에만 적용되어 있어서 해당 링크를 클릭하면 브라우저 단에서 페이지가 차단된다는 점입니다.</p>
+
+<p><img src="/img/posts/nginx-allow-via-domain-denied-page.png" style="max-width:720px" /></p>
+
+<p>ㅠㅠㅠㅠㅠㅠㅠ</p>
+
+<hr />
+
+<h1 id="2-allow-via-domain-only">2. Allow via Domain Only</h1>
+
+<p>해당 이슈의 원인을 확인해 보니 블로그 서버에 IP 접근이 허용되고 있던 부분이 문제였습니다.
+AWS와 같은 클라우드 환경에서 인스턴스를 생성하는 경우에는 별다른 설정을 하지 않으면 기본적으로 IP주소 접근이 허용되는데 구글 크롤러가 이를 반영하여 IP로 매핑한다고 합니다.
+따라서 도메인 접근만 허용하고 IP로 접근하는 경우 에러를 발생시킨다면 크롤러는 해당 요청이 잘못되었다는 것을 깨닫고 검색 결과에 도메인으로 반영하게 됩니다.</p>
+
+<p>해당 부분은 nginx에서 설정할 수 있습니다.
+먼저 현 블로그에 적용되어있는 nginx 설정을 확인해봅시다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>server <span class="o">{</span>
+  listen 80<span class="p">;</span>
+  server_name blog.miintto.com<span class="p">;</span>
+  <span class="k">return </span>301 https://<span class="nv">$host$request_uri</span><span class="p">;</span>
+<span class="o">}</span>
+
+server <span class="o">{</span>
+  listen 443 ssl<span class="p">;</span>
+  server_name blog.miintto.com<span class="p">;</span>
+
+  ssl_certificate /etc/letsencrypt/live/blog.miintto.com/fullchain.pem<span class="p">;</span>
+  ssl_certificate_key /etc/letsencrypt/live/blog.miintto.com/privkey.pem<span class="p">;</span>
+
+  ...
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>위와 같이 blog.miintto.com 도메인에 접근하는 경우 기본적으로 HTTPS 프로토콜을 허용하였고, 80포트(HTTP)로 접근하는 경우에는 HTTPS로 리다이렉트 되도록 하였습니다.</p>
+
+<p>여기서 nginx 환경설정에 아래 내용을 추가해 줍니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>server <span class="o">{</span>
+  listen 80 default_server<span class="p">;</span>
+  listen 443 default_server<span class="p">;</span>
+  ssl_certificate /etc/letsencrypt/live/blog.miintto.com/fullchain.pem<span class="p">;</span>
+  ssl_certificate_key /etc/letsencrypt/live/blog.miintto.com/privkey.pem<span class="p">;</span>
+  <span class="k">return </span>404<span class="p">;</span>  <span class="c"># 기본적으로 유입되는 경우에는 404로 응답.</span>
+<span class="o">}</span>
+
+server <span class="o">{</span>  <span class="c"># 이하 내용은 동일</span>
+  listen 80<span class="p">;</span>
+  server_name blog.miintto.com<span class="p">;</span>
+...
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">listen</code> 뒤에 <code class="language-plaintext highlighter-rouge">default_server</code> 값을 기입한 경우에는 해당 포트로 접근하는 전반적인 요청에 대해서 처리하게 됩니다.
+즉, 요청이 들어온 IP 혹은 도메인과 일치하는 <code class="language-plaintext highlighter-rouge">server_name</code>이 존재하지 않으면 기본적으로 <code class="language-plaintext highlighter-rouge">default_server</code>에 정의대로 처리됩니다.
+따라서 blog.miintto.com 도메인이 아니라 IP주소로 들어온 경우에는 설정해 준 대로 404 에러를 반환하게 됩니다.
+404 에러 대신 400, 403, 444 에러를 발생시켜도 무방합니다.</p>
+
+<p>설정울 마친 후 며칠 뒤 다시 검색 결과를 확인해 보면 아래와 같이 도메인으로 연결된 것을 확인할 수 있습니다.</p>
+
+<p><img src="/img/posts/nginx-allow-via-domain-improved-search-result.png" style="max-width:720px" /></p>
+
+<hr />
+
+<p>Reference</p>
+
+<ul>
+  <li><a href="https://www.youtube.com/watch?v=jrpw7YUEHiU">구글 검색에 도메인이 IP로 나올 때 - When a domain is listed as an IP in Google search</a></li>
+  <li><a href="https://www.codesarang.com/8">라즈베리파이4 설정(4) - NGINX에서 도메인으로 접속만 허용하기(IP주소 직접접속 차단)</a></li>
+  <li><a href="https://stackoverflow.com/questions/61800208/nginx-allow-via-domain-but-not-via-the-ip">Nginx allow via Domain but not via the IP</a></li>
+</ul>
+
+
+      <hr>
+
+      <div id="disqus_thread"></div>
+      <script>
+          (function() {
+          var d = document, s = d.createElement('script');
+          s.src = 'https://miintto-github-io.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+          })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+      <hr>
+
+    </div>
+  </div>
+</div>
+
+
+  <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="footer-content container">
+    <p class="copyright text-muted">Copyright &copy; miintto 2024</p>
+  </div>
+</footer>
+
+
+  <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
+<script src="/assets/scripts.js"></script>
+
+
+  <script src="/assets/vendor/miintto/js/toc.js"></script>
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXXXX-X"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-XXXXXXXXX-X');
+</script>
+
+
+
+</body>
+
+</html>

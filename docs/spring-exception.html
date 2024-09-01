@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+
+<html>
+
+
+
+
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>Spring 어플리케이션 예외 처리 - miintto.log</title>
+
+  <meta name="description" content="개발자가 아무리 코드를 완벽하게 작성했다고 해도 어플리케이션이 항상 개발자가 의도한 대로 돌아가지만은 않습니다. 사람의 실수를 차치하고서라도 서버에 부하가 몰리거나 네트워크 단절되는 등 외부적인 요인에 의해서 충분히 서비스에 장애가 발생할 수 있습니다.">
+
+  <meta name="google-site-verification" content="wGN_mZVjgAC8sdItYCBTkSMwLrgNSWPY6sicU3MuSQw" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital@1&display=swap">
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://miintto.github.io/docs/spring-exception">
+  <link rel="alternate" type="application/rss+xml" title="Spring 어플리케이션 예외 처리 - miintto.log" href="/feed.xml">
+
+  <link rel="apple-touch-icon" href="/img/favicon-128.png">
+  <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+
+  <meta prefix="og: http://ogp.me/ns#" property="og:site_name" content="miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:type" content="blog"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:title" content="Spring 어플리케이션 예외 처리 - miintto.log"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:description" content="개발자가 아무리 코드를 완벽하게 작성했다고 해도 어플리케이션이 항상 개발자가 의도한 대로 돌아가지만은 않습니다. 사람의 실수를 차치하고서라도 서버에 부하가 몰리거나 네트워크 단절되는 등 외부적인 요인에 의해서 충분히 서비스에 장애가 발생할 수 있습니다."/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:locale" content="ko_KR"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:url" content="https://miintto.github.io/docs/spring-exception"/>
+  <meta prefix="og: http://ogp.me/ns#" property="og:image" content="/img/thumbnails/spring-exception.png">
+
+</head>
+
+
+<body>
+
+  <!-- Navigation -->
+
+<nav class="navbar" style="background-color: white;">
+
+  <div class="navbar-content container">
+    <a class="navbar-brand" href="/">miintto.log</a>
+    <button class="navbar-button" id="toggleButton" type="button" data-toggle="collapse" aria-controls="navbarResponsive" aria-expanded="false">
+      MENU
+      <i class="fa fa-bars"></i>
+    </button>
+    <div class="navbar-nav" id="navbarResponsive" aria-hidden="true">
+      <div class="nav-item">
+        <a class="nav-link" href="/about">ABOUT</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/posts">POSTS</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/archive">ARCHIVES</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+  <div class="article">
+  <div class="article-wrapper">
+    <div class="article-header">
+      <div class="article-info">
+        <h1>Spring 어플리케이션 예외 처리</h1>
+        <div class="post-tags">
+          <p>spring</p><p>custom response</p><p>exception</p><p>controller advice</p>
+        </div>
+        <div class="article-meta">
+          2023.07.02 &middot; <span class="reading-time" title="Estimated read time">
+  
+   8 mins  read </span>
+
+        </div>
+      </div>
+      <div class="article-banner"">
+        <img src="/img/thumbnails/spring-exception.png">
+      </div>
+    </div>
+
+    <div class="article-content">
+      <aside>
+  <div class="section-toc">
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h1"><a href="#1-custom-response">1. Custom Response</a></li>
+<li class="toc-entry toc-h1"><a href="#2-custom-exception">2. Custom Exception</a></li>
+<li class="toc-entry toc-h1"><a href="#3-handle-exception">3. Handle Exception</a></li>
+</ul>
+  </div>
+</aside>
+
+
+      <p>개발자가 아무리 코드를 완벽하게 작성했다고 해도 어플리케이션이 항상 개발자가 의도한 대로 돌아가지만은 않습니다.
+사람의 실수를 차치하고서라도 서버에 부하가 몰리거나 네트워크 단절되는 등 외부적인 요인에 의해서 충분히 서비스에 장애가 발생할 수 있습니다.</p>
+
+<p>따라서 견고한 어플리케이션을 만들기 위해서는 예외 상황에 대비하여 방어적인 코드 작성이 필요합니다.
+그러기 위해서는 어느 정도 발생 가능성 있는 오류에 대해서는 프로그래밍적으로 의도한 에러를 발생시키는 동시에 문제가 되는 부분을 클라이언트에 고지해 줄 수 있어야 합니다.</p>
+
+<hr />
+
+<h1 id="1-custom-response">1. Custom Response</h1>
+
+<p>기본적으로 응답 포맷을 일괄적으로 통일하려고 합니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">{</span>
+    <span class="s2">"code"</span>: <span class="s2">"코드"</span>,  <span class="c"># 0000, F001</span>
+    <span class="s2">"message"</span>: <span class="s2">"상태 설명"</span>,  <span class="c"># 응답 성공, 유효하지 않은 파라미터</span>
+    <span class="s2">"data"</span>: <span class="s2">"응답 데이터"</span>  <span class="c"># 리스트 혹은 스트링 포맷</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>먼저 status로 성공 및 실패 여부를 구분하고, 위와 같이 ‘code’에는 특정 코드값으로 구체적인 상태 정보를 반환하며 ‘data’에 응답 데이터를 내려주는 방식으로 구성하였습니다.</p>
+
+<p>이를 구현하기 위해 Enum 형태로 각 상황별 코드를 정의하고, <code class="language-plaintext highlighter-rouge">data class</code>로 응답 형태를 잡아주었습니다.
+또한 응답 시 사용했던 <code class="language-plaintext highlighter-rouge">ResponseEntity</code>를 상속하여 커스텀한 응답 클래스를 만들었습니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">enum</span> <span class="kd">class</span> <span class="nc">Http</span><span class="p">(</span><span class="kd">val</span> <span class="py">code</span><span class="p">:</span> <span class="nc">String</span><span class="p">,</span> <span class="kd">val</span> <span class="py">message</span><span class="p">:</span> <span class="nc">String</span><span class="p">,</span> <span class="kd">val</span> <span class="py">status</span><span class="p">:</span> <span class="nc">HttpStatus</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nc">SUCCESS</span><span class="p">(</span><span class="s">"S001"</span><span class="p">,</span> <span class="s">"성공"</span><span class="p">,</span> <span class="nc">HttpStatus</span><span class="p">.</span><span class="nc">OK</span><span class="p">),</span>
+    <span class="nc">CREATED</span><span class="p">(</span><span class="s">"S002"</span><span class="p">,</span><span class="s">"생성 완료"</span><span class="p">,</span> <span class="nc">HttpStatus</span><span class="p">.</span><span class="nc">CREATED</span><span class="p">),</span>
+    <span class="nc">USER_NOT_FOUND</span><span class="p">(</span><span class="s">"F001"</span><span class="p">,</span> <span class="s">"사용자를 찾을 수 없습니다."</span><span class="p">,</span> <span class="nc">HttpStatus</span><span class="p">.</span><span class="nc">NOT_FOUND</span><span class="p">),</span>
+    <span class="c1">// 필요한 경우 더 추가</span>
+<span class="p">}</span>
+
+<span class="kd">data class</span> <span class="nc">ResponseDto</span><span class="p">(</span>
+    <span class="kd">val</span> <span class="py">code</span><span class="p">:</span> <span class="nc">String</span><span class="p">,</span>
+    <span class="kd">val</span> <span class="py">message</span><span class="p">:</span> <span class="nc">String</span><span class="p">,</span>
+    <span class="kd">val</span> <span class="py">data</span><span class="p">:</span> <span class="nc">Any</span><span class="p">?</span>
+<span class="p">)</span>
+
+<span class="kd">class</span> <span class="nc">ApiResponse</span><span class="p">(</span>
+    <span class="n">http</span><span class="p">:</span> <span class="nc">Http</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">:</span> <span class="nc">Any</span><span class="p">?</span>
+<span class="p">)</span> <span class="p">:</span> <span class="nc">ResponseEntity</span><span class="p">&lt;</span><span class="nc">ResponseDto</span><span class="p">&gt;(</span><span class="nc">ResponseDto</span><span class="p">(</span><span class="n">http</span><span class="p">.</span><span class="n">code</span><span class="p">,</span> <span class="n">http</span><span class="p">.</span><span class="n">message</span><span class="p">,</span> <span class="n">data</span><span class="p">),</span> <span class="n">http</span><span class="p">.</span><span class="n">status</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">constructor</span><span class="p">(</span><span class="n">http</span><span class="p">:</span> <span class="nc">Http</span><span class="p">)</span> <span class="p">:</span> <span class="k">this</span><span class="p">(</span><span class="n">http</span><span class="p">,</span> <span class="k">null</span><span class="p">)</span>  <span class="c1">// data를 입력받지 않은 경우에는 null로 처리</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>코드는 성공, 실패를 명확하게 구분하기 위해 알파벳과 숫자를 혼용하였습니다.
+<strong>S</strong>로 시작하면 성공, <strong>F</strong>로 시작하면 요청 실패 상태로 정의하였고 그 뒤에 숫자 세 개를 순차적으로 부여하여 구분하였습니다.</p>
+
+<p>API 개발 시 반드시 ‘data’ 값을 채워 내려줄 필요가 없는 상황도 있습니다.
+이런 경우에는 매번 <code class="language-plaintext highlighter-rouge">data</code> 값을 <code class="language-plaintext highlighter-rouge">null</code>로 작성하기 번거로우므로 <code class="language-plaintext highlighter-rouge">data</code> 인자를 입력하지 않은 경우 <code class="language-plaintext highlighter-rouge">null</code>로 응답하도록 <code class="language-plaintext highlighter-rouge">ApiResponse</code> 클래스에 생성자를 추가하였습니다.</p>
+
+<p>컨트롤러에서는 아래와 같이 <code class="language-plaintext highlighter-rouge">ResponseEntity</code> 대신 <code class="language-plaintext highlighter-rouge">ApiResponse</code>를 반환하는 방식으로 변경하였습니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/{user-id}"</span><span class="p">)</span>
+<span class="k">fun</span> <span class="nf">getUser</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="p">(</span><span class="s">"user-id"</span><span class="p">)</span> <span class="n">userId</span><span class="p">:</span> <span class="nc">Long</span><span class="p">):</span> <span class="nc">ApiResponse</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nc">ApiResponse</span><span class="p">(</span><span class="nc">Http</span><span class="p">.</span><span class="nc">SUCCESS</span><span class="p">,</span> <span class="n">userService</span><span class="p">.</span><span class="nf">getUserById</span><span class="p">(</span><span class="n">userId</span><span class="p">))</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>해당 엔드포인트 요청 시 사용자 정보는 아래와 같이 반환됩니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET /user/1
+Response
+<span class="o">{</span>
+    <span class="s2">"code"</span>: <span class="s2">"S001"</span>,
+    <span class="s2">"message"</span>: <span class="s2">"성공"</span>,
+    <span class="s2">"data"</span>: <span class="o">{</span>
+        <span class="s2">"id"</span>: 1,
+        <span class="s2">"userName"</span>: <span class="s2">"miintto"</span>,
+        <span class="s2">"userEmail"</span>: <span class="s2">"miintto.log@gmail.com"</span>,
+        <span class="s2">"password"</span>: <span class="s2">"</span><span class="nv">$2b$12$XCJfOKShSppXRwuX</span><span class="s2">"</span>,
+        <span class="s2">"userPermission"</span>: <span class="s2">"ADMIN"</span>,
+        <span class="s2">"createdDtm"</span>: <span class="s2">"2023-04-15T15:38:51.307531"</span>,
+        <span class="s2">"active"</span>: <span class="nb">true</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>어플리케이션 전반적으로 커스텀한 응답 객체를 적용한다면 보다 일관성 있는 어플리케이션을 만들 수 있습니다.</p>
+
+<hr />
+
+<h1 id="2-custom-exception">2. Custom Exception</h1>
+
+<p>내부 예외 처리를 위해 <code class="language-plaintext highlighter-rouge">Exception</code> 클래스를 상속받아 커스텀한 예외 클래스를 작성합니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">ApiException</span><span class="p">(</span><span class="kd">val</span> <span class="py">http</span><span class="p">:</span> <span class="nc">Http</span><span class="p">,</span> <span class="kd">val</span> <span class="py">data</span><span class="p">:</span> <span class="nc">Any</span><span class="p">?)</span> <span class="p">:</span> <span class="nc">Exception</span><span class="p">(</span><span class="n">http</span><span class="p">.</span><span class="n">message</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">constructor</span><span class="p">(</span><span class="n">http</span><span class="p">:</span> <span class="nc">Http</span><span class="p">)</span> <span class="p">:</span> <span class="k">this</span><span class="p">(</span><span class="n">http</span><span class="p">,</span> <span class="k">null</span><span class="p">)</span>
+
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">toString</span><span class="p">():</span> <span class="nc">String</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="s">"ApiException code=${this.http.code} message=${this.http.message} status=${this.http.status}"</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>내부 인자로는 응답 클래스 사용 시 만들었던 <code class="language-plaintext highlighter-rouge">Http</code>를 그대로 활용하였습니다.
+해당 인자를 이용하여 에러 발생 시 어떤 status 및 코드값을 클라이언트에 전달할지 지정해 줄 수 있습니다.
+<code class="language-plaintext highlighter-rouge">data</code> 인자는 응답 포맷의 ‘data’ 값으로 쓰일 문자열인데, 특별히 선언하지 않은 경우 기본적으로 <code class="language-plaintext highlighter-rouge">null</code>로 설정됩니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Service</span>
+<span class="kd">class</span> <span class="nc">UserService</span> <span class="p">{</span>
+
+    <span class="k">fun</span> <span class="nf">getUserById</span><span class="p">(</span><span class="n">userId</span><span class="p">:</span> <span class="nc">Long</span><span class="p">):</span> <span class="nc">AuthUser</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">authUserRepository</span><span class="p">.</span><span class="nf">findByIdOrNull</span><span class="p">(</span><span class="n">userId</span><span class="p">)</span>
+            <span class="o">?:</span> <span class="k">throw</span> <span class="nc">ApiException</span><span class="p">(</span><span class="nc">Http</span><span class="p">.</span><span class="nc">USER_NOT_FOUND</span><span class="p">)</span>  <span class="c1">// 조회 실패시 에러 발생</span>
+    <span class="p">}</span>
+</code></pre></div></div>
+
+<p>서비스에서 작성했던 <code class="language-plaintext highlighter-rouge">Exception</code> 대신 새로 구현한 <code class="language-plaintext highlighter-rouge">ApiException</code>을 발생시키도록 변경하였습니다.
+만일 <code class="language-plaintext highlighter-rouge">Http</code> 내에 원하는 코드값이 정의되어 있지 않은 경우라도 자유롭게 코드를 추가하여 내부 비즈니스 로직에 반영할 수 있습니다.</p>
+
+<hr />
+
+<h1 id="3-handle-exception">3. Handle Exception</h1>
+
+<p>이제 에러를 발생시키는 것에 그치지 않고 발생한 에러를 잘 가공하여 클라이언트로 응답해 봅시다.
+해당 기능은 <code class="language-plaintext highlighter-rouge">ControllerAdvice</code>와 <code class="language-plaintext highlighter-rouge">ExceptionHandler</code>를 이용하여 처리할 수 있습니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">@ExceptionHandler</code> 어노테이션이 명시된 메소드는 예외 처리 메소드인데, 각 예외 상황마다 처리방식을 정의할 수 있습니다.
+해당 메소드는 Controller나 ControllerAdvice 클래스에 작성할 수 있습니다.
+예외가 발생한 경우 우선적으로 동일 컨트롤러에서 예외 상황과 매칭되는 ExceptionHandler를 찾아서 처리하며, 컨트롤러에서 처리하지 못한 경우 ControllerAdvice의 알맞은 메소드에서 처리합니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">@ControllerAdvice</code> 어노테이션은 어플리케이션 전역적인 에러 처리를 위해 사용합니다.
+<strong>ControllerAdvice</strong>와 <strong>RestControllerAdvice</strong> 모두 사용 가능한데, 둘의 차이는 컨트롤러와 동일하게 응답 시 <code class="language-plaintext highlighter-rouge">@ResponseBody</code>로 Json형식으로 포맷팅하는지 여부입니다.</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@RestControllerAdvice</span>
+<span class="kd">class</span> <span class="nc">ApiExceptionHandler</span> <span class="p">{</span>
+    <span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">value</span> <span class="p">=</span> <span class="p">[</span><span class="nc">ApiException</span><span class="o">::</span><span class="k">class</span><span class="p">])</span>
+    <span class="k">fun</span> <span class="nf">handleApiException</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="nc">ApiException</span><span class="p">):</span> <span class="nc">ApiResponse</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nc">ApiResponse</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">http</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">value</span> <span class="p">=</span> <span class="p">[</span><span class="nc">Exception</span><span class="o">::</span><span class="k">class</span><span class="p">])</span>
+    <span class="k">fun</span> <span class="nf">handleException</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="nc">Exception</span><span class="p">):</span> <span class="nc">ApiResponse</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nc">ApiResponse</span><span class="p">(</span><span class="nc">Http</span><span class="p">.</span><span class="nc">SERVER_ERROR</span><span class="p">)</span>  <span class="c1">// Http에 추가 코드 정의</span>
+    <span class="p">}</span>
+<span class="p">}</span> 
+</code></pre></div></div>
+
+<p>컨트롤러에서 <code class="language-plaintext highlighter-rouge">ApiException</code>이 발생한 경우에는 해당하는 코드값으로 응답하고, 그 외의 <code class="language-plaintext highlighter-rouge">Exception</code>에 대해서도 형식에 맞는 응답을 내려주도록 하였습니다.
+어노테이션으로 <code class="language-plaintext highlighter-rouge">@RestControllerAdvice</code>를 사용하였으므로 메소드 리턴값은 컨트롤러와 같은 방식으로 <code class="language-plaintext highlighter-rouge">ApiException</code>를 반환하였습니다.</p>
+
+<p>아래는 Spring MVC에서 에러가 처리되는 과정을 도식화하였습니다.</p>
+
+<p><img src="/img/posts/spring-exception-flow.png" style="max-width:720" /></p>
+
+<ol>
+  <li>어플리케이션이 실행되면 작성했던 <code class="language-plaintext highlighter-rouge">RestControllerAdvice</code> 클래스는 <code class="language-plaintext highlighter-rouge">ExceptionHandlerExceptionResolver</code> 내부 캐시 데이터에 저장됩니다.</li>
+  <li>컨트롤러 실행 중 에러가 발생하면 해당 에러는 <code class="language-plaintext highlighter-rouge">HandlerExceptionResolver</code>에 전달됩니다.</li>
+  <li>여러 resolver 중 <code class="language-plaintext highlighter-rouge">ExceptionHandlerExceptionResolver</code>는 캐시 내부의 advice에서 에러에 알맞은 <code class="language-plaintext highlighter-rouge">ExcetionHandler</code>를 가져와 처리합니다.</li>
+  <li>처리된 응답을 다시 <code class="language-plaintext highlighter-rouge">DispatcherServlet</code>으로 넘겨줍니다.</li>
+</ol>
+
+<hr />
+
+<p>References</p>
+
+<ul>
+  <li><a href="https://a-road-after-walking.tistory.com/54">방어적 프로그래밍(Defensive programming), 방어 코딩(defensive coding) — 걷고 나니 길</a></li>
+  <li><a href="https://blog.lyunho.kim/api-response">API Response 포맷에 관한 고찰</a></li>
+  <li><a href="https://mangkyu.tistory.com/204">[Spring] 스프링의 다양한 예외 처리 방법(ExceptionHandler, ControllerAdvice 등) 완벽하게 이해하기 - (1/2) - MangKyu’s Diary</a></li>
+</ul>
+
+
+      <hr>
+
+      <div id="disqus_thread"></div>
+      <script>
+          (function() {
+          var d = document, s = d.createElement('script');
+          s.src = 'https://miintto-github-io.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+          })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+      <hr>
+
+    </div>
+  </div>
+</div>
+
+
+  <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="footer-content container">
+    <p class="copyright text-muted">Copyright &copy; miintto 2024</p>
+  </div>
+</footer>
+
+
+  <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
+<script src="/assets/scripts.js"></script>
+
+
+  <script src="/assets/vendor/miintto/js/toc.js"></script>
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXXXX-X"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-XXXXXXXXX-X');
+</script>
+
+
+
+</body>
+
+</html>
