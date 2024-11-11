@@ -9,7 +9,7 @@ toc: true
 thumbnail: "/img/thumbnails/airflow.png"
 ---
 
-[저번 포스트](/docs/python-airflow-architecture)에서 간단히 Airflow의 구조에 대해 살펴보았다면 이번에는 Airflow를 직접 실행해 봅시다.
+[저번 포스트](/docs/airflow-architecture)에서 간단히 Airflow의 구조에 대해 살펴보았다면 이번에는 Airflow를 직접 실행해 봅시다.
 
 아래에 설명된 내용들은 다음 환경 기준으로 작성되었습니다.
 
