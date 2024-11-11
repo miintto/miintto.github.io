@@ -43,12 +43,11 @@
 
     @media (max-width: 767px) {
         display: block;
-        position: absolute;
         overflow: hidden;
         top: 60px;
         width: 100vw;
         height: 0;
-        background-color: $white;
+        background-color: $steel-blue-1;
     }
 }
 

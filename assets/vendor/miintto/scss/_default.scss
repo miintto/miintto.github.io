@@ -26,11 +26,16 @@
 }
 
 .post-effect {
+    img {
+        transition: all 0.25s linear;
+        transform: scale(1.0);
+    }
+
     &:hover {
         text-decoration: none;
 
         img {
-            transition: all 0.2s linear;
+            transition: all 0.25s linear;
             transform: scale(1.2);
         }
     }
