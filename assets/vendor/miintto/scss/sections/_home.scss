@@ -8,15 +8,15 @@
     flex-wrap: wrap;
     justify-content: center;
     flex-direction: row-reverse;
-    height: 420px;
+    height: 720px;
 
     .banner-description {
-        width: 548px;
+        width: 520px;
         margin: auto 0;
         padding: 20px;
 
         h1 {
-            margin: 30px 0;
+            margin: 50px 0;
             font-size: 42px;
             letter-spacing: .05em;
         }
@@ -24,6 +24,9 @@
         p {
             font-size: 18px;
             font-weight: 400;
+            line-height: 32px;
+            letter-spacing: .02em;
+            color: $gray-6;
         }
 
         @media (max-width: 767px) {
@@ -31,198 +34,208 @@
             margin: 0;
 
             h1 {
-                font-size: 32px;
+                font-size: 28px;
             }
 
             p {
                 font-size: 14px;
+                line-height: 24px;
             }
         }
     }
 
     .banner-thumbnail {
-        width: 300px;
+        width: 450px;
         margin: auto;
 
         @media (max-width: 1059px) {
-            width: 180px;
+            width: 200px;
         }
     }
 }
 
-.skill-content {
-    display: flex;
-    flex-wrap: wrap;
-    max-width: 1000px;
-    margin: auto auto 150px auto;
+.banner-button {
+    width: 150px;
+    margin: 50px auto;
+}
 
-    @media only screen and (max-width: 767px) {
-        width: 480px;
+.home-content {
+    max-width: 1080px;
+    margin: 0 auto;
 
-        @media only screen and (max-width: 539px) {
-            width: 360px;
-            margin-bottom: 50px;
+    @media (max-width: 1079px) {
+        width: 712px;
+
+        @media (max-width: 767px) {
+            width: inherit;
+            margin: 0 10px;
         }
     }
 }
 
-.skill-item {
-    display: flex;
-    margin: 10px;
-    font-size: 18px;
-    font-weight: 600;
-    line-height: 60px;
-
-    .skills-thumbnail {
-        width: 32px;
-        margin-right: 12px;
-
-        img {
-            filter: grayscale(1)
-        }
-
-        @media (max-width: 767px) {
-            width: 28px;
-            font-size: 12px;
-        }
-    }
-
-    .skill-title {
-        width: 136px;
-
-        @media (max-width: 767px) {
-            width: 90px;
-            font-size: 12px;
-        }
-    }
-
-    @media (max-width: 1059px) {
-        display: inline-block;
-        height: 120px;
-        margin: 0;
-        text-align: center;
-        line-height: 40px;
-
-        .skills-thumbnail {
-            margin: auto;
-        }
-    }
-    &:hover {
-        img {
-            filter: grayscale(0);
-        }
-    }
+.content-title h1 {
+    margin: 40px 0;
 }
 
 .recent-content {
-    max-width: 1060px;
-    margin: 0 auto 150px auto;
+    margin: 0 10px 150px 10px;
 }
 
 .recent-wrapper {
-    display: inline-block;
-    margin: 20px;
-
-    >h1 {
-        margin: 30px 0;
-    }
-
-    >.recent-content-list {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    
-    @media only screen and (max-width: 767px) {
-        >h1 {
-            margin: 20px 0;
-            font-size: 24px;
-        }
-
-        >.recent-content-list {
-            display: inline-block;
-            margin: 5px;
-        }
-    }
+    margin: 0 auto;
 }
 
-.recent-first {
-    flex: 1;
-    margin-right: 60px;
+.recent-content-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.recent-article {
+    width: 330px;
+
+    @media only screen and (max-width: 767px) {
+        width: 100%;
+        max-width: 720px;
+        margin: 15px 5px;
+    }
 
     .recent-thumbnail {
         overflow: hidden;
-        margin-bottom: 15px;
+        margin-bottom: 10px;
         border-radius: 12px;
     }
-
-    .recent-title {
-        margin: 0;
-        font-size: 24px;
-        font-weight: 700;
-        line-height: 1.4;
-        letter-spacing: .03em;
-    }
-
-    @media only screen and (max-width: 767px) {
-        margin-right: 0px;
-        margin-bottom: 40px;
-
-        .recent-title {
-            font-size: 21px;
-        }
-    }
 }
 
-.recent-sub {
-    flex: 1;
-}
+.recent-post-preview {
+    height: 132px;
 
-.recent-post {
-    display: flex;
-    margin-bottom: 24px;
-
-    .recent-title {
-        max-width: 360px;
+    >.recent-title {
         margin: 0;
         font-size: 18px;
         font-weight: 700;
-        line-height: 1.4;
+        line-height: 1.6;
         letter-spacing: .03em;
-    }
-
-    .recent-thumbnail-sub {
-        overflow: hidden;
-        width: 100px;
-        height: 100px;
-        margin-right: 20px;
-        border-radius: 10px;
-    }
-
-    img {
-        height: 100%;
-        object-fit: cover;
-    }
-
-    @media only screen and (max-width: 1059px) {
-        .recent-title {
-            max-width: 720px;
-        }
-
-        .recent-thumbnail-sub {
-            display: none;
-        }
     }
 }
 
 .post-link {
-    margin: 20px;
-    font-size: 16px;
-    text-align: right;
+    width: 180px;
+    margin: 0 auto;
+    background: $gray-5;
 
-    .link-arrow {
-        position: absolute;
-        margin-left: 5px;
-        transform: rotate(-45deg);
+    &:hover {
+        background: $gray-6;
     }
+}
+
+.topic-content {
+    margin: auto 10px 200px 10px;
+}
+
+.topic-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 0 auto;
+
+    @media (max-width: 1079px) {
+        display: block;
+        width: inherit;
+    }
+
+    .space {
+        height: 32px;
+
+        @media (max-width: 1079px) {
+            height: 0;
+        }
+    }
+}
+
+.topic-item {
+    position: relative;
+    width: 192px;
+    height: 270px;
+    border-radius: 12px;
+
+    @media (max-width: 1079px) {
+        display: flex;
+        width: inherit;
+        height: 80px;
+        margin: 15px 5px;
+    }
+
+    .topic-logo {
+        width: 72px;
+        margin: auto;
+        line-height: 224px;
+
+        @media (max-width: 1079px) {
+            width: 42px;
+            margin: 0 32px;
+            line-height: 80px;
+        }
+    }
+
+    .topic-title {
+        position: absolute;
+        top: 210px;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        height: 32px;
+        padding: 0 20px;
+        background: rgb(255, 255, 255, 0.6);
+        line-height: 32px;
+        text-align: center;
+        color: $gray-6;
+        transition: all 0.2s linear;
+
+        >p {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 600;
+            white-space: nowrap;
+            letter-spacing: .03em;
+        }
+
+        @media (max-width: 1079px) {
+            position: relative;
+            top: 0;
+            left: 0;
+            transform: none;
+            width: inherit;
+            height: 80px;
+            background: inherit;
+            line-height: 80px;
+
+            >p {
+                font-size: 18px;
+                font-weight: 600;
+                color: $gray-8;
+            }
+        }
+    }
+
+    @media (min-width: 1080px) {
+        &:hover .topic-title {
+            top: 50%;
+            height: 270px;
+            width: 100%;
+            background: rgb(255, 255, 255, 0.9);
+            line-height: 270px;
+            color: $gray-7;
+            transition: all 0.2s linear;
+
+            > p {
+                font-size: 24px;
+                font-weight: 700;
+            }
+        }
+    }
+}
+
+.image-content{
+    margin: 100px;
+    text-align: center;
 }

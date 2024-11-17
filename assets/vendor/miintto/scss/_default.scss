@@ -10,12 +10,32 @@
     left: 0;
 }
 
+.round-button {
+    height: 48px;
+    border-radius: 32px;
+    background: $steel-blue-3;
+    text-align: center;
+    line-height: 48px;
+
+    >div {
+        transition: all 0.2s linear;
+        font-size: 16px;
+        font-weight: 500;
+        color: $white;
+    }
+
+    &:hover {
+        background: $steel-blue-4;
+        transition: all 0.2s linear;
+    }
+}
+
 .post-meta {
     display: flex;
-    font-size: 14px;
+    font-size: 13px;
 
     >p {
-        margin: 10px 10px 10px 0;
+        margin: 8px 8px 8px 0;
         color: $gray-5;
     }
 

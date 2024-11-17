@@ -3,10 +3,10 @@ layout: page
 ---
 
 {% assign category = page.category | default: page.title | downcase %}
+<div class="post-flex">
 {% for post in site.categories[category] reversed %}
 
 {% include post-preview.html %}
 
-<hr>
-
 {% endfor %}
+</div>

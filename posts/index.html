@@ -3,13 +3,13 @@ layout: page
 title: 전체 게시물
 ---
 
+<div class="post-flex">
 {% for post in paginator.posts %}
 
 {% include post-preview.html %}
 
-<hr>
-
 {% endfor %}
+</div>
 
 <!-- Pager -->
 {% if paginator.total_pages > 1 %}
