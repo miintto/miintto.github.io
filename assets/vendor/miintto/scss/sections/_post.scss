@@ -4,7 +4,7 @@
 }
 
 .post-content {
-    width: 720px;
+    width: 750px;
     margin: 0px 20px;
 }
 
@@ -14,20 +14,29 @@
 }
 
 .post-article {
-    max-width: 330px;
+    width: calc(50% - 30px);
     margin: 15px;
 
     @media (max-width: 767px) {
-        width: 100%;
         max-width: 480px;
+        width: calc(100% - 10px);
         margin: 5px;
+    }
+
+    a {
+
+        @media (max-width: 478px) {
+            display: block;
+        }
     }
 }
 
 .post-thumbnail {
     overflow: hidden;
     display: inline-flex;
-    margin: 0px 0px 10px 0px;
+    width: 100%;
+    aspect-ratio: 1.8;
+    margin: 0 0 10px 0;
     border-radius: 10px;
 
     img {
@@ -36,8 +45,6 @@
     }
 
     @media (max-width: 478px) {
-        width: 100%;
-        height: auto;
         margin: 0px 0px 10px 0px;
     }
 }

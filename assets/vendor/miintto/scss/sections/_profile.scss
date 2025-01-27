@@ -1,7 +1,7 @@
 .profile-content {
     display: block;
     width: 200px;
-    margin: 0px 80px 0 20px;
+    margin: 0px 50px 0 20px;
 
     @media (max-width: 1078px) {
         display: none;
@@ -31,7 +31,7 @@
     >.profile-bio {
         margin-bottom: 16px;
         font-size: 14px;
-        line-height: 21px;
+        line-height: 1.5;
         letter-spacing: .02em;
         color: #606060;
     }

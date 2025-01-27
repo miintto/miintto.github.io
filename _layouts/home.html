@@ -7,16 +7,23 @@ layout: default
   <div class="banner-content">
     <div class="banner-component container">
       <div class="banner-thumbnail">
-        <img src="/img/bg/miintto.png">
+        <div class="image-layer">
+          <img class="animate-fade-in-scale-up" src="/img/bg/miintto-bg.png">
+        </div>
+        <div class="image-layer" style="margin: 15%; background-color: #EEF3F5;">
+          <img class="animate-fade-in-delay" src="/img/profile.png">
+        </div>
       </div>
       <div class="banner-description">
-        <h1>안녕하세요 백엔드 엔지니어<br>박민재입니다.</h1>
-        <p>마케팅, 커머스 등 다양한 도메인에서 서버 개발자로 경력을 쌓았습니다. 파이썬 언어와 데이터베이스 및 시스템 아키텍처에 관심이 많으며, 여러 기술적인 문제를 고민하는 것을 좋아합니다.</p>
-        <div class="banner-button">
+        <div class="home-title animate-fade-in-down-delay-1">
+          <span> 미민또의 프로그래밍 </span>
+        </div>
+        <div class="home-subtitle animate-fade-in-down-delay-2">
+          <p>안녕하세요! 백엔드 엔지니어 박민재입니다.<br>평소 관심있거나 공부한 자료들 여기 담아보았습니다.</p>
+        </div>
+        <div class="banner-button animate-fade-in-down-delay-3">
           <a href="/about">
-            <div class="round-button">
-              <div>About Me &rarr;</div>
-            </div>
+            <div class="about-me-button">About Me &rarr;</div>
           </a>
         </div>
       </div>
@@ -25,7 +32,7 @@ layout: default
 
   <div class="home-content">
     <!-- Recent Posts -->
-    <div class="recent-content">
+    <div class="recent-content animate-fade-in-up">
       <div class="content-title">
         <h1>Recent Posts</h1>
       </div>
@@ -35,8 +42,8 @@ layout: default
         {% for post in posts_subset %}
           <div class="recent-article post-effect">
             <a href="{{ post.url | prepend: site.baseurl | replace: '//', '/' }}">
-              <div class="recent-thumbnail">
-                <img src="{{ post.thumbnail }}">
+              <div class="recent-thumbnail" style="background-color: #EEF3F5;">
+                <img class="animate-fade-in-delay" src="{{ post.thumbnail }}">
               </div>
               <div class="recent-post-preview">
                 <div class="post-meta">
@@ -64,120 +71,6 @@ layout: default
         </div>
       </div>
     </div>
-
-    <!-- Topics -->
-    <div class="topic-content">
-      <div class="content-title">
-        <h1>Topics</h1>
-      </div>
-      <div class="topic-wrapper">
-        <a href="/category/python">
-          <div class="topic-item" style="background: #A8B5C2;">
-            <div class="topic-logo">
-              <img src="/img/skills/python.png">
-            </div>
-            <div class="topic-title">
-              <p>Python</p>
-            </div>
-          </div>
-        </a>
-        <a href="/category/django">
-          <div class="space"></div>
-          <div class="topic-item" style="background: #B8DDD0;">
-            <div class="topic-logo">
-              <img src="/img/skills/django.png">
-            </div>
-            <div class="topic-title">
-              <p>Django</p>
-            </div>
-          </div>
-        </a>
-        <a href="/category/django">
-          <div class="topic-item" style="background: #AED4D1;">
-            <div class="topic-logo">
-              <img src="/img/skills/fastapi.png">
-            </div>
-            <div class="topic-title">
-              <p>FastAPI</p>
-            </div>
-          </div>
-        </a>
-        <a href="/category/spring">
-          <div class="space"></div>
-          <div class="topic-item" style="background: #ACCF94;">
-            <div class="topic-logo">
-              <img src="/img/skills/spring.png">
-            </div>
-            <div class="topic-title">
-              <p>Spring</p>
-            </div>
-          </div>
-        </a>
-        <a href="/category/database">
-          <div class="topic-item" style="background: #CFDDDE;">
-            <div class="topic-logo">
-              <img src="/img/skills/mysql.png">
-            </div>
-            <div class="topic-title">
-              <p>MySQL</p>
-            </div>
-          </div>
-        </a>
-        <a href="/category/database">
-          <div class="topic-item" style="background: #A3BCD1;">
-            <div class="topic-logo">
-              <img src="/img/skills/postgresql.png">
-            </div>
-            <div class="topic-title">
-              <p>PostgreSQL</p>
-            </div>
-          </div>
-        </a>
-        <a href="/category/elasticsearch">
-          <div class="space"></div>
-          <div class="topic-item" style="background: #F2D38C;">
-            <div class="topic-logo">
-              <img src="/img/skills/elasticsearch.png">
-            </div>
-            <div class="topic-title">
-              <p>Elasticsearch</p>
-            </div>
-          </div>
-        </a>
-        <a href="/category/database">
-          <div class="topic-item" style="background: #E7AEB1;">
-            <div class="topic-logo">
-              <img src="/img/skills/redis.png">
-            </div>
-            <div class="topic-title">
-              <p>Redis</p>
-            </div>
-          </div>
-        </a>
-        <a href="/category/docker">
-          <div class="space"></div>
-          <div class="topic-item" style="background: #99BBDE;">
-            <div class="topic-logo">
-              <img src="/img/skills/docker.png">
-            </div>
-            <div class="topic-title">
-              <p>Docker</p>
-            </div>
-          </div>
-        </a>
-        <a href="/category/system-architecture">
-          <div class="topic-item" style="background: #A7CECE;">
-            <div class="topic-logo">
-              <img src="/img/skills/airflow.png">
-            </div>
-            <div class="topic-title">
-              <p>Apach-Airflow</p>
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-
     <div class="image-content">
       <img src="/img/bg/developer.png" style="max-width: 300px;">
     </div>

@@ -1,0 +1,78 @@
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInDown {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(0);
+    }
+}
+
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(0);
+    }
+}
+
+@keyframes fadeInScaleUp {
+    0% {
+        opacity: 0;
+        transform: scale(0);;
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+body:not(.stop-animations) .animate-fade-in {
+    animation: fadeIn 1s both;
+}
+
+body:not(.stop-animations) .animate-fade-in-delay {
+    animation: fadeIn .25s both;
+    animation-delay: .5s;
+}
+
+body:not(.stop-animations) .animate-fade-in-up {
+    animation: fadeInUp .75s both;
+}
+
+body:not(.stop-animations) .animate-fade-in-down-delay-1 {
+    animation: fadeInDown .5s both;
+    animation-delay: .1s;
+}
+
+body:not(.stop-animations) .animate-fade-in-down-delay-2 {
+    animation: fadeInDown .5s both;
+    animation-delay: .2s;
+}
+
+body:not(.stop-animations) .animate-fade-in-down-delay-3 {
+    animation: fadeInDown .5s both;
+    animation-delay: .3s;
+}
+
+body:not(.stop-animations) .animate-fade-in-scale-up {
+    animation: fadeInScaleUp .5s both;
+    animation-delay: .5s;
+}

@@ -3,17 +3,10 @@
     margin: 0 auto;
 }
 
-.fixed-top {
-    position: fixed;
-    top: 0;
-    right: 0;
-    left: 0;
-}
-
 .round-button {
     height: 48px;
     border-radius: 32px;
-    background: $steel-blue-3;
+    background: $gray-1;
     text-align: center;
     line-height: 48px;
 
@@ -21,11 +14,11 @@
         transition: all 0.2s linear;
         font-size: 16px;
         font-weight: 500;
-        color: $white;
+        color: $gray-5;
     }
 
     &:hover {
-        background: $steel-blue-4;
+        background: $gray-2;
         transition: all 0.2s linear;
     }
 }

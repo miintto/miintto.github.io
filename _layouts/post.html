@@ -6,21 +6,23 @@ layout: default
   <div class="article-wrapper">
     <div class="article-header">
       <div class="article-info">
-        <h1>{{ page.title }}</h1>
-        <div class="post-tags">
+        <h1 class="animate-fade-in-down-delay-1">{{ page.title }}</h1>
+        <div class="post-tags animate-fade-in-down-delay-2">
           {% for tag in page.tags %}<p>{{ tag | escape }}</p>{% endfor %}
         </div>
-        <div class="article-meta">
+        <div class="article-meta animate-fade-in-down-delay-3">
           {{ page.date | date: '%Y.%m.%d' }} &middot; {% include read_time.html
           content=page.content %}
         </div>
       </div>
-      <div class="article-banner"">
-        <img src="{{ page.thumbnail }}">
+      <div class="article-banner">
+        <div class="article-banner-thumbnail" style="background-color: #EEF3F5;">
+          <img class="animate-fade-in-delay" src="{{ page.thumbnail }}">
+        </div>
       </div>
     </div>
 
-    <div class="article-content">
+    <div class="article-content animate-fade-in-up">
       {% include toc.html %}
 
       {{ content }}

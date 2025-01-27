@@ -1,7 +1,7 @@
 {% if page.title %}
   {% assign title = page.title | append: ' - ' | append: site.title %}
 {% else %}
-  {% assign title = site.title | append: ' - '| append: site.description %}
+  {% assign title = site.description | append: ' - '| append: site.title %}
 {% endif %}
 {% assign description = page.excerpt | default: site.description | strip_html | normalize_whitespace | truncate: 160 | escape %}
 {% assign bg_image = page.background | default: page.thumbnail | default: "/img/og-image.png" %}
