@@ -11,13 +11,13 @@ toc: true
 thumbnail: "/img/thumbnails/meta-migrating-mysql-8.png"
 ---
 
-> 해당 포스트는 Meta Engineering 블로그의 [Migrating Facebook to MySQL 8.0](https://engineering.fb.com/2021/07/22/data-infrastructure/mysql/) 포스트를 번역한 글입니다.
+> 해당 포스트는 Meta Engineering 블로그의 [Migrating Facebook to MySQL 8.0](https://engineering.fb.com/2021/07/22/data-infrastructure/mysql/){:target="_blank"} 포스트를 번역한 글입니다.
 > 
 > 게시일: 2021.07.02
 
 # 페이스북의 MySQL 8.0 마이그레이션
 
-오라클 기업이 관리하는 오픈소스 데이터베이스 [MySQL](https://github.com/facebook/mysql-5.6)은 페이스북에서 중요한 워크로드를 담당하고 있습니다.
+오라클 기업이 관리하는 오픈소스 데이터베이스 [MySQL](https://github.com/facebook/mysql-5.6){:target="_blank"}은 페이스북에서 중요한 워크로드를 담당하고 있습니다.
 그리고 우리는 새로운 요구 사항에 맞추기 위해 새로운 기능을 적극적으로 MySQL에 추가하고 있습니다.
 이번 작업으로 클라이언트 커넥션, 스토리지 엔진, 옵티마이저, 복제 등 MySQL 여러 영역에 걸쳐 변화가 일어났습니다.
 MySQL의 각 버전마다 워크로드를 마이그레이션하는 과정에서 상당히 많은 신경을 써야 하는데, 필요한 과제는 아래와 같습니다.
@@ -28,7 +28,7 @@ MySQL의 각 버전마다 워크로드를 마이그레이션하는 과정에서 
 - 서버 워크로드에 영향을 주는 성능 저하 대응
 
 지난번 메이저 버전 5.6으로 업그레이드를 진행하였을 때 1년 이상의 시간이 소요되었습니다.
-그리고 5.7 버전이 릴리즈되었을 때에는 5.6 버전 기반의 LST-Tree 스토리지 엔진 [MyRocks](https://engineering.fb.com/2016/08/31/core-infra/myrocks-a-space-and-write-optimized-mysql-database/) 개발에 집중하고 있었습니다.
+그리고 5.7 버전이 릴리즈되었을 때에는 5.6 버전 기반의 LST-Tree 스토리지 엔진 [MyRocks](https://engineering.fb.com/2016/08/31/core-infra/myrocks-a-space-and-write-optimized-mysql-database/){:target="_blank"} 개발에 집중하고 있었습니다.
 5.7 버전 업그레이드까지 동시에 진행하게 되면 스토리지 엔진 개발 일정이 늦어질 것 같아서 우선 MyRocks 개발이 완료될 때까지 5.6 버전을 유지하기로 했습니다.
 그리고 우리 데이터베이스(UDB) 서비스 계층에 MyRocks 배포를 마무리하고 나니 MySQL 8.0 버전이 릴리즈되었습니다.
 
@@ -86,7 +86,7 @@ MySQL의 각 버전마다 워크로드를 마이그레이션하는 과정에서 
 프라이머리는 모든 write 작업을 처리하며 해당 결과를 나머지 세컨더리로 복제합니다.
 
 우리는 5.6 프라이머리/5.6 세컨더리에서 8.0 프라이머리/8.0 세컨더리로 향하는 게 최종 목표입니다.
-먼저 [UDB MyRocks 마이그레이션 전략](https://engineering.fb.com/2017/09/25/core-infra/migrating-a-database-from-innodb-to-myrocks/)과 비슷한 계획을 세웠습니다.
+먼저 [UDB MyRocks 마이그레이션 전략](https://engineering.fb.com/2017/09/25/core-infra/migrating-a-database-from-innodb-to-myrocks/){:target="_blank"}과 비슷한 계획을 세웠습니다.
 
 1. 각 레플리카 그룹마다 8.0 세컨더리를 추가하고 mysqldump를 활용하여 복제가 진행되도록 합니다. 해당 세컨더리들은 아직 read 트래픽을 받고 있지 않은 상태입니다.
 2. 8.0 세컨더리에 read 트래픽 유입을 시작합니다.
@@ -144,7 +144,7 @@ MyRocks 마이그레이션을 위해 운영 트래픽을 받아서 테스트 인
 
 - 8.0에 새로운 예약 키워드가 도입되었으며, 그 중 groups, rank와 같은 키워드는 이미 테이블 컬럼 명이나 어플리케이션 쿼리의 alias로 사용하고 있었습니다. 이러한 쿼리 구문은 백쿼트(`)로는 해결할 수 없었고 결국 파싱 에러가 발생했습니다. 살펴보니 어플리케이션에서는 자동으로 쿼리의 컬럼 명을 처리하는 라이브러리를 포함하고 있었는데 해당 라이브러리를 사용하지 않는 어플리케이션에서만 이슈가 발생했습니다. 해결 방안 자체는 간단했지만 어플리케이션의 해당 부분을 담당하는 작성자와 코드베이스에서 쿼리를 찾아내는 데 많은 시간이 소요되었습니다.
 - 몇 REGEXP 구문에서 5.6, 8.0 버전 간에 몇몇 호환성 문제가 있었습니다.
-- 일부 어플리케이션에서는 `insert … on duplicate key` 구문을 InnoDB에서 실행하는 경우 [반복적인 read 트랜잭션 데드락](https://bugs.mysql.com/bug.php?id=98324)이 발생했습니다. 8.0 버전에서 일부 5.6 버전의 버그를 수정했었는데 해당 수정한 부분이 데드락을 유발할 가능성이 있다고 판단했습니다. 그래서 일부 쿼리를 분석한 후 격리 수준을 낮추어 해결할 수 있었습니다. 해당 옵션은 RBR로 전환한 이후에 사용할 수 있었습니다.
+- 일부 어플리케이션에서는 `insert … on duplicate key` 구문을 InnoDB에서 실행하는 경우 [반복적인 read 트랜잭션 데드락](https://bugs.mysql.com/bug.php?id=98324){:target="_blank"}이 발생했습니다. 8.0 버전에서 일부 5.6 버전의 버그를 수정했었는데 해당 수정한 부분이 데드락을 유발할 가능성이 있다고 판단했습니다. 그래서 일부 쿼리를 분석한 후 격리 수준을 낮추어 해결할 수 있었습니다. 해당 옵션은 RBR로 전환한 이후에 사용할 수 있었습니다.
 - 우리가 5.6에서 커스텀한 Document Store나 JSON 함수는 8.0에서 호환이 되지 않았습니다. 이에 따라 Document Store를 사용하는 어플리케이션은 문서 타입을 text로 변경해야 했습니다. 또한 8.0 서버에도 JSON 함수 기능을 추가하여 어플리케이션 마이그레이션 과정에서 문제가 없도록 하였습니다.
 
 추가적으로 8.0 서버에서 진행한 쿼리와 성능 테스트로 빠른 시일 내에 해결해야 할 몇 문제를 발견했습니다.
@@ -188,9 +188,13 @@ MySQL 8.0 마이그레이션은 지금까지 몇 년이 소요되었습니다.
 
 ---
 
+<details>
+<summary>원문 보기</summary>
+<div markdown="1">
+
 # Migrating Facebook to MySQL 8.0
 
-[MySQL](https://github.com/facebook/mysql-5.6), an open source database developed by Oracle, powers some of Facebook’s most important workloads.
+[MySQL](https://github.com/facebook/mysql-5.6){:target="_blank"}, an open source database developed by Oracle, powers some of Facebook’s most important workloads.
 We actively develop new features in MySQL to support our evolving requirements.
 These features change many different areas of MySQL, including client connectors, storage engine, optimizer, and replication.
 Each new major version of MySQL requires significant time and effort to migrate our workloads.
@@ -202,7 +206,7 @@ The challenges include:
 - Fixing performance regressions that prevent the server from supporting our workloads
 
 Our last major version upgrade, to MySQL 5.6, took more than a year to roll out.
-When version 5.7 was released, we were still in the midst of developing our LSM-Tree storage engine, [MyRocks](https://engineering.fb.com/2016/08/31/core-infra/myrocks-a-space-and-write-optimized-mysql-database/), on version 5.6.
+When version 5.7 was released, we were still in the midst of developing our LSM-Tree storage engine, [MyRocks](https://engineering.fb.com/2016/08/31/core-infra/myrocks-a-space-and-write-optimized-mysql-database/){:target="_blank"}, on version 5.6.
 Since upgrading to 5.7 while simultaneously building a new storage engine would have significantly slowed the progress on MyRocks, we opted to stay with 5.6 until MyRocks was complete.
 MySQL 8.0 was announced as we were finishing the rollout of MyRocks to our user database (UDB) service tier. 
 
@@ -262,7 +266,7 @@ The remaining instances are all secondaries.
 The primary handles all write traffic and replicates the data asynchronously to all secondaries.
 
 We started with replica sets consisting of 5.6 primary/5.6 secondaries and the end goal was replica sets with 8.0 primary/8.0 secondaries.
-We followed a plan similar to the [UDB MyRocks migration plan](https://engineering.fb.com/2017/09/25/core-infra/migrating-a-database-from-innodb-to-myrocks/).
+We followed a plan similar to the [UDB MyRocks migration plan](https://engineering.fb.com/2017/09/25/core-infra/migrating-a-database-from-innodb-to-myrocks/){:target="_blank"}.
 
 1. For each replica set, create and add 8.0 secondaries via a logical copy using mysqldump. These secondaries do not serve any application read traffic.
 2. Enable read traffic on the 8.0 secondaries.
@@ -321,7 +325,7 @@ We were able to roll back these applications to 5.6 temporarily while we researc
 
 - New reserved keywords were introduced in 8.0 and a few, such as groups and rank, conflicted with popular table column names and aliases used in application queries. These queries did not escape the names via backquotes, leading to parsing errors. Applications using software libraries that automatically escaped the column names in queries did not hit these issues, but not all applications used them. Fixing the problem was simple, but it took time to track down application owners and codebases generating these queries.
 - A few REGEXP incompatibilities were also found between 5.6 and 8.0.
-- A few applications hit [repeatable-read transaction deadlocks](https://bugs.mysql.com/bug.php?id=98324) involving `insert … on duplicate key` queries on InnoDB. 5.6 had a bug which was corrected in 8.0, but the fix increased the likelihood of transaction deadlocks. After analyzing our queries, we were able to resolve them by lowering the isolation level. This option was available to us since we had made the switch to row-based replication.
+- A few applications hit [repeatable-read transaction deadlocks](https://bugs.mysql.com/bug.php?id=98324){:target="_blank"} involving `insert … on duplicate key` queries on InnoDB. 5.6 had a bug which was corrected in 8.0, but the fix increased the likelihood of transaction deadlocks. After analyzing our queries, we were able to resolve them by lowering the isolation level. This option was available to us since we had made the switch to row-based replication.
 - Our custom 5.6 Document Store and JSON functions were not compatible with 8.0’s. Applications using Document Store needed to convert the document type to text for the migration. For the JSON functions, we added 5.6-compatible versions to the 8.0 server so that applications could migrate to the 8.0 API at a later time.
 
 Our query and performance testing of the 8.0 server uncovered a few problems that needed to be addressed almost immediately.
@@ -363,8 +367,11 @@ Some applications have opted for early conversion to 8.0 to utilize features lik
 We have been considering how to support storage engine features like Instant DDL on MyRocks.
 Overall, the new version greatly expands on what we can do with MySQL @ Facebook.
 
+</div>
+</details>
+
 ---
 
 References
 
-- [Migrating Facebook to MySQL 8.0 - Engineering at Meta](https://engineering.fb.com/2021/07/22/data-infrastructure/mysql/)
+- [Migrating Facebook to MySQL 8.0 - Engineering at Meta](https://engineering.fb.com/2021/07/22/data-infrastructure/mysql/){:target="_blank"}

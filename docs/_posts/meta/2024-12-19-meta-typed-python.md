@@ -9,7 +9,7 @@ toc: true
 thumbnail: "/img/thumbnails/meta-typed-python.png"
 ---
 
-> 해당 포스트는 Meta Engineering 블로그의 [Typed Python in 2024: Well adopted, yet usability challenges persist](https://engineering.fb.com/2024/12/09/developer-tools/typed-python-2024-survey-meta/) 포스트를 번역한 글입니다.
+> 해당 포스트는 Meta Engineering 블로그의 [Typed Python in 2024: Well adopted, yet usability challenges persist](https://engineering.fb.com/2024/12/09/developer-tools/typed-python-2024-survey-meta/){:target="_blank"} 포스트를 번역한 글입니다.
 > 
 > 게시일: 2024.12.09
 
@@ -93,7 +93,7 @@ IDE와 타입 체커에 대한 선호도는 상당히 다양했습니다.
 동적이고 복잡한 패턴에 대한 지원 강화와 런타입 타입 체킹 개선 또한 중요한 과제로 꼽았습니다.
 모든 개발자 그룹에서 타입 체커 성능 개선에 대한 이야기가 공통으로 나왔습니다.
 또한 기능적인 측면을 넘어서 파이썬 문서의 접근성과 가시성에 대해서도 여러 번 언급되었습니다.
-[Python 3 typing 문서](https://docs.python.org/3/library/typing.html)는 타입을 익히고 도움을 구하는 중요한 채널로 꼽혔습니다.
+[Python 3 typing 문서](https://docs.python.org/3/library/typing.html){:target="_blank"}는 타입을 익히고 도움을 구하는 중요한 채널로 꼽혔습니다.
 하지만 동시에 많은 사람들로부터 더 개선된 문서와 특히 복잡한 타입 사용 예제를 요청하는 일관된 피드백을 받기도 했습니다.
 타입을 기피하는 두 번째 이유가 "친근감 부족"(전체 대상자의 8%)인 것을 볼 때 문서의 사용성 개선이 많이 필요해 보입니다.
 
@@ -112,12 +112,16 @@ IDE와 타입 체커에 대한 선호도는 상당히 다양했습니다.
 
 내년 설문 결과는 어떻게 예상하시나요?
 그리고 파이썬 타입 시스템이 사용자의 니즈에 맞추어 어떻게 개선될까요?
-[토론장](https://discuss.python.org/c/typing/32)에서 많은 의견 부탁드리며 [직접 설문 데이터를 살펴보고](https://lookerstudio.google.com/reporting/15599c5b-0e51-4423-8998-cf5c1bfeea00/page/8lQ9D/edit) 당신의 인사이트를 댓글로 달아주셔도 좋습니다.
+[토론장](https://discuss.python.org/c/typing/32){:target="_blank"}에서 많은 의견 부탁드리며 [직접 설문 데이터를 살펴보고](https://lookerstudio.google.com/reporting/15599c5b-0e51-4423-8998-cf5c1bfeea00/page/8lQ9D/edit){:target="_blank"} 당신의 인사이트를 댓글로 달아주셔도 좋습니다.
 
 _*파이썬 개발자를 대상으로 X(구 트위터), 링크드인, Reddit 및 기타 플랫폼에 배포된 온라인 설문조사에서 1,083명의 응답을 집계하였습니다.
 본 설문은 Meta, Microsoft, JetBrains에서 공동으로 주관하였으며 데이터는 2024년 7월 29일부터 2024년 10월 8일까지 수집되었습니다._
 
 ---
+
+<details>
+<summary>원문 보기</summary>
+<div markdown="1">
 
 # Typed Python in 2024: Well adopted, yet usability challenges persist
 
@@ -195,7 +199,7 @@ Developers are asking for better standardization and consistency across tools.
 Improving support for dynamic and complex patterns, as well as enhancing runtime type checking, are all key areas for further thought.
 Better type checker performance was a common pain point cited by developers in all cohorts.
 Beyond features and performance, the accessibility and discoverability of Python documentation was mentioned numerous times.
-[The Python 3 typing docs](https://docs.python.org/3/library/typing.html) were the most popular way for people to learn about types or get help with issues.
+[The Python 3 typing docs](https://docs.python.org/3/library/typing.html){:target="_blank"} were the most popular way for people to learn about types or get help with issues.
 There was consistent feedback asking for better documentation, particularly for advanced typing features that included examples.
 “Lack of familiarity” was the second highest reason (8% of all responses) people are not using types.
 There is an opportunity to improve discoverability and usability of documentation.
@@ -215,14 +219,17 @@ We want to ensure that many opinions across the community are heard and that we 
 
 What would you like to see in the survey next year?
 How can the Python Type System evolve to meet your needs?
-Join the conversation on [discourse](https://discuss.python.org/c/typing/32). You can also [explore the data yourself through this tool](https://lookerstudio.google.com/reporting/15599c5b-0e51-4423-8998-cf5c1bfeea00/page/8lQ9D/edit) and comment below with your insights.
+Join the conversation on [discourse](https://discuss.python.org/c/typing/32){:target="_blank"}. You can also [explore the data yourself through this tool](https://lookerstudio.google.com/reporting/15599c5b-0e51-4423-8998-cf5c1bfeea00/page/8lQ9D/edit){:target="_blank"} and comment below with your insights.
 
 _*Based on an online survey conducted among 1,083 people distributed through X, LinkedIn, Reddit,and other social media platforms for targeting Python developers.
 The research was conducted by Meta, Microsoft and JetBrains.
 Data was collected between 07/29/2024 and 10/08/2024._
 
+</div>
+</details>
+
 ---
 
 References
 
-- [Introducing Immortal Objects for Python - Engineering at Meta](https://engineering.fb.com/2024/12/09/developer-tools/typed-python-2024-survey-meta/)
+- [Introducing Immortal Objects for Python - Engineering at Meta](https://engineering.fb.com/2024/12/09/developer-tools/typed-python-2024-survey-meta/){:target="_blank"}

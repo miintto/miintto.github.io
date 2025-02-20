@@ -11,13 +11,13 @@ toc: true
 thumbnail: "/img/thumbnails/meta-cinder-lazy-import.png"
 ---
 
-> 해당 포스트는 Meta 블로그의 [Python Lazy Imports With Cinder](https://developers.facebook.com/blog/post/2022/06/15/python-lazy-imports-with-cinder/) 포스트를 번역한 글입니다.
+> 해당 포스트는 Meta 블로그의 [Python Lazy Imports With Cinder](https://developers.facebook.com/blog/post/2022/06/15/python-lazy-imports-with-cinder/){:target="_blank"} 포스트를 번역한 글입니다.
 > 
 > 게시일: 2022.06.15
 
 # Cinder의 Lazy Import
 
-파이썬은 [별도 컴파일 과정 없이](https://xkcd.com/303/) 빠른 코드 수정 및 실행이 가능하다는 장점 덕분에 개발자 친화적인 언어로 널리 사용되고 있습니다.
+파이썬은 [별도 컴파일 과정 없이](https://xkcd.com/303/){:target="_blank"} 빠른 코드 수정 및 실행이 가능하다는 장점 덕분에 개발자 친화적인 언어로 널리 사용되고 있습니다.
 하지만 대규모로 운영되는 인스타그램 서버를 로컬 개발 환경에 구성하는 경우 이러한 사용성 이점을 제대로 누리지 못하고 있었습니다.
 파이썬 코드를 변경한 후 로컬 환경에서 서버를 재시작하면 이 과정에서 서버 시작 시간이 지연되어 평균적으로 **50초**가량 소요된다는 점이 주요 골칫거리였습니다.
 
@@ -110,7 +110,7 @@ Joshua Lear는 하루 온 종일을 쏟아부어서 이전까지 아무도 보�
 
 우리는 좀 더 깔끔하고 손이 많이 가지 않으면서도 신뢰성 높고 영구적인 방법으로 모듈을 가져오는 시점을 늦출 방법이 필요했습니다.
 더 이상 메소드 내부에서 import 호출을 하거나 `import_module()`, `__import__()` 를 사용하는 방식은 피하고 싶었습니다.
-구상하고 있는 프로젝트는 야심 차고 위험했지만 저는 소매를 걷어붙이고 CPython를 파고들어 [Cinder](https://github.com/facebookincubator/cinder) 내부에 <i>Lazy Imports</i>를 구현하기 시작했습니다.
+구상하고 있는 프로젝트는 야심 차고 위험했지만 저는 소매를 걷어붙이고 CPython를 파고들어 [Cinder](https://github.com/facebookincubator/cinder){:target="_blank"} 내부에 <i>Lazy Imports</i>를 구현하기 시작했습니다.
 
 Lazy Imports는 파이썬이 모듈을 불러오는 메커니즘을 바꾸어 모듈이 사용되는 시점에만 가져오도록 하였습니다.
 구체적으로 매 _import_ 호출 라인마다 즉시 모듈을 로드하지 않고 대신 <i>"지연 객체" 이름</i>을 생성합니다.
@@ -146,13 +146,13 @@ Carl Meyer, Dino Viehland와 충분한 논의를 가진 끝에 저는 대부분�
 <img src="/img/posts/meta-cinder-lazy-import-img005.png" style="max-width:480px"/>
 <span class="caption text-muted">그래프의 어느 지점에서 Lazy Imports가 반영되었는지 보이시나요?</span>
 
-추가적인 결과는 [여기](https://github.com/facebookincubator/cinder/blob/cinder/3.8/CinderDoc/lazy_imports.rst#results)를 참고해 주세요.
+추가적인 결과는 [여기](https://github.com/facebookincubator/cinder/blob/cinder/3.8/CinderDoc/lazy_imports.rst#results){:target="_blank"}를 참고해 주세요.
 
 ## 시행착오
 
 프로젝트를 진행하면서 여기 포스트에는 담지 못할 수많은 난관이 있었습니다.
 중간중간 매우 까다로운 상황이 있었지만 그래도 대다수의 경우는 어렵지 않았습니다.
-돌이켜보면 CPython의 몇 가지 버그 (`TypeDict` 관련 [bpo-41249](https://bugs.python.org/issue41249)), 걷어내야만 했던 일부 라이브러리, 다듬어야 할 수많은 테스트 코드 정도가 기억에 남습니다.
+돌이켜보면 CPython의 몇 가지 버그 (`TypeDict` 관련 [bpo-41249](https://bugs.python.org/issue41249){:target="_blank"}), 걷어내야만 했던 일부 라이브러리, 다듬어야 할 수많은 테스트 코드 정도가 기억에 남습니다.
 
 제가 코드베이스에 Lazy Imports를 접목하면서 경험한바 Lazy Imports 적용 시 일반적으로 나타날 수 있는 문제들은 아래와 같습니다.
 
@@ -166,18 +166,18 @@ Carl Meyer, Dino Viehland와 충분한 논의를 가진 끝에 저는 대부분�
   - 스트링 타입 어노테이션으로는 `typing.TypeVar()`와 `typing.NewType()`을 사용해야 하며,
   - 타입 alias는 `TYPE_CHECKING` 블럭 내부에서 처리해야합니다.
 
-더 포괄적인 문제들은 [여기](https://github.com/facebookincubator/cinder/blob/cinder/3.8/CinderDoc/lazy_imports.rst#issues-and-gotchas)를 참고해주세요.
+더 포괄적인 문제들은 [여기](https://github.com/facebookincubator/cinder/blob/cinder/3.8/CinderDoc/lazy_imports.rst#issues-and-gotchas){:target="_blank"}를 참고해주세요.
 
 ---
 
 ## 강점
 
-모듈을 사용 시점에 로드하는 lazy import가 완전히 새로운 개념이 아니고 간단한 방식이었지만, 아무도 CPython 내부에 직접 구현할 생각을 하지 못했으며 [이전에 시도한 방식](https://github.com/facebookincubator/cinder/blob/cinder/3.8/CinderDoc/lazy_imports.rst#prior-art)도 지금 Cinder에 도입한 구현체와도 거리가 있습니다.
+모듈을 사용 시점에 로드하는 lazy import가 완전히 새로운 개념이 아니고 간단한 방식이었지만, 아무도 CPython 내부에 직접 구현할 생각을 하지 못했으며 [이전에 시도한 방식](https://github.com/facebookincubator/cinder/blob/cinder/3.8/CinderDoc/lazy_imports.rst#prior-art){:target="_blank"}도 지금 Cinder에 도입한 구현체와도 거리가 있습니다.
 Lazy Imports의 강점은 아래와 같습니다.
 
 - 파이썬을 지연시키는 목적으로 사용되는 패러다임 중 가장 **자연스럽**고, **강력**하며 **명료**한 방법입니다.
 - 적용하는데 크게 **어렵지 않습니다**. Lazy Imports 기능을 언어 레벨에 전역으로 설정해 두었으며 단일 모듈이나 표준 및 서드파티 라이브러리에도 적용 가능합니다.
-- **효율적**입니다. 저희 서버에 여러 테스트를 진행했는데, Lazy Imports를 추가하더라도 성능에 큰 영향을 미치지 않았습니다. 오픈소스 [<u>pyperformance</u>](https://pyperformance.readthedocs.io/)를 **3회** 실행하여 측정하였는데, Lazy Imports를 적용하지 않았을 때와 적용했을 때의 성능을 비교하여 아래와 같이 유의미한 결과를 얻었습니다.
+- **효율적**입니다. 저희 서버에 여러 테스트를 진행했는데, Lazy Imports를 추가하더라도 성능에 큰 영향을 미치지 않았습니다. 오픈소스 [pyperformance](https://pyperformance.readthedocs.io/){:target="_blank"}를 **3회** 실행하여 측정하였는데, Lazy Imports를 적용하지 않았을 때와 적용했을 때의 성능을 비교하여 아래와 같이 유의미한 결과를 얻었습니다.
 <img src="/img/posts/meta-cinder-lazy-import-img006.png" style="max-width:360px"/>
 - **순환 참조가 발생하지 않습니다**. 단순히 Lazy Imports가 직접 순환 참조를 걸러낸다는 의미가 아닙니다. 여전히 모듈 간의 순환 의존성이 존재할 수 있으나 대부분의 순환 의존성은 큰 문제가 없는 일반적인 상황입니다. 인스타그램에서는 매일마다 80개의 순환 참조 에러가 발견되었지만, 현재는 발생하지 않고 있습니다.
 
@@ -186,13 +186,17 @@ Lazy Imports의 강점은 아래와 같습니다.
 - Lazy Imports를 적절히 개선하여 메모리 확보, 서버 재시작 시간 개선뿐 아니라 인스타그램 서버의 성능까지 이끌어낼 수 있습니다.
 - 순환 참조에 대한 염려가 사라지면서 코드베이스의 품질을 높이는 새로운 길을 열어줍니다. 리팩토링이 더욱 간편해지고 불가능했던 일이 가능해집니다.
 - 외부 서드파티 라이브러리와 협력하여 Lazy Imports와 호환 가능하도록 하여 많은 어플리케이션이 활용할 수 있도록 합니다.
-- [<u>보다 광범위한 세계관에서 Lazy Import를 사용할 수 있도록 파이썬 프로젝트에 기여합니다.</u>](https://peps.python.org/pep-0690/)
+- [보다 광범위한 세계관에서 Lazy Import를 사용할 수 있도록 파이썬 프로젝트에 기여합니다.](https://peps.python.org/pep-0690/){:target="_blank"}
 
 ---
 
+<details>
+<summary>원문 보기</summary>
+<div markdown="1">
+
 # Python Lazy Imports With Cinder
 
-Python is widely touted as one of the most developer-friendly languages, thanks to the fast feedback loop that comes from [not needing to compile](https://xkcd.com/303/).
+Python is widely touted as one of the most developer-friendly languages, thanks to the fast feedback loop that comes from [not needing to compile](https://xkcd.com/303/){:target="_blank"}.
 However, when used at scale in Instagram Server, we’ve found a major usability problem when developing locally; _every single change_ to any Python file requires developers to perform a slow server reload (**~50 seconds** on average!) to observe the effects of their change.
 
 At Meta, we’ve tackled this problem by creating Lazy Imports: a Python runtime feature that provides a transparent and robust mechanism to lazy loading.
@@ -278,7 +282,7 @@ What we needed was a robust way of lazyfing all things.
 <span class="caption text-muted">Two-toed sloth courtesy of Geoff Gallice via Creative Commons</span>
 
 We needed a more transparent, automatic, reliable and permanent way to make things lazy, instead of manually trying to make things _lazy_ by using _inner imports_, `import_module()`, or `__import__()`.
-The envisioned project was ambitious and risky, but I rolled my sleeves, dove deep into CPython and started implementing _Lazy Imports_ in [Cinder](https://github.com/facebookincubator/cinder).
+The envisioned project was ambitious and risky, but I rolled my sleeves, dove deep into CPython and started implementing _Lazy Imports_ in [Cinder](https://github.com/facebookincubator/cinder){:target="_blank"}.
 
 Lazy Imports changes the mechanics of how imports work in Python so that modules are imported only when they are used.
 At its core, every single _import_ (e.g., `import foo`) won't immediately load and execute the module, it will instead create a _"deferred object" name_.
@@ -310,13 +314,13 @@ Other servers and tools consistently saw improvements between **50% to 70%** and
 <img src="/img/posts/meta-cinder-lazy-import-img005.png" style="max-width:480px"/>
 <span class="caption text-muted">Can you guess when Lazy Imports was enabled in the graph?</span>
 
-See additional results [here](https://github.com/facebookincubator/cinder/blob/cinder/3.8/CinderDoc/lazy_imports.rst#results).
+See additional results [here](https://github.com/facebookincubator/cinder/blob/cinder/3.8/CinderDoc/lazy_imports.rst#results){:target="_blank"}.
 
 ## Challenges
 
 Along the way, I ran into many obstacles, too many to list in this post.
 Some were more complex than others, but all of them were interesting and challenging.
-I can recall a couple bugs in CPython ([bpo-41249](https://bugs.python.org/issue41249), related to `TypedDict`), some libraries that I had to remove and a whole bunch of tests that I had to fix.
+I can recall a couple bugs in CPython ([bpo-41249](https://bugs.python.org/issue41249){:target="_blank"}, related to `TypedDict`), some libraries that I had to remove and a whole bunch of tests that I had to fix.
 
 In my journey making codebases compatible with Lazy Imports, the problems that are more common when we start using Lazy Imports are:
 
@@ -330,16 +334,16 @@ In my journey making codebases compatible with Lazy Imports, the problems that a
   - We should use string type annotations for `typing.TypeVar()` and `typing.NewType()`.
   - Wrap type aliases inside a `TYPE_CHECKING` conditional block.
 
-For more comprehensive issues and gotchas, see [here](https://github.com/facebookincubator/cinder/blob/cinder/3.8/CinderDoc/lazy_imports.rst#issues-and-gotchas).
+For more comprehensive issues and gotchas, see [here](https://github.com/facebookincubator/cinder/blob/cinder/3.8/CinderDoc/lazy_imports.rst#issues-and-gotchas){:target="_blank"}.
 
 ## Highlights
 
-Even though the _concept_ of lazy imports is not entirely new and is conceptually simple (i.e., deferring module loading until imported names are used), we are not aware of any other low level implementation directly in CPython internals and none of the [previous efforts](https://github.com/facebookincubator/cinder/blob/cinder/3.8/CinderDoc/lazy_imports.rst#prior-art) matches our current implementation in Cinder.
+Even though the _concept_ of lazy imports is not entirely new and is conceptually simple (i.e., deferring module loading until imported names are used), we are not aware of any other low level implementation directly in CPython internals and none of the [previous efforts](https://github.com/facebookincubator/cinder/blob/cinder/3.8/CinderDoc/lazy_imports.rst#prior-art){:target="_blank"} matches our current implementation in Cinder.
 Some of its highlights are:
 
 - It provides an _**automatic**_, _**robust**_ and mostly _**transparent**_ solution to the often used paradigm of making things _lazy_ in Python.
 - It needs _**little effort**_ to be used. We can turn Lazy Imports on _globally_, as a language level feature, and have Python _load every single module and package ever being used lazily_ (even third party and standard library packages).
-- It's _**efficient**_. We ran a series of experiments in our live servers and results were performance neutral when adding the Lazy Imports patch (but not enabling the feature). We also ran the open source [<u>pyperformance</u>](https://pyperformance.readthedocs.io/) **3 times**, and observed the following most significant results when Lazy Imports is enabled vs. without the patch:
+- It's _**efficient**_. We ran a series of experiments in our live servers and results were performance neutral when adding the Lazy Imports patch (but not enabling the feature). We also ran the open source [pyperformance](https://pyperformance.readthedocs.io/){:target="_blank"} **3 times**, and observed the following most significant results when Lazy Imports is enabled vs. without the patch:
 <img src="/img/posts/meta-cinder-lazy-import-img006.png" style="max-width:360px"/>
 - **No more import cycles**. That doesn’t mean there can’t be circular imports with Lazy Imports enabled. There can still be legitimate cyclic dependencies at module level, but most cycles won’t be harmful and won’t manifest themselves as import errors. In our use case at Instagram, we went from engineers seeing ~80 circular import errors every day to zero.
 - It _**Just Works™️**_ (most of the time).
@@ -349,10 +353,13 @@ Some of its highlights are:
 - With the right amount of warmup, Lazy Imports would for sure give us some gains in _memory usage_, _startup times_ and perhaps (hopefully) even some _performance wins_ in Instagram production servers.
 - Not having to worry about _Circular Imports_, Lazy Imports opens a whole new avenue for modernizing and improving the quality of codebases. Refactoring becomes much easier and things that were once impossible are now feasible.
 - Work with external third-party packages and libraries so that they are lazy-imports-friendly, making it possible for many more applications to take advantage of this capability.
-- [<u>Upstreaming Lazy Imports to make it available to the broader Python ecosystem</u>](https://peps.python.org/pep-0690/)!
+- [<u>Upstreaming Lazy Imports to make it available to the broader Python ecosystem</u>](https://peps.python.org/pep-0690/){:target="_blank"}!
+
+</div>
+</details>
 
 ---
 
 References
 
-- [Python Lazy Imports With Cinder](https://developers.facebook.com/blog/post/2022/06/15/python-lazy-imports-with-cinder/)
+- [Python Lazy Imports With Cinder](https://developers.facebook.com/blog/post/2022/06/15/python-lazy-imports-with-cinder/){:target="_blank"}

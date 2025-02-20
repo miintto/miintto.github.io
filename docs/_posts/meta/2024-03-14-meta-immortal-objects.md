@@ -8,10 +8,10 @@ tags:
   - immortal object
   - instagram
 toc: true
-thumbnail: "/img/thumbnails/meta-immortal-objects.png"
+thumbnail: "/img/thumbnails/meta-instagram.png"
 ---
 
-> 해당 포스트는 Meta Engineering 블로그의 [Introducing Immortal Objects for Python](https://engineering.fb.com/2023/08/15/developer-tools/immortal-objects-for-python-instagram-meta/) 포스트를 번역한 글입니다.
+> 해당 포스트는 Meta Engineering 블로그의 [Introducing Immortal Objects for Python](https://engineering.fb.com/2023/08/15/developer-tools/immortal-objects-for-python-instagram-meta/){:target="_blank"} 포스트를 번역한 글입니다.
 > 
 > 게시일: 2023.08.15
 
@@ -34,7 +34,7 @@ Meta에서는 인스타그램 프론트엔드 서버로 파이썬(Django)을 사
 사실 이런 공유 객체 간의 mutation 상태 이슈는 파이썬 런타임이 작동하는 핵심 구성요소입니다.
 파이썬 런타임이 레퍼런스 카운팅과 GC 사이클에 의존하고 있기 때문에 객체의 핵심 메모리 구조를 건드릴 수 밖에 없고, 그 때문에 GIL도 불가피한 상황입니다.
 
-우리는 이런 문제를 해결하기 위해 불멸 객체([PEP-683](https://peps.python.org/pep-0683/))라는 개념을 도입했습니다.
+우리는 이런 문제를 해결하기 위해 불멸 객체([PEP-683](https://peps.python.org/pep-0683/){:target="_blank"})라는 개념을 도입했습니다.
 파이썬 객체의 레퍼런스 카운트 필드에 특별한 값을 표기하면서 핵심 객체의 상태가 절대 변하지 않는 불멸 객체를 고안해 냈습니다.
 그래서 런타임이 언제 레퍼런스 카운트 필드와 GC 헤더를 mutate 할 수 있는지 구별할 수 있게 되었습니다.
 
@@ -72,8 +72,8 @@ GC와 레퍼런스 카운트 메커니즘 하에서 객체의 레퍼런스 카�
 이런 방식은 multi-core 파이썬을 향한 중요한 기반이 될 수 있습니다.
 이를 위해 불멸 객체를 활용하는 방법으로 아래 두 가지 제안이 있습니다.
 
-- [PEP-684](https://peps.python.org/pep-0684/): 인터프리터마다 GIL 설정 
-- [PEP-703](https://peps.python.org/pep-0703/): CPython에서 GIL을 선택 사항으로 만들기
+- [PEP-684](https://peps.python.org/pep-0684/){:target="_blank"}: 인터프리터마다 GIL 설정 
+- [PEP-703](https://peps.python.org/pep-0703/){:target="_blank"}: CPython에서 GIL을 선택 사항으로 만들기
 
 ## 오늘날 불멸 객체
 
@@ -81,6 +81,10 @@ GC와 레퍼런스 카운트 메커니즘 하에서 객체의 레퍼런스 카�
 Meta에서는 이러한 언어의 발전 방향에 흥미를 느끼고 있으며, 인스타그램을 연구하고 발전시키면서도 회사 외적으로 기여할 준비가 되어있습니다.
 
 ---
+
+<details>
+<summary>원문 보기</summary>
+<div markdown="1">
 
 # Introducing Immortal Objects for Python
 
@@ -101,7 +105,7 @@ By analyzing the Python heap, we found that while most of our Python Objects wer
 This problem of state mutation of shared objects is at the heart of how the Python runtime works.
 Given that it relies on reference counting and cycle detection, the runtime requires modifying the core memory structure of the object, which is one of the reasons the language requires a global interpreter lock (GIL).
 
-To get around this issue, we introduced Immortal Objects – PEP-683.
+To get around this issue, we introduced [Immortal Objects – PEP-683](https://peps.python.org/pep-0683/){:target="_blank"}.
 This creates an immortal object (an object for which the core object state will never change) by marking a special value in the object’s reference count field.
 It allows the runtime to know when it can and can’t mutate both the reference count fields and GC header.
 
@@ -139,16 +143,19 @@ This means that we can now share immortal objects across threads without requiri
 This is an important building block towards a multi-core Python runtime.
 There are two proposals that leverage immortal objects to achieve this in different ways:
 
-- [PEP-684](https://peps.python.org/pep-0684/): A Per-Interpreter GIL
-- [PEP-703](https://peps.python.org/pep-0703/): Making the Global Interpreter Lock Optional in CPython
+- [PEP-684](https://peps.python.org/pep-0684/){:target="_blank"}: A Per-Interpreter GIL
+- [PEP-703](https://peps.python.org/pep-0703/){:target="_blank"}: Making the Global Interpreter Lock Optional in CPython
 
 # Try Immortal Objects today
 
 We invite the community to think of ways they can leverage immortalization in their applications as well as review the existing proposals to anticipate how to improve their applications for a multi-core environment.
 At Meta, we are excited about the direction in the language’s development and we are ready to keep contributing externally while we keep experimenting and evolving Instagram.
 
+</div>
+</details>
+
 ---
 
 References
 
-- [Introducing Immortal Objects for Python - Engineering at Meta](https://engineering.fb.com/2023/08/15/developer-tools/immortal-objects-for-python-instagram-meta/)
+- [Introducing Immortal Objects for Python - Engineering at Meta](https://engineering.fb.com/2023/08/15/developer-tools/immortal-objects-for-python-instagram-meta/){:target="_blank"}

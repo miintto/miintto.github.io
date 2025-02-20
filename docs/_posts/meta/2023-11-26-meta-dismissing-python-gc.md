@@ -11,7 +11,7 @@ toc: true
 thumbnail: "/img/thumbnails/meta-dismissing-python-gc.png"
 ---
 
-> 해당 포스트는 Instagram Engineering 블로그의 [Dismissing Python Garbage Collection at Instagram](https://medium.com/instagram-engineering/dismissing-python-garbage-collection-at-instagram-4dca40b29172) 포스트를 번역한 글입니다.
+> 해당 포스트는 Instagram Engineering 블로그의 [Dismissing Python Garbage Collection at Instagram](https://medium.com/instagram-engineering/dismissing-python-garbage-collection-at-instagram-4dca40b29172){:target="_blank"} 포스트를 번역한 글입니다.
 > 
 > 게시일: 2017.01.18
 
@@ -38,7 +38,7 @@ Django 서버의 OOM 을 방지하기 위해서 uWSGI 마스터 프로세스는 
 ## 우리가 세운 가설: Copy-on-Read
 
 리눅스 커널은 포크하고 있는 프로세스들을 최적화하기 위해 Copy-on-Write(COW)라는 메커니즘을 가지고 있습니다.
-자식 프로세스는 시작될 때부터 모든 메모리 페이지를 메인 프로세스와 공유하는데, 하나의 페이지는 해당 페이지에 쓰기 작업이 발생했을 때만 자식 프로세스에 복사됩니다. (더 자세한 내용은 [https://en.wikipedia.org/wiki/Copy-on-write](https://en.wikipedia.org/wiki/Copy-on-write)를 참고해 주세요.)
+자식 프로세스는 시작될 때부터 모든 메모리 페이지를 메인 프로세스와 공유하는데, 하나의 페이지는 해당 페이지에 쓰기 작업이 발생했을 때만 자식 프로세스에 복사됩니다. (더 자세한 내용은 [https://en.wikipedia.org/wiki/Copy-on-write](https://en.wikipedia.org/wiki/Copy-on-write){:target="_blank"}를 참고해 주세요.)
 
 이런 메커니즘이 파이썬 세계관에서는 레퍼런스 카운팅이라는 작업과 맞물려 재미있는 현상이 발생합니다.
 파이썬 인터프리터는 객체를 참조할 때마다 객체 구조체의 refcount 값을 증가시키는데 이 과정에서 쓰기 작업이 발생하고, 결국 COW를 유발하게 됩니다.
@@ -232,6 +232,10 @@ CPU 캐시 미스는 CPU 파이프라인을 정지시키기 때문에 매우 치
 
 ---
 
+<details>
+<summary>원문 보기</summary>
+<div markdown="1">
+
 # Dismissing Python Garbage Collection at Instagram
 
 By dismissing the Python garbage collection (GC) mechanism, which reclaims memory by collecting and freeing unused data, Instagram can run 10% more efficiently.
@@ -256,7 +260,7 @@ Next we wanted to understand why this shared memory becomes private memory per p
 
 Linux kernel has a mechanism called Copy-on-Write (CoW) that serves as an optimization for forked processes.
 A child process starts by sharing every memory page with its parent.
-A page copied to the child’s memory space only when the page is written to (for more details refer to the wiki [https://en.wikipedia.org/wiki/Copy-on-write](https://en.wikipedia.org/wiki/Copy-on-writ)).
+A page copied to the child’s memory space only when the page is written to (for more details refer to the wiki [https://en.wikipedia.org/wiki/Copy-on-write](https://en.wikipedia.org/wiki/Copy-on-write){:target="_blank"}).
 
 But in Python land, because of reference counting, things get interesting.
 Every time we read a Python object, the interpreter will increase its refcount, which is essentially a write to its underlying data structure.
@@ -327,7 +331,7 @@ Well, since GC is backstabbing us, let’s disable it!
 We added a gc.disable() call to our bootstrapping script.
 We restarted the server, but again, no luck!
 If we look at perf again, we’ll see `gc.collect` is still called, and the memory is still copied.
-With some debugging with GDB, we found that apparently one of the third-party libraries we used (msgpack) calls gc.enable() to bring it back, so `gc.disable()` at bootstrapping was washed.
+With some debugging with GDB, we found that apparently one of the third-party libraries we used (msgpack) calls `gc.enable()` to bring it back, so `gc.disable()` at bootstrapping was washed.
 
 Patching msgpack is the last thing we would do because it leaves the door for other libraries to do the same thing in the future without us noticing.
 First, we need to prove disabling GC actually helps.
@@ -447,8 +451,11 @@ With less CoW, more CPU cache lines with different virtual addresses (in differe
 As we can see, not every component worked as expected, and sometimes, the results can be very surprising.
 So keep digging and sniffing around, and you’ll be amazed how things really work!
 
+</div>
+</details>
+
 ---
 
 References
 
-- [Dismissing Python Garbage Collection at Instagram \| by Instagram Engineering](https://medium.com/instagram-engineering/dismissing-python-garbage-collection-at-instagram-4dca40b29172)
+- [Dismissing Python Garbage Collection at Instagram \| by Instagram Engineering](https://medium.com/instagram-engineering/dismissing-python-garbage-collection-at-instagram-4dca40b29172){:target="_blank"}

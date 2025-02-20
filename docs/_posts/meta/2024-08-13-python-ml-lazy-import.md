@@ -11,7 +11,7 @@ toc: true
 thumbnail: "/img/thumbnails/meta-ml-lazy-import.png"
 ---
 
-> 해당 포스트는 Meta Engineering 블로그의 [Lazy is the new fast: How Lazy Imports and Cinder accelerate machine learning at Meta](https://engineering.fb.com/2024/01/18/developer-tools/lazy-imports-cinder-machine-learning-meta/) 포스트를 번역한 글입니다.
+> 해당 포스트는 Meta Engineering 블로그의 [Lazy is the new fast: How Lazy Imports and Cinder accelerate machine learning at Meta](https://engineering.fb.com/2024/01/18/developer-tools/lazy-imports-cinder-machine-learning-meta/){:target="_blank"} 포스트를 번역한 글입니다.
 > 
 > 게시일: 2024.01.18
 
@@ -20,7 +20,7 @@ thumbnail: "/img/thumbnails/meta-ml-lazy-import.png"
 머신러닝 세계에서 시간은 곧 생명입니다.
 머신러닝 모델이 초기 학습 데이터를 처리하는 과정에서 소요되는 1밀리초의 차이는 생산성과 실험 과정에 아주 극명한 차이를 가져올 수 있습니다.
 
-메타에서는 [Lazy Imports](https://peps.python.org/pep-0690/) 방식과 파이썬 런타임 [Cinder](https://github.com/facebookincubator/cinder)를 도입하면서 모델의 학습 시간을 개선했을 뿐 아니라 전반적인 개발자 경험(DevX)도 축적할 수 있었습니다.
+메타에서는 [Lazy Imports](https://peps.python.org/pep-0690/){:target="_blank"} 방식과 파이썬 런타임 [Cinder](https://github.com/facebookincubator/cinder){:target="_blank"}를 도입하면서 모델의 학습 시간을 개선했을 뿐 아니라 전반적인 개발자 경험(DevX)도 축적할 수 있었습니다.
 
 ## 첫 배치 시간 이슈
 
@@ -113,12 +113,16 @@ Lazy Imports와 맞물리는 패러다임과 패턴을 지지하는 견고한 �
 
 ---
 
+<details>
+<summary>원문 보기</summary>
+<div markdown="1">
+
 # Lazy is the new fast: How Lazy Imports and Cinder accelerate machine learning at Meta
 
 Time is of the essence in the realm of machine learning (ML) development.
 The milliseconds it takes for an ML model to transition from conceptualization to processing the initial training data can dramatically impact productivity and experimentation.
 
-At Meta, we’ve been able to significantly improve our model training times, as well as our overall developer experience (DevX) by adopting [Lazy Imports](https://peps.python.org/pep-0690/) and the [Python Cinder runtime](https://github.com/facebookincubator/cinder). 
+At Meta, we’ve been able to significantly improve our model training times, as well as our overall developer experience (DevX) by adopting [Lazy Imports](https://peps.python.org/pep-0690/){:target="_blank"} and the [Python Cinder runtime](https://github.com/facebookincubator/cinder){:target="_blank"}.
 
 ## The time to first batch challenge
 
@@ -140,7 +144,7 @@ Previously, ML developers explored alternatives like the standard `LazyLoader` i
 While promising, these approaches are limited by their much narrower scope, and the need to manually select which dependencies will be lazily imported (often with suboptimal results).
 Using these approaches demands meticulous codebase curation and a fair amount of code refactoring.
 
-In contrast, [Cinder’s Lazy Imports](https://developers.facebook.com/blog/post/2022/06/15/python-lazy-imports-with-cinder/) approach is a comprehensive and aggressive strategy that goes beyond the limitations of other libraries and delivers significant enhancements to the developer experience.
+In contrast, [Cinder’s Lazy Imports](https://developers.facebook.com/blog/post/2022/06/15/python-lazy-imports-with-cinder/){:target="_blank"} approach is a comprehensive and aggressive strategy that goes beyond the limitations of other libraries and delivers significant enhancements to the developer experience.
 Instead of painstakingly handpicking imports to become lazy, Cinder simplifies and accelerates the startup process by transparently deferring all imports as a default action, resulting in a much broader and more powerful deferral of imports until the exact moment they’re needed.
 Once in place, this method ensures that developers no longer have to navigate the maze of selective import choices.
 With it, developers can bid farewell to the need of typing-only imports and the use of `TYPE_CHECKING`.
@@ -208,8 +212,11 @@ The power of Lazy Imports lies in its adaptability and versatility.
 We’re eager to collaborate with the Python community – sharing insights, best practices, and addressing challenges together.
 Building a robust community that helps supporting paradigms and patterns that play well with Lazy Imports is one of our future priorities.
 
+</div>
+</details>
+
 ---
 
 References
 
-- [Lazy is the new fast: How Lazy Imports and Cinder accelerate machine learning at Meta - Engineering at Meta](https://engineering.fb.com/2024/01/18/developer-tools/lazy-imports-cinder-machine-learning-meta/)
+- [Lazy is the new fast: How Lazy Imports and Cinder accelerate machine learning at Meta - Engineering at Meta](https://engineering.fb.com/2024/01/18/developer-tools/lazy-imports-cinder-machine-learning-meta/){:target="_blank"}
