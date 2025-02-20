@@ -38,7 +38,7 @@ layout: default
       </div>
       <div class="recent-wrapper">
         <div class="recent-content-list">
-        {% assign posts_subset = site.posts | slice: 0, 12 %}
+        {% assign posts_subset = site.posts | slice: 0, 6 %}
         {% for post in posts_subset %}
           <div class="recent-article post-effect">
             <a href="{{ post.url | prepend: site.baseurl | replace: '//', '/' }}">
@@ -56,7 +56,7 @@ layout: default
                     {{ post.date | date: '%Y.%m.%d' }}
                   </p>
                 </div>
-                <p class="recent-title">{{ post.title }}</p>
+                <p class="recent-title font-title">{{ post.title }}</p>
               </div>
             </a>
           </div>
