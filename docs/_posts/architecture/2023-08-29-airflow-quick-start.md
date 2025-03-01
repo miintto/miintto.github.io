@@ -67,7 +67,7 @@ Airflow를 구성하는 환경 설정값들은 **`airflow.cfg`** 파일에서 �
 
 - **`dags_folder`**: DAG파일이 존재하는 디렉토리.
 - **`default_timezone`**: 기본 타임존.
-- **`executor`**: 스케줄러에서 사용할 executor 클래스. ([이전 포스트의 Executor 설명 참조](/docs/python-airflow-architecture#3-executor))
+- **`executor`**: 스케줄러에서 사용할 executor 클래스. ([이전 포스트의 Executor 설명 참조](/docs/airflow-architecture#3-executor))
 - **`parallelism`**: 동시에 실행 가능한 최대 Task 개수
 - **`max_active_tasks_per_dag`**: 각 DAG 마다 동시에 실행될 수 있는 task의 최대 개수
 - **`max_active_runs_per_dag`**: 동시에 실행될 수 있는 DAG의 최대 개수
