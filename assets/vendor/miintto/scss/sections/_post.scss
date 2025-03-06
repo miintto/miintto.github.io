@@ -8,26 +8,21 @@
     margin: 0px 20px;
 }
 
-.post-flex {
-    display: flex;
-    flex-wrap: wrap;
+.post-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    @media (max-width: 639px) {
+        grid-template-columns: 1fr;
+    }
 }
 
 .post-article {
-    width: calc(50% - 30px);
     margin: 15px;
 
-    @media (max-width: 767px) {
-        max-width: 480px;
-        width: calc(100% - 10px);
+    @media (max-width: 639px) {
+        max-width: 600px;
         margin: 5px;
-    }
-
-    a {
-
-        @media (max-width: 478px) {
-            display: block;
-        }
     }
 }
 

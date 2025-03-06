@@ -1,7 +1,7 @@
 .navbar {
     background: $steel-blue-1;
 
-    @media (max-width: 767px) {
+    @media (max-width: 639px) {
         background: $white;
     }
 }
@@ -32,7 +32,7 @@
     font-weight: 700;
     color: $gray-8;
 
-    @media (max-width: 767px) {
+    @media (max-width: 639px) {
         display: inline-block;
     }
 }
@@ -41,7 +41,7 @@
     display: flex;
     transition: height 0.3s ease;
 
-    @media (max-width: 767px) {
+    @media (max-width: 639px) {
         display: block;
         overflow: hidden;
         top: 60px;
@@ -59,7 +59,7 @@
     line-height: 60px;
     text-align: center;
 
-    @media (max-width: 767px) {
+    @media (max-width: 639px) {
         line-height: 50px;
         text-align: left;
     }

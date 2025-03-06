@@ -22,3 +22,8 @@ img {
     border-style: none;
     vertical-align: middle;
 }
+
+::selection {
+    color: $white;
+    background-color: $steel-blue-4;
+}
