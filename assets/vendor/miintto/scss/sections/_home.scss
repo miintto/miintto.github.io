@@ -1,6 +1,5 @@
 .banner-content {
     margin-bottom: 100px;
-    background: $steel-blue-1;
 }
 
 .banner-component {
@@ -8,30 +7,54 @@
     flex-wrap: wrap;
     justify-content: center;
     flex-direction: row-reverse;
-    height: 720px;
+    height: 450px;
+    margin: 10px;
+    border-radius: 20px;
+
+    @media (max-width: 639px) {
+        height: 500px;
+    }
 
     .banner-description {
-        width: 520px;
+        width: 400px;
         margin: auto 0;
-        padding: 20px;
+        padding: 0 40px;
 
-        @media (max-width: 767px) {
+        @media (max-width: 950px) {
+            width: 375px;
             padding: 20px;
-            margin: 0;
+
+            @media (max-width: 800px) {
+                width: 360px;
+                padding: 10px;
+
+                @media (max-width: 639px) {
+                    width: 100%;
+                    margin: 0;
+                }
+            }
         }
     }
 }
 
 .home-title {
     margin: 30px 0;
-    font-size: 48px;
+    font-size: 45px;
     font-weight: 700;
     line-height: 1.5;
     letter-spacing: .05em;
 
-    @media (max-width: 767px) {
+    @media (max-width: 950px) {
         margin: 20px 0;
-        font-size: 36px;
+        font-size: 40px;
+
+        @media (max-width: 800px) {
+            font-size: 36px;
+
+            @media (max-width: 639px) {
+                font-size: 32px;
+            }
+        }
     }
 
     span {
@@ -54,30 +77,46 @@
 
 .home-subtitle {
     padding: 0 5px;
-    font-size: 20px;
+    font-size: 18px;
     line-height: 1.6;
     letter-spacing: .02em;
     color: $gray-6;
 
-    @media (max-width: 767px) {
+    @media (max-width: 950px) {
         font-size: 17px;
+
+        @media (max-width: 800px) {
+            font-size: 16px;
+
+            @media (max-width: 639px) {
+                font-size: 15px;
+            }
+        }
     }
 }
 
 .banner-thumbnail {
     position: relative;
-    width: 420px;
     margin: auto;
     aspect-ratio: 1 / 1;
+    height: 360px;
 
-    @media (max-width: 1059px) {
-        width: 240px;
+    @media (max-width: 950px) {
+        height: 280px;
+
+        @media (max-width: 800px) {
+            height: 240px;
+
+            @media (max-width: 639px) {
+                height: 200px;
+            }
+        }
     }
-}
 
-.image-layer {
-    position: absolute;
-    top: 0;
+    img {
+        height: 100%;
+        object-fit: contain;
+    }
 }
 
 .banner-button {
@@ -89,7 +128,7 @@
     text-align: center;
     line-height: 50px;
 
-    @media (max-width: 767px) {
+    @media (max-width: 639px) {
         margin: 30px auto;
     }
 

@@ -1,11 +1,3 @@
-.navbar {
-    background: $steel-blue-1;
-
-    @media (max-width: 639px) {
-        background: $white;
-    }
-}
-
 .navbar-content {
     display: flex;
     flex-wrap: wrap;
