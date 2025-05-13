@@ -198,4 +198,4 @@ async def app(scope, receive, send):
 References
 
 - [ASGI Documentation — ASGI 3.0 documentation](https://asgi.readthedocs.io/en/latest/){:target="_blank"}
-- [CGI, WSGI, ASGI 정리](https://kangbk0120.github.io/articles/2022-02/cgi-wcgi-asgi)
+- [CGI, WSGI, ASGI 정리](https://kangbk0120.github.io/articles/2022-02/cgi-wcgi-asgi){:target="_blank"}
