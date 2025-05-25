@@ -20,20 +20,13 @@
 
     >.prifile-username {
         margin: 10px auto;
-        font-size: 16px;
-        font-weight: 700;
-    
-        >span {
-            font-size: 14px;
-        }
     }
 
     >.profile-bio {
         margin-bottom: 16px;
-        font-size: 14px;
         line-height: 1.5;
         letter-spacing: .02em;
-        color: #606060;
+        color: $gray-6;
     }
 
     >.proflie-contact {
@@ -47,17 +40,14 @@
 
 .profile-title {
     margin: 10px 0;
-    font-size: 16px;
-    font-weight: 700;
 }
 
 .profile-category {
     margin-top: 50px;
-    font-size: 14px;
 
     >ul {
         padding-left: 24px;
-        color: #606060;
+        color: $gray-6;
 
         >li {
             height: 30px;

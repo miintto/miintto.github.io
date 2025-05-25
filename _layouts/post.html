@@ -6,13 +6,12 @@ layout: default
   <div class="article-wrapper">
     <div class="article-header">
       <div class="article-info">
-        <h1 class="animate-fade-in-down-delay-1">{{ page.title }}</h1>
+        <div class="article-title font-bold-0 animate-fade-in-down-delay-1">{{ page.title }}</div>
         <div class="post-tags animate-fade-in-down-delay-2">
           {% for tag in page.tags %}<p>{{ tag | escape }}</p>{% endfor %}
         </div>
-        <div class="article-meta animate-fade-in-down-delay-3">
-          {{ page.date | date: '%Y.%m.%d' }} &middot; {% include read_time.html
-          content=page.content %}
+        <div class="article-meta font-light-2 animate-fade-in-down-delay-3">
+          {{ page.date | date: '%Y.%m.%d' }} &middot; {% include read_time.html content=page.content %}
         </div>
       </div>
       <div class="article-banner">

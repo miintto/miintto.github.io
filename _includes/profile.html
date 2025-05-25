@@ -2,7 +2,7 @@
   <div class="profile-img">
     <img src="/img/profile.png"/>
   </div>
-  <div class="prifile-username">박민재<span> (miintto)</span></div>
+  <div class="prifile-username font-bold-3">박민재<span class="font-bold-4""> (miintto)</span></div>
   <div class="profile-bio">안녕하세요! 개발을 즐기는 백엔드 엔지니어 박민재입니다.</div>
   <div class="proflie-contact">
     <a href="mailto:{{ site.email | encode_email }}">
@@ -24,7 +24,7 @@
 </div>
 
 <div class="profile-category">
-  <div class="profile-title">Categories</div>
+  <div class="profile-title font-bold-3">Categories</div>
   <ul>
   {% for page in site.pages %}
     {% if page.layout == "category" %}

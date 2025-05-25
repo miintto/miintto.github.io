@@ -6,19 +6,19 @@
 {% endif %}
   <div class="navbar-content container">
     <a class="navbar-brand" href="{{"/" | relative_url }}">{{ site.title | escape }}</a>
-    <button class="navbar-button" id="toggleButton" type="button" data-toggle="collapse" aria-controls="navbarResponsive" aria-expanded="false">
+    <button class="navbar-button font-bold-5" id="toggleButton" type="button" data-toggle="collapse" aria-controls="navbarResponsive" aria-expanded="false">
       MENU
       <i class="fa fa-bars"></i>
     </button>
     <div class="navbar-nav" id="navbarResponsive" aria-hidden="true">
       <div class="nav-item">
-        <a class="nav-link" href="{{"/about" | relative_url }}">ABOUT</a>
+        <a class="nav-link font-bold-4" href="{{"/about" | relative_url }}">ABOUT</a>
       </div>
       <div class="nav-item">
-        <a class="nav-link" href="{{ "/posts" | relative_url }}">POSTS</a>
+        <a class="nav-link font-bold-4" href="{{ "/posts" | relative_url }}">POSTS</a>
       </div>
       <div class="nav-item">
-        <a class="nav-link" href="{{"/archive" | relative_url }}">ARCHIVES</a>
+        <a class="nav-link font-bold-4" href="{{"/archive" | relative_url }}">ARCHIVES</a>
       </div>
     </div>
   </div>

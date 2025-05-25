@@ -30,9 +30,9 @@
     overflow: hidden;
     display: inline-flex;
     width: 100%;
-    aspect-ratio: 1.8;
     margin: 0 0 10px 0;
     border-radius: 10px;
+    aspect-ratio: 1.8;
 
     img {
         margin: 0;
@@ -84,7 +84,7 @@
     }
 
     .pagination-page:hover {
-        background-color: $gray-1;
+        background: $gray-1;
     }
 
     .previous, .next {
@@ -99,7 +99,6 @@
 
     .current {
         background: $steel-blue-3;
-        font-weight: 600;
         color: $white;
     }
 }

@@ -7,6 +7,65 @@ body {
     color: $gray-8;
 }
 
+.font-bold-0 {
+    font-size: 40px;
+    font-weight: 600;
+
+    @media (max-width: 767px) {
+        font-size: 32px;
+    }
+}
+
+.font-bold-1 {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.font-bold-2 {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.font-bold-3 {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.font-bold-4 {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.font-bold-5 {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.font-semi-bold-1 {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.font-semi-bold-2 {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.font-semi-bold-3 {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.font-light-2 {
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.font-light-3 {
+    font-size: 14px;
+    font-weight: 400;
+}
+
 a {
     text-decoration: none;
     color: $gray-8;
@@ -25,5 +84,5 @@ img {
 
 ::selection {
     color: $white;
-    background-color: $steel-blue-4;
+    background: $steel-blue-4;
 }

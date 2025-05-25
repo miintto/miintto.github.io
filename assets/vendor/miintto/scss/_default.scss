@@ -6,26 +6,18 @@
 .round-button {
     height: 48px;
     border-radius: 32px;
-    background: $gray-1;
-    text-align: center;
     line-height: 48px;
-
-    >div {
-        transition: all 0.2s linear;
-        font-size: 16px;
-        font-weight: 500;
-        color: $gray-5;
-    }
+    text-align: center;
+    color: $gray-5;
 
     &:hover {
-        background: $gray-2;
+        background: $gray-1;
         transition: all 0.2s linear;
     }
 }
 
 .post-meta {
     display: flex;
-    font-size: 13px;
 
     >p {
         margin: 8px 8px 8px 0;
@@ -33,8 +25,7 @@
     }
 
     .post-meta-category {
-        font-weight: 500;
-        color: $gray-8;
+        color: $gray-7;
     }
 }
 
@@ -55,8 +46,6 @@
 }
 
 .font-title {
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: .03em;
     line-height: 1.6;
+    letter-spacing: .03em;
 }

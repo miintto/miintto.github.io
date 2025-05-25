@@ -5,16 +5,16 @@
     </div>
     <div class="post-preview">
       <div class="post-meta">
-        <p class="post-meta-category">
+        <p class="post-meta-category font-semi-bold-3">
           {% assign category_letters = post.category | split: ' ' %}
           {% for word in category_letters %}{% assign capitalized_word = word | capitalize %}{{ capitalized_word }} {% endfor %}
         </p>
         <p>|</p>
-        <p>
+        <p class="font-light-3">
           {{ post.date | date: '%Y.%m.%d' }}
         </p>
       </div>
-      <div class="post-title font-title">{{ post.title }}</div>
+      <div class="post-title font-title font-bold-2">{{ post.title }}</div>
     {% if post.tags %}
       <aside class="post-tags">
         {% for tag in post.tags %}<p>{{ tag | escape }}</p>{% endfor %}

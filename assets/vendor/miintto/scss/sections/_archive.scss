@@ -3,27 +3,22 @@
 
     .archive-date {
         width: 90px;
-        color: $gray-5;
-        font-size: 14px;
         line-height: 24px;
         text-align: center;
+        color: $gray-5;
+
+        @media (max-width: 767px) {
+            width: 72px;
+        }
     }
 
     .archive-title {
         display: inline-block;
         flex: 1;
-        font-size: 16px;
-        font-weight: 500;
         line-height: 24px;
     }
 
     p {
         margin: 8px 0;
-    }
-
-    @media (max-width: 767px) {
-        .archive-date {
-            width: 72px;
-        }
     }
 }

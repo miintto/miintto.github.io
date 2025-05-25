@@ -33,7 +33,7 @@ title: 전체 게시물
 
   {% for page in (start_page..end_page) %}
     {% if page == current_page %}
-      <span class="current">{{ page }}</span>
+      <span class="current font-bold-4">{{ page }}</span>
     {% elsif page == 1 %}
       <a href="{{ "/posts" | relative_url }}"><span class="pagination-page">1</span></a>
     {% else %}

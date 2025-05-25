@@ -7,8 +7,6 @@ title: Archives
 
 <div class="container">
   <div class="row">
-    <div class="col-lg-8 col-md-10 mx-auto">
-
     <h3>{{ site.posts.size }} Posts Below!</h3>
       <!-- Post List -->
       {% for post in site.posts %}
@@ -21,10 +19,10 @@ title: Archives
       {% endif %}
 
       <div class="archive-post">
-        <div class="archive-date">
+        <div class="archive-date font-light-3">
           <p>{{ post.date | date: '%m.%d' }}</p>
         </div>
-        <div class="archive-title">
+        <div class="archive-title font-light-2">
           <a href="{{ post.url | prepend: site.baseurl | replace: '//', '/' }}">
             <p>{{ post.title }}</p>
           </a>
