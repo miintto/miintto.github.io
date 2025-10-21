@@ -2,7 +2,7 @@
 layout: post
 title: "[번역] Cinder의 Lazy Import"
 excerpt: 파이썬은 별도 컴파일 과정 없이 빠른 코드 수정 및 실행이 가능하다는 장점 덕분에 개발자 친화적인 언어로 널리 사용되고 있습니다. 하지만 대규모로 운영되는 인스타그램 서버를 로컬 개발 환경에 구성하는 경우 이러한 사용성 이점을 제대로 누리지 못하고 있었습니다. 
-category: meta engineering
+category: articles
 tags:
   - python
   - cinder

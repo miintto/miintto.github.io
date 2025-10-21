@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "[번역] 2024년의 파이썬 타입 시스템 현황"
-category: meta engineering
+category: articles
 tags:
   - python
   - typing

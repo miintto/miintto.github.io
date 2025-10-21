@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "[번역] COW 친화적인 파이썬 가비지 컬렉션"
-category: meta engineering
+category: articles
 tags:
   - python
   - copy-on-write

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "[번역] 타입 체킹과 Free Threading으로 파이썬 생태계 개선"
-category: meta engineering
+category: articles
 tags:
   - python
   - type

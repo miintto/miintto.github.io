@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "[번역] Pyrefly 소개: 새로운 타입 체커로 체험하는 IDE 경험"
-category: meta engineering
+category: articles
 tags:
   - python
   - type

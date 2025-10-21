@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "[번역] Facebook의 MySQL 8.0 마이그레이션"
-category: meta engineering
+category: articles
 tags:
   - meta
   - facebook

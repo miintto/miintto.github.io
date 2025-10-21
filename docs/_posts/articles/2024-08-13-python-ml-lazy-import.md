@@ -2,7 +2,7 @@
 layout: post
 title: "[번역] Lazy Import와 Cinder가 머신러닝 성능을 이끌어낸 방법"
 excerpt: 머신러닝 세계에서 시간은 곧 생명입니다. 머신러닝 모델이 초기 학습 데이터를 처리하는 과정에서 소요되는 1밀리초의 차이는 생산성과 실험 과정에 아주 극명한 차이를 가져올 수 있습니다. 메타에서는 Lazy Imports 방식과 파이썬 런타임 Cinder를 도입하면서
-category: meta engineering
+category: articles
 tags:
   - python
   - machine learning

@@ -2,7 +2,7 @@
 layout: post
 title: "[번역] Python에 불멸 객체 도입"
 excerpt: Meta에서는 인스타그램 프론트엔드 서버로 파이썬(Django)을 사용하고 있습니다. 해당 환경에서 병렬 처리를 위해 프로세스마다 asyncio 기반의 동시성을 처리하는 멀티 프로세스 아키텍처로 운영하고 있습니다.
-category: meta engineering
+category: articles
 tags:
   - python
   - immortal object

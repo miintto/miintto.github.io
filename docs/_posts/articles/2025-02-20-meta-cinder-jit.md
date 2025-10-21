@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "[번역] JIT의 함수 인라이너로 인스타그램 서버 최적화"
-category: meta engineering
+category: articles
 tags:
   - python
   - instagram

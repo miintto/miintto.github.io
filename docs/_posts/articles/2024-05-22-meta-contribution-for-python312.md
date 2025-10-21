@@ -2,7 +2,7 @@
 layout: post
 title: "[번역] Python 3.12에 대한 Meta의 공헌"
 excerpt: 이번 파이썬 3.12 릴리즈에는 우리 내부의 사용 사례를 파이썬 커뮤니티에서 더 쉽게 접근할 수 있도록 개발 및 확장하였던 메타의 노력이 담겨있습니다. 이처럼 메타를 구성하는 오픈소스는 우리의 작업 방식과 학습한 결과를 커뮤니티에 공유하는 아주 중요한 역할을 합니다.
-category: meta engineering
+category: articles
 tags:
   - python
   - immortal object
